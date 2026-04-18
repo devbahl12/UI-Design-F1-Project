@@ -109,6 +109,51 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
+
+    /* ── LEARNING MENU ── */
+    .section-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .section-item {
+      background: #3d3d3d;
+      border: 1px solid #555;
+      border-radius: 12px;
+      padding: 22px 26px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-item:hover { background: #4a4a4a; border-color: #e10600; transform: translateX(4px); }
+    .section-num { color: #e10600; font-weight: 800; font-size: 1.3rem; min-width: 30px; }
+    .section-label { font-size: 1rem; font-weight: 600; }
+    .section-desc { font-size: 0.82rem; color: #888; margin-top: 2px; }
+
+    /* ── CAR COMPONENTS ── */
+    .hotspot {
+      position: absolute;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+    }
+    .hs-ring {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(225,6,0,0.2);
+      border: 3px solid #e10600;
+      animation: hsPulse 1.6s ease-in-out infinite;
+    }
+    .hotspot:hover .hs-ring { background: rgba(225,6,0,0.45); animation: none; transform: scale(1.1); }
+    @keyframes hsPulse {
+      0%,100% { transform: scale(1); opacity:1; }
+      50%      { transform: scale(1.25); opacity:.6; }
+    }
   </style>
 </head>
 <body>
@@ -132,6 +177,151 @@
     <button class="btn-primary" onclick="startSelected()" style="padding:18px 80px; font-size:1.2rem;">Start</button>
   </div>
 
+  <!-- LEARNING MENU -->
+  <div class="screen" id="screen-learning-menu">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('home')">← Home</button>
+      <span class="nav-title">F1 Strategies · Learn</span>
+    </div>
+    <h2 style="font-size:2rem; font-weight:700;">Learning Modules</h2>
+    <p style="margin-top:6px; color:#888;">Explore each topic to understand F1 race strategy.</p>
+
+    <div class="section-list">
+      <div class="section-item" onclick="showScreen('car-components')">
+        <span class="section-num">01</span>
+        <div>
+          <div class="section-label">Car Components</div>
+          <div class="section-desc">Explore key parts of an F1 car</div>
+        </div>
+        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+      </div>
+      <div class="section-item" onclick="showScreen('tires')">
+        <span class="section-num">02</span>
+        <div>
+          <div class="section-label">Tire Compounds</div>
+          <div class="section-desc">Soft, Medium, Hard, Inter, Wet</div>
+        </div>
+        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+      </div>
+      <div class="section-item" onclick="showScreen('tire-degradation')">
+        <span class="section-num">03</span>
+        <div>
+          <div class="section-label">Tire Degradation</div>
+          <div class="section-desc">The cliff effect on lap times</div>
+        </div>
+        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+      </div>
+      <div class="section-item" onclick="showScreen('performance-degradation')">
+        <span class="section-num">04</span>
+        <div>
+          <div class="section-label">Performance Degradation</div>
+          <div class="section-desc">How grip changes speed</div>
+        </div>
+        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+      </div>
+      <div class="section-item" onclick="showScreen('aerodynamics')">
+        <span class="section-num">05</span>
+        <div>
+          <div class="section-label">Aerodynamics</div>
+          <div class="section-desc">Clean air vs dirty air</div>
+        </div>
+        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+      </div>
+      <div class="section-item" onclick="showScreen('finding-the-gap')">
+        <span class="section-num">06</span>
+        <div>
+          <div class="section-label">Finding the Gap</div>
+          <div class="section-desc">Select your pit window</div>
+        </div>
+        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+      </div>
+    </div>
+
+    <div style="margin-top:28px; text-align:center;">
+      <button class="btn-primary" onclick="showScreen('quiz-intro')" style="padding:15px 48px;">Ready to Quiz? →</button>
+    </div>
+  </div>
+
+  <!-- CAR COMPONENTS -->
+  <div class="screen" id="screen-car-components">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
+      <span class="nav-title">Learning · 01 / 06</span>
+    </div>
+    <h2 style="font-size:1.8rem; font-weight:700;">Car Components</h2>
+    <p style="margin-top:6px; color:#aaa;">Click the red hotspots to learn about each part of the car.</p>
+
+    <div style="flex:1; display:flex; gap:40px; align-items:center; margin-top:24px; overflow:hidden;">
+      <!-- SVG Car -->
+      <div style="position:relative; flex:1; display:flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 720 340" style="width:100%; max-width:580px;" xmlns="http://www.w3.org/2000/svg">
+          <!-- rear body -->
+          <ellipse cx="420" cy="210" rx="220" ry="55" fill="#1e1e1e"/>
+          <!-- front nose -->
+          <path d="M 100 210 L 180 192 L 180 228 Z" fill="#2a2a2a"/>
+          <!-- main chassis -->
+          <rect x="180" y="190" width="260" height="40" rx="6" fill="#252525"/>
+          <!-- cockpit opening -->
+          <ellipse cx="330" cy="178" rx="62" ry="30" fill="#1a1a1a"/>
+          <ellipse cx="330" cy="168" rx="48" ry="20" fill="#111"/>
+          <!-- halo -->
+          <path d="M 285 163 Q 330 143 375 163" fill="none" stroke="#444" stroke-width="9" stroke-linecap="round"/>
+          <!-- front wing main -->
+          <rect x="90" y="228" width="130" height="10" rx="4" fill="#333"/>
+          <rect x="76" y="234" width="158" height="5" rx="3" fill="#404040"/>
+          <!-- front wing end plates -->
+          <rect x="76" y="222" width="6" height="24" rx="2" fill="#3a3a3a"/>
+          <rect x="234" y="222" width="6" height="24" rx="2" fill="#3a3a3a"/>
+          <!-- rear wing -->
+          <rect x="538" y="178" width="108" height="9" rx="4" fill="#333"/>
+          <rect x="534" y="187" width="116" height="6" rx="3" fill="#3d3d3d"/>
+          <!-- DRS flap -->
+          <rect x="538" y="167" width="108" height="5" rx="2" fill="#444"/>
+          <!-- rear wing endplates -->
+          <rect x="534" y="160" width="7" height="40" rx="2" fill="#3a3a3a"/>
+          <rect x="643" y="160" width="7" height="40" rx="2" fill="#3a3a3a"/>
+          <!-- sidepod left -->
+          <path d="M 248 198 Q 280 178 380 180 L 380 212 Q 280 214 248 230 Z" fill="#222"/>
+          <!-- sidepod right -->
+          <path d="M 380 180 Q 470 175 510 192 L 510 215 Q 470 222 380 212 Z" fill="#222"/>
+          <!-- floor/diffuser hint -->
+          <rect x="180" y="230" width="420" height="6" rx="2" fill="#1a1a1a"/>
+          <!-- front left tire -->
+          <ellipse cx="168" cy="252" rx="32" ry="38" fill="#111" stroke="#2a2a2a" stroke-width="3"/>
+          <ellipse cx="168" cy="252" rx="15" ry="18" fill="#1e1e1e"/>
+          <!-- front right tire (mirrored, barely visible) -->
+          <ellipse cx="190" cy="248" rx="10" ry="14" fill="#0e0e0e"/>
+          <!-- rear left tire -->
+          <ellipse cx="548" cy="256" rx="42" ry="50" fill="#111" stroke="#2a2a2a" stroke-width="3"/>
+          <ellipse cx="548" cy="256" rx="20" ry="24" fill="#1e1e1e"/>
+          <!-- rear right tire -->
+          <ellipse cx="578" cy="250" rx="14" ry="18" fill="#0e0e0e"/>
+          <!-- engine cover vents -->
+          <rect x="390" y="186" width="4" height="20" rx="1" fill="#333"/>
+          <rect x="400" y="186" width="4" height="20" rx="1" fill="#333"/>
+          <rect x="410" y="186" width="4" height="20" rx="1" fill="#333"/>
+        </svg>
+
+        <!-- Hotspots -->
+        <div class="hotspot" style="left:19%;top:63%;" onclick="showComponent('frontwing')"><div class="hs-ring"></div></div>
+        <div class="hotspot" style="left:24%;top:76%;" onclick="showComponent('fronttire')"><div class="hs-ring"></div></div>
+        <div class="hotspot" style="left:46%;top:37%;" onclick="showComponent('halo')"><div class="hs-ring"></div></div>
+        <div class="hotspot" style="left:53%;top:57%;" onclick="showComponent('sidepod')"><div class="hs-ring"></div></div>
+        <div class="hotspot" style="left:77%;top:43%;" onclick="showComponent('rearwing')"><div class="hs-ring"></div></div>
+        <div class="hotspot" style="left:77%;top:76%;" onclick="showComponent('reartire')"><div class="hs-ring"></div></div>
+      </div>
+
+      <!-- Info panel -->
+      <div id="component-info" style="width:270px; flex-shrink:0; background:#1a1a1a; border-radius:16px; padding:32px; min-height:220px; display:flex; flex-direction:column; justify-content:center; transition:all 0.2s;">
+        <p style="color:#555; text-align:center; font-style:italic; font-size:0.95rem;">Click a red hotspot on the car to learn more.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+      <button class="btn-primary" onclick="showScreen('tires')">Next: Tires →</button>
+    </div>
+  </div>
+
   <script>
     let selectedMode = 'learning';
 
@@ -149,6 +339,25 @@
 
     function startSelected() {
       showScreen(selectedMode === 'learning' ? 'learning-menu' : 'quiz-intro');
+    }
+
+    // Car components data
+    const componentData = {
+      frontwing: { icon: '⬛', name: 'Front Wing', desc: 'Generates downforce at the nose of the car. Small angle adjustments shift balance between understeer and oversteer — teams tweak it lap by lap via radio.' },
+      fronttire: { icon: '⭕', name: 'Front Tires', desc: 'Pirelli-supplied slick tires. The fronts handle braking and steering loads and are typically cooler than rears — meaning they\'re less prone to graining.' },
+      halo: { icon: '🛡️', name: 'Halo', desc: 'A mandatory titanium safety structure above the cockpit that protects the driver\'s head from debris and rollover forces. Introduced in 2018 after several fatal incidents.' },
+      sidepod: { icon: '❄️', name: 'Sidepod', desc: 'Houses the water and oil radiators that cool the engine and hybrid battery system. Sidepod shape is one of the most aerodynamically contested areas between teams.' },
+      rearwing: { icon: '✈️', name: 'Rear Wing', desc: 'The largest downforce element on the car. The DRS (Drag Reduction System) opens a flap in the rear wing on designated straights, reducing drag to aid overtaking.' },
+      reartire: { icon: '🔄', name: 'Rear Tires', desc: 'Wider than the fronts to transmit engine and hybrid power to the track. Under heavy acceleration they\'re most vulnerable to overheating and degradation.' }
+    };
+
+    function showComponent(key) {
+      const d = componentData[key];
+      document.getElementById('component-info').innerHTML = `
+        <div style="font-size:2.4rem; margin-bottom:14px;">${d.icon}</div>
+        <h3 style="color:#e10600; margin-bottom:10px; font-size:1.1rem;">${d.name}</h3>
+        <p style="color:#aaa; line-height:1.75; font-size:0.9rem;">${d.desc}</p>
+      `;
     }
   </script>
 </body>
