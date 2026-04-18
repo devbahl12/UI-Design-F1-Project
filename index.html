@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intro to Formula 1</title>
   <style>
+    /* reset - keeping it simple */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
+      /* dark theme throughout, matches F1's broadcast aesthetic */
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       background: #2a2a2a;
       color: #fff;
@@ -15,6 +17,7 @@
       overflow: hidden;
     }
 
+    /* each "page" is a screen div, only one visible at a time */
     .screen {
       display: none;
       height: 100vh;
@@ -23,11 +26,13 @@
     }
     .screen.active { display: flex; animation: fadeIn 0.3s ease; }
 
+    /* subtle slide-up on screen transitions, feels nicer than a hard swap */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* teal is the main action color - picked to contrast against the dark bg */
     .btn-primary {
       background: #009688;
       color: #111;
@@ -41,6 +46,7 @@
     }
     .btn-primary:hover { background: #00b39d; transform: translateY(-1px); }
 
+    /* secondary buttons are just for less important actions like "back to learning" */
     .btn-secondary {
       background: #3d3d3d;
       color: #fff;
@@ -54,7 +60,7 @@
     }
     .btn-secondary:hover { background: #4d4d4d; }
 
-    /* ── HOME ── */
+    /* ── HOME SCREEN ── */
     #screen-home {
       align-items: center;
       justify-content: center;
@@ -67,6 +73,7 @@
       margin-bottom: 40px;
     }
 
+    /* clicking a card highlights it before you hit Start */
     .mode-card {
       background: #3d3d3d;
       border: 2px solid #555;
@@ -86,7 +93,8 @@
     .mode-card.selected { border-color: #009688; background: #1d3532; }
     .mode-card .icon { font-size: 1.8rem; }
 
-    /* ── SHARED NAV ── */
+    /* ── SHARED TOP NAV ── */
+    /* reused on every learning/quiz screen */
     .nav {
       display: flex;
       justify-content: space-between;
@@ -103,6 +111,7 @@
     }
     .nav-back:hover { color: #fff; }
     .nav-title {
+      /* red breadcrumb label top right */
       color: #e10600;
       font-size: 0.9rem;
       font-weight: 600;
@@ -111,6 +120,7 @@
     }
 
     /* ── LEARNING MENU ── */
+    /* 2-column grid so all 6 modules fit without scrolling */
     .section-list {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -128,12 +138,14 @@
       align-items: center;
       gap: 16px;
     }
+    /* nudges right on hover to give a "drill-in" feeling */
     .section-item:hover { background: #4a4a4a; border-color: #e10600; transform: translateX(4px); }
     .section-num { color: #e10600; font-weight: 800; font-size: 1.3rem; min-width: 30px; }
     .section-label { font-size: 1rem; font-weight: 600; }
     .section-desc { font-size: 0.82rem; color: #888; margin-top: 2px; }
 
-    /* ── CAR COMPONENTS ── */
+    /* ── CAR COMPONENTS - hotspot overlay ── */
+    /* positioned absolutely over the SVG car diagram */
     .hotspot {
       position: absolute;
       width: 38px;
@@ -149,6 +161,7 @@
       border: 3px solid #e10600;
       animation: hsPulse 1.6s ease-in-out infinite;
     }
+    /* stop pulsing on hover so it feels like it's ready to be clicked */
     .hotspot:hover .hs-ring { background: rgba(225,6,0,0.45); animation: none; transform: scale(1.1); }
     @keyframes hsPulse {
       0%,100% { transform: scale(1); opacity:1; }
@@ -156,6 +169,7 @@
     }
 
     /* ── TIRES ── */
+    /* Reya suggested using just the colored ring instead of actual tire images - cleaner */
     .tire-grid {
       display: flex;
       gap: 14px;
@@ -177,6 +191,7 @@
     }
     .tire-card:hover { background: #4a4a4a; transform: translateY(-3px); }
     .tire-card.active { background: #1d3532; }
+    /* the ring color is set inline to match Pirelli's actual color coding */
     .tire-ring {
       width: 54px;
       height: 54px;
@@ -197,12 +212,13 @@
 </head>
 <body>
 
-  <!-- HOME -->
+  <!-- HOME - first thing users see, pick learning or quiz mode -->
   <div class="screen active" id="screen-home">
     <h1 style="color:#e10600; font-size:4rem; font-weight:800; margin-bottom:16px;">Intro to Formula 1</h1>
     <p style="color:#888; margin-bottom:56px; font-size:1.05rem;">Select a mode to get started</p>
 
     <div class="mode-cards">
+      <!-- learning is selected by default since most users will go through it first -->
       <div class="mode-card selected" id="mode-learning" onclick="selectMode('learning')">
         <span class="icon">🎓</span>
         <span>Learning</span>
@@ -216,7 +232,7 @@
     <button class="btn-primary" onclick="startSelected()" style="padding:18px 80px; font-size:1.2rem;">Start</button>
   </div>
 
-  <!-- LEARNING MENU -->
+  <!-- LEARNING MENU - overview of all 6 modules -->
   <div class="screen" id="screen-learning-menu">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('home')">← Home</button>
@@ -225,6 +241,7 @@
     <h2 style="font-size:2rem; font-weight:700;">Learning Modules</h2>
     <p style="margin-top:6px; color:#888;">Explore each topic to understand F1 race strategy.</p>
 
+    <!-- 2 columns so it fits without scrolling on a standard laptop screen -->
     <div class="section-list">
       <div class="section-item" onclick="showScreen('car-components')">
         <span class="section-num">01</span>
@@ -281,7 +298,7 @@
     </div>
   </div>
 
-  <!-- CAR COMPONENTS -->
+  <!-- CAR COMPONENTS - SVG car with clickable hotspots -->
   <div class="screen" id="screen-car-components">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
@@ -291,57 +308,57 @@
     <p style="margin-top:6px; color:#aaa;">Click the red hotspots to learn about each part of the car.</p>
 
     <div style="flex:1; display:flex; gap:40px; align-items:center; margin-top:24px; overflow:hidden;">
-      <!-- SVG Car -->
+      <!-- SVG car drawn by hand - side profile, roughly 3/4 view -->
       <div style="position:relative; flex:1; display:flex; align-items:center; justify-content:center;">
         <svg viewBox="0 0 720 340" style="width:100%; max-width:580px;" xmlns="http://www.w3.org/2000/svg">
-          <!-- rear body -->
+          <!-- rear body mass -->
           <ellipse cx="420" cy="210" rx="220" ry="55" fill="#1e1e1e"/>
-          <!-- front nose -->
+          <!-- pointed front nose cone -->
           <path d="M 100 210 L 180 192 L 180 228 Z" fill="#2a2a2a"/>
-          <!-- main chassis -->
+          <!-- main monocoque chassis -->
           <rect x="180" y="190" width="260" height="40" rx="6" fill="#252525"/>
-          <!-- cockpit opening -->
+          <!-- cockpit cutout -->
           <ellipse cx="330" cy="178" rx="62" ry="30" fill="#1a1a1a"/>
           <ellipse cx="330" cy="168" rx="48" ry="20" fill="#111"/>
-          <!-- halo -->
+          <!-- halo safety device - the curved titanium bar above cockpit -->
           <path d="M 285 163 Q 330 143 375 163" fill="none" stroke="#444" stroke-width="9" stroke-linecap="round"/>
-          <!-- front wing main -->
+          <!-- front wing - main plane + flap -->
           <rect x="90" y="228" width="130" height="10" rx="4" fill="#333"/>
           <rect x="76" y="234" width="158" height="5" rx="3" fill="#404040"/>
-          <!-- front wing end plates -->
+          <!-- front wing endplates (vertical fins on the sides) -->
           <rect x="76" y="222" width="6" height="24" rx="2" fill="#3a3a3a"/>
           <rect x="234" y="222" width="6" height="24" rx="2" fill="#3a3a3a"/>
-          <!-- rear wing -->
+          <!-- rear wing main plane -->
           <rect x="538" y="178" width="108" height="9" rx="4" fill="#333"/>
           <rect x="534" y="187" width="116" height="6" rx="3" fill="#3d3d3d"/>
-          <!-- DRS flap -->
+          <!-- DRS flap (the movable element that opens on straights) -->
           <rect x="538" y="167" width="108" height="5" rx="2" fill="#444"/>
           <!-- rear wing endplates -->
           <rect x="534" y="160" width="7" height="40" rx="2" fill="#3a3a3a"/>
           <rect x="643" y="160" width="7" height="40" rx="2" fill="#3a3a3a"/>
-          <!-- sidepod left -->
+          <!-- sidepods - left (camera side) -->
           <path d="M 248 198 Q 280 178 380 180 L 380 212 Q 280 214 248 230 Z" fill="#222"/>
-          <!-- sidepod right -->
+          <!-- sidepods - right -->
           <path d="M 380 180 Q 470 175 510 192 L 510 215 Q 470 222 380 212 Z" fill="#222"/>
-          <!-- floor/diffuser hint -->
+          <!-- floor undercut -->
           <rect x="180" y="230" width="420" height="6" rx="2" fill="#1a1a1a"/>
-          <!-- front left tire -->
+          <!-- front left tire (larger, closer to viewer) -->
           <ellipse cx="168" cy="252" rx="32" ry="38" fill="#111" stroke="#2a2a2a" stroke-width="3"/>
           <ellipse cx="168" cy="252" rx="15" ry="18" fill="#1e1e1e"/>
-          <!-- front right tire (mirrored, barely visible) -->
+          <!-- front right tire barely peeking out from behind -->
           <ellipse cx="190" cy="248" rx="10" ry="14" fill="#0e0e0e"/>
-          <!-- rear left tire -->
+          <!-- rear left tire - noticeably wider than front -->
           <ellipse cx="548" cy="256" rx="42" ry="50" fill="#111" stroke="#2a2a2a" stroke-width="3"/>
           <ellipse cx="548" cy="256" rx="20" ry="24" fill="#1e1e1e"/>
           <!-- rear right tire -->
           <ellipse cx="578" cy="250" rx="14" ry="18" fill="#0e0e0e"/>
-          <!-- engine cover vents -->
+          <!-- engine cover cooling vents -->
           <rect x="390" y="186" width="4" height="20" rx="1" fill="#333"/>
           <rect x="400" y="186" width="4" height="20" rx="1" fill="#333"/>
           <rect x="410" y="186" width="4" height="20" rx="1" fill="#333"/>
         </svg>
 
-        <!-- Hotspots -->
+        <!-- hotspot positions tuned manually to sit on top of each car part -->
         <div class="hotspot" style="left:19%;top:63%;" onclick="showComponent('frontwing')"><div class="hs-ring"></div></div>
         <div class="hotspot" style="left:24%;top:76%;" onclick="showComponent('fronttire')"><div class="hs-ring"></div></div>
         <div class="hotspot" style="left:46%;top:37%;" onclick="showComponent('halo')"><div class="hs-ring"></div></div>
@@ -350,7 +367,7 @@
         <div class="hotspot" style="left:77%;top:76%;" onclick="showComponent('reartire')"><div class="hs-ring"></div></div>
       </div>
 
-      <!-- Info panel -->
+      <!-- info panel on the right - updates when you click a hotspot -->
       <div id="component-info" style="width:270px; flex-shrink:0; background:#1a1a1a; border-radius:16px; padding:32px; min-height:220px; display:flex; flex-direction:column; justify-content:center; transition:all 0.2s;">
         <p style="color:#555; text-align:center; font-style:italic; font-size:0.95rem;">Click a red hotspot on the car to learn more.</p>
       </div>
@@ -361,7 +378,7 @@
     </div>
   </div>
 
-  <!-- TIRES -->
+  <!-- TIRES - color-coded compound selector -->
   <div class="screen" id="screen-tires">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
@@ -371,6 +388,7 @@
     <p style="margin-top:6px; color:#aaa; font-weight:600;">F1 uses color-coded tire compounds. Click one to learn its purpose:</p>
 
     <div class="tire-grid" id="tire-grid">
+      <!-- colors match official Pirelli tire markings -->
       <div class="tire-card" onclick="selectTire(this,'soft')">
         <div class="tire-ring" style="border-color:#e10600;"></div>
         <span class="tire-name">Soft</span>
@@ -393,6 +411,7 @@
       </div>
     </div>
 
+    <!-- description text updates here when a tire is selected -->
     <div class="tire-info-box">
       <p id="tire-text" style="color:#555; font-style:italic; font-size:1rem;">Select a tire compound above to see details.</p>
     </div>
@@ -403,8 +422,10 @@
   </div>
 
   <script>
+    // tracks which mode the user picked on the home screen
     let selectedMode = 'learning';
 
+    // swap the visible screen by toggling the .active class
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const el = document.getElementById('screen-' + id);
@@ -417,21 +438,33 @@
       document.getElementById('mode-' + mode).classList.add('selected');
     }
 
+    // routes to the right starting screen based on mode selection
     function startSelected() {
       showScreen(selectedMode === 'learning' ? 'learning-menu' : 'quiz-intro');
     }
 
-    // Car components data
+    // content for each clickable car part
+    // descriptions kept short - Nitish mentioned users don't read walls of text
     const componentData = {
       frontwing: { icon: '⬛', name: 'Front Wing', desc: 'Generates downforce at the nose of the car. Small angle adjustments shift balance between understeer and oversteer — teams tweak it lap by lap via radio.' },
       fronttire: { icon: '⭕', name: 'Front Tires', desc: 'Pirelli-supplied slick tires. The fronts handle braking and steering loads and are typically cooler than rears — meaning they\'re less prone to graining.' },
-      halo: { icon: '🛡️', name: 'Halo', desc: 'A mandatory titanium safety structure above the cockpit that protects the driver\'s head from debris and rollover forces. Introduced in 2018 after several fatal incidents.' },
-      sidepod: { icon: '❄️', name: 'Sidepod', desc: 'Houses the water and oil radiators that cool the engine and hybrid battery system. Sidepod shape is one of the most aerodynamically contested areas between teams.' },
-      rearwing: { icon: '✈️', name: 'Rear Wing', desc: 'The largest downforce element on the car. The DRS (Drag Reduction System) opens a flap in the rear wing on designated straights, reducing drag to aid overtaking.' },
-      reartire: { icon: '🔄', name: 'Rear Tires', desc: 'Wider than the fronts to transmit engine and hybrid power to the track. Under heavy acceleration they\'re most vulnerable to overheating and degradation.' }
+      halo:      { icon: '🛡️', name: 'Halo', desc: 'A mandatory titanium safety structure above the cockpit that protects the driver\'s head from debris and rollover forces. Introduced in 2018 after several fatal incidents.' },
+      sidepod:   { icon: '❄️', name: 'Sidepod', desc: 'Houses the water and oil radiators that cool the engine and hybrid battery system. Sidepod shape is one of the most aerodynamically contested areas between teams.' },
+      rearwing:  { icon: '✈️', name: 'Rear Wing', desc: 'The largest downforce element on the car. The DRS (Drag Reduction System) opens a flap in the rear wing on designated straights, reducing drag to aid overtaking.' },
+      reartire:  { icon: '🔄', name: 'Rear Tires', desc: 'Wider than the fronts to transmit engine and hybrid power to the track. Under heavy acceleration they\'re most vulnerable to overheating and degradation.' }
     };
 
-    // Tires
+    // render component info into the side panel when a hotspot is clicked
+    function showComponent(key) {
+      const d = componentData[key];
+      document.getElementById('component-info').innerHTML = `
+        <div style="font-size:2.4rem; margin-bottom:14px;">${d.icon}</div>
+        <h3 style="color:#e10600; margin-bottom:10px; font-size:1.1rem;">${d.name}</h3>
+        <p style="color:#aaa; line-height:1.75; font-size:0.9rem;">${d.desc}</p>
+      `;
+    }
+
+    // tire info text - color matches the ring on the card
     const tireData = {
       soft:  { color: '#e10600', text: 'SOFT: The fastest compound on track, generating peak grip — but typically lasts only 10–15 laps before falling off the cliff. Used in qualifying and short stints.' },
       med:   { color: '#ffd600', text: 'MEDIUM: The go-to compound for most races. Balanced grip and durability, usually lasting 20–30 laps. Teams often build strategies around it.' },
@@ -441,6 +474,7 @@
     };
 
     function selectTire(card, type) {
+      // clear previous selection first
       document.querySelectorAll('.tire-card').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
       const d = tireData[type];
@@ -449,15 +483,6 @@
       el.style.fontStyle = 'italic';
       el.style.fontWeight = '600';
       el.textContent = d.text;
-    }
-
-    function showComponent(key) {
-      const d = componentData[key];
-      document.getElementById('component-info').innerHTML = `
-        <div style="font-size:2.4rem; margin-bottom:14px;">${d.icon}</div>
-        <h3 style="color:#e10600; margin-bottom:10px; font-size:1.1rem;">${d.name}</h3>
-        <p style="color:#aaa; line-height:1.75; font-size:0.9rem;">${d.desc}</p>
-      `;
     }
   </script>
 </body>
