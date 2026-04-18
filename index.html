@@ -154,6 +154,45 @@
       0%,100% { transform: scale(1); opacity:1; }
       50%      { transform: scale(1.25); opacity:.6; }
     }
+
+    /* ── TIRES ── */
+    .tire-grid {
+      display: flex;
+      gap: 14px;
+      margin-top: 36px;
+      flex-wrap: nowrap;
+    }
+    .tire-card {
+      background: #3d3d3d;
+      border: 2px solid #555;
+      border-radius: 14px;
+      padding: 28px 20px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+    .tire-card:hover { background: #4a4a4a; transform: translateY(-3px); }
+    .tire-card.active { background: #1d3532; }
+    .tire-ring {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 4px solid;
+    }
+    .tire-name { font-weight: 700; font-size: 0.95rem; }
+    .tire-info-box {
+      background: #1a1a1a;
+      border-radius: 14px;
+      padding: 24px 32px;
+      margin-top: 28px;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
@@ -322,6 +361,47 @@
     </div>
   </div>
 
+  <!-- TIRES -->
+  <div class="screen" id="screen-tires">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
+      <span class="nav-title">Learning · 02 / 06</span>
+    </div>
+    <h2 style="font-size:1.8rem; font-weight:700;">Tires</h2>
+    <p style="margin-top:6px; color:#aaa; font-weight:600;">F1 uses color-coded tire compounds. Click one to learn its purpose:</p>
+
+    <div class="tire-grid" id="tire-grid">
+      <div class="tire-card" onclick="selectTire(this,'soft')">
+        <div class="tire-ring" style="border-color:#e10600;"></div>
+        <span class="tire-name">Soft</span>
+      </div>
+      <div class="tire-card" onclick="selectTire(this,'med')">
+        <div class="tire-ring" style="border-color:#ffd600;"></div>
+        <span class="tire-name">Med</span>
+      </div>
+      <div class="tire-card" onclick="selectTire(this,'hard')">
+        <div class="tire-ring" style="border-color:#ffffff;"></div>
+        <span class="tire-name">Hard</span>
+      </div>
+      <div class="tire-card" onclick="selectTire(this,'inter')">
+        <div class="tire-ring" style="border-color:#00c853;"></div>
+        <span class="tire-name">Inter</span>
+      </div>
+      <div class="tire-card" onclick="selectTire(this,'wet')">
+        <div class="tire-ring" style="border-color:#2979ff;"></div>
+        <span class="tire-name">Wet</span>
+      </div>
+    </div>
+
+    <div class="tire-info-box">
+      <p id="tire-text" style="color:#555; font-style:italic; font-size:1rem;">Select a tire compound above to see details.</p>
+    </div>
+
+    <div style="margin-top:auto; padding-top:24px; display:flex; justify-content:flex-end;">
+      <button class="btn-primary" onclick="showScreen('tire-degradation')">Next: Tire Degradation →</button>
+    </div>
+  </div>
+
   <script>
     let selectedMode = 'learning';
 
@@ -350,6 +430,26 @@
       rearwing: { icon: '✈️', name: 'Rear Wing', desc: 'The largest downforce element on the car. The DRS (Drag Reduction System) opens a flap in the rear wing on designated straights, reducing drag to aid overtaking.' },
       reartire: { icon: '🔄', name: 'Rear Tires', desc: 'Wider than the fronts to transmit engine and hybrid power to the track. Under heavy acceleration they\'re most vulnerable to overheating and degradation.' }
     };
+
+    // Tires
+    const tireData = {
+      soft:  { color: '#e10600', text: 'SOFT: The fastest compound on track, generating peak grip — but typically lasts only 10–15 laps before falling off the cliff. Used in qualifying and short stints.' },
+      med:   { color: '#ffd600', text: 'MEDIUM: The go-to compound for most races. Balanced grip and durability, usually lasting 20–30 laps. Teams often build strategies around it.' },
+      hard:  { color: '#e0e0e0', text: 'HARD: Slowest but most durable — can run 40+ laps. Preferred for long stints or when track temperatures are very high. Less sensitive to heat cycles.' },
+      inter: { color: '#00c853', text: 'INTERMEDIATE: Designed for damp or light rain conditions. The tread evacuates water without the full channel depth of a wet tire. Often the fastest in tricky weather windows.' },
+      wet:   { color: '#2979ff', text: 'FULL WET: For heavy rain. Deep grooves channel up to 85 litres of water per second per tire. Drivers switch to slicks the moment the track begins to dry.' }
+    };
+
+    function selectTire(card, type) {
+      document.querySelectorAll('.tire-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      const d = tireData[type];
+      const el = document.getElementById('tire-text');
+      el.style.color = d.color;
+      el.style.fontStyle = 'italic';
+      el.style.fontWeight = '600';
+      el.textContent = d.text;
+    }
 
     function showComponent(key) {
       const d = componentData[key];
