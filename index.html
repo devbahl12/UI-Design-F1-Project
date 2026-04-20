@@ -375,78 +375,133 @@
     <p style="margin-top:6px; color:#aaa;">Click the red hotspots to learn about each part of the car.</p>
 
     <div style="flex:1; display:flex; gap:40px; align-items:center; margin-top:24px; overflow:hidden;">
-      <!-- SVG car - hotspots are circles inside the SVG so they scale correctly -->
+      <!-- SVG car - proper F1 side-profile silhouette with hotspots inside -->
       <div style="flex:1; display:flex; align-items:center; justify-content:center;">
-        <svg viewBox="0 0 720 340" style="width:100%; max-width:600px;" xmlns="http://www.w3.org/2000/svg">
-          <!-- rear body mass -->
-          <ellipse cx="420" cy="210" rx="220" ry="55" fill="#1e1e1e"/>
-          <!-- pointed front nose cone -->
-          <path d="M 100 210 L 180 192 L 180 228 Z" fill="#2a2a2a"/>
-          <!-- main monocoque chassis -->
-          <rect x="180" y="190" width="260" height="40" rx="6" fill="#252525"/>
-          <!-- cockpit cutout -->
-          <ellipse cx="330" cy="178" rx="62" ry="30" fill="#1a1a1a"/>
-          <ellipse cx="330" cy="168" rx="48" ry="20" fill="#111"/>
-          <!-- halo safety device -->
-          <path d="M 285 163 Q 330 143 375 163" fill="none" stroke="#444" stroke-width="9" stroke-linecap="round"/>
-          <!-- front wing main plane + flap -->
-          <rect x="90" y="228" width="130" height="10" rx="4" fill="#333"/>
-          <rect x="76" y="234" width="158" height="5" rx="3" fill="#404040"/>
-          <!-- front wing endplates -->
-          <rect x="76" y="222" width="6" height="24" rx="2" fill="#3a3a3a"/>
-          <rect x="234" y="222" width="6" height="24" rx="2" fill="#3a3a3a"/>
-          <!-- rear wing -->
-          <rect x="538" y="178" width="108" height="9" rx="4" fill="#333"/>
-          <rect x="534" y="187" width="116" height="6" rx="3" fill="#3d3d3d"/>
-          <!-- DRS flap -->
-          <rect x="538" y="167" width="108" height="5" rx="2" fill="#444"/>
-          <!-- rear wing endplates -->
-          <rect x="534" y="160" width="7" height="40" rx="2" fill="#3a3a3a"/>
-          <rect x="643" y="160" width="7" height="40" rx="2" fill="#3a3a3a"/>
-          <!-- sidepods -->
-          <path d="M 248 198 Q 280 178 380 180 L 380 212 Q 280 214 248 230 Z" fill="#222"/>
-          <path d="M 380 180 Q 470 175 510 192 L 510 215 Q 470 222 380 212 Z" fill="#222"/>
-          <!-- floor -->
-          <rect x="180" y="230" width="420" height="6" rx="2" fill="#1a1a1a"/>
-          <!-- front left tire -->
-          <ellipse cx="168" cy="252" rx="32" ry="38" fill="#111" stroke="#2a2a2a" stroke-width="3"/>
-          <ellipse cx="168" cy="252" rx="15" ry="18" fill="#1e1e1e"/>
-          <!-- front right tire -->
-          <ellipse cx="190" cy="248" rx="10" ry="14" fill="#0e0e0e"/>
-          <!-- rear left tire -->
-          <ellipse cx="548" cy="256" rx="42" ry="50" fill="#111" stroke="#2a2a2a" stroke-width="3"/>
-          <ellipse cx="548" cy="256" rx="20" ry="24" fill="#1e1e1e"/>
-          <!-- rear right tire -->
-          <ellipse cx="578" cy="250" rx="14" ry="18" fill="#0e0e0e"/>
-          <!-- engine cover vents -->
-          <rect x="390" y="186" width="4" height="20" rx="1" fill="#333"/>
-          <rect x="400" y="186" width="4" height="20" rx="1" fill="#333"/>
-          <rect x="410" y="186" width="4" height="20" rx="1" fill="#333"/>
+        <svg viewBox="0 0 800 320" style="width:100%; max-width:640px;" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3a3a3a"/>
+              <stop offset="100%" stop-color="#1a1a1a"/>
+            </linearGradient>
+            <linearGradient id="tireGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2a2a2a"/>
+              <stop offset="100%" stop-color="#111"/>
+            </linearGradient>
+          </defs>
 
-          <!-- hotspots as SVG circles - coordinates match the car parts exactly -->
+          <!-- ── TIRES (drawn first so body sits on top) ── -->
+          <!-- front tire -->
+          <ellipse cx="200" cy="242" rx="36" ry="36" fill="url(#tireGrad)" stroke="#444" stroke-width="2"/>
+          <ellipse cx="200" cy="242" rx="16" ry="16" fill="#333"/>
+          <ellipse cx="200" cy="242" rx="8"  ry="8"  fill="#222"/>
+          <!-- rear tire -->
+          <ellipse cx="590" cy="242" rx="46" ry="46" fill="url(#tireGrad)" stroke="#444" stroke-width="2"/>
+          <ellipse cx="590" cy="242" rx="20" ry="20" fill="#333"/>
+          <ellipse cx="590" cy="242" rx="10" ry="10" fill="#222"/>
+
+          <!-- ── FLOOR / UNDERFLOOR ── -->
+          <rect x="185" y="250" width="430" height="10" rx="3" fill="#1e1e1e"/>
+
+          <!-- ── SIDEPODS ── -->
+          <path d="M 310 205 Q 340 185 430 183 L 540 190 Q 540 220 430 222 Q 340 225 310 235 Z"
+                fill="#2e2e2e" stroke="#444" stroke-width="1"/>
+          <!-- sidepod air intake opening -->
+          <ellipse cx="320" cy="207" rx="14" ry="20" fill="#111"/>
+
+          <!-- ── MAIN CHASSIS / MONOCOQUE ── -->
+          <path d="M 185 215 Q 195 200 260 195 L 490 192 Q 545 192 565 215 L 565 248 L 185 248 Z"
+                fill="url(#bodyGrad)" stroke="#555" stroke-width="1"/>
+
+          <!-- ── ENGINE COVER (hump behind cockpit) ── -->
+          <path d="M 380 192 Q 400 165 450 160 Q 500 158 530 175 L 530 192 Z"
+                fill="#2a2a2a" stroke="#555" stroke-width="1"/>
+          <!-- air intake on top of engine cover -->
+          <path d="M 415 175 Q 430 158 445 158 Q 460 158 465 172 L 445 172 Q 440 162 430 163 Z"
+                fill="#111" stroke="#555" stroke-width="1"/>
+
+          <!-- ── COCKPIT ── -->
+          <path d="M 280 195 Q 295 162 330 155 Q 375 148 400 162 L 395 192 Z"
+                fill="#222" stroke="#555" stroke-width="1"/>
+          <!-- cockpit inner dark -->
+          <path d="M 288 192 Q 300 166 330 160 Q 368 153 390 166 L 387 190 Z"
+                fill="#111"/>
+
+          <!-- ── HALO ── -->
+          <path d="M 296 170 L 300 148 Q 330 132 365 148 L 368 168"
+                fill="none" stroke="#888" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="328" y1="132" x2="333" y2="168"
+                stroke="#888" stroke-width="6" stroke-linecap="round"/>
+
+          <!-- ── NOSE CONE (tapered front) ── -->
+          <path d="M 185 225 Q 150 222 90 228 Q 60 230 40 235 Q 60 237 90 238 Q 150 240 185 240 Z"
+                fill="#333" stroke="#555" stroke-width="1"/>
+          <!-- nose tip -->
+          <path d="M 40 235 Q 20 235 8 236 L 40 237 Z" fill="#2a2a2a"/>
+
+          <!-- ── FRONT WING ── -->
+          <!-- main plane -->
+          <path d="M 60 240 Q 40 240 20 244 L 20 248 Q 40 248 60 248 Z"
+                fill="#333"/>
+          <rect x="18" y="237" width="180" height="7" rx="2" fill="#3a3a3a"/>
+          <rect x="18" y="246" width="180" height="4" rx="1" fill="#444"/>
+          <!-- front wing endplates -->
+          <rect x="18"  y="232" width="5" height="22" rx="1" fill="#444"/>
+          <rect x="195" y="232" width="5" height="22" rx="1" fill="#444"/>
+          <!-- front wing cascade elements -->
+          <path d="M 30 237 Q 80 228 140 230 Q 160 231 185 234 L 185 237 Q 160 234 140 233 Q 80 231 30 240 Z"
+                fill="#2e2e2e"/>
+
+          <!-- ── REAR WING ── -->
+          <!-- main plane + DRS flap -->
+          <rect x="620" y="168" width="130" height="7"  rx="2" fill="#555"/>
+          <rect x="622" y="177" width="126" height="9"  rx="2" fill="#3a3a3a"/>
+          <rect x="620" y="188" width="130" height="5"  rx="2" fill="#444"/>
+          <!-- rear wing endplates -->
+          <rect x="617" y="162" width="8" height="42" rx="2" fill="#3d3d3d"/>
+          <rect x="748" y="162" width="8" height="42" rx="2" fill="#3d3d3d"/>
+          <!-- beam wing (lower element) -->
+          <rect x="630" y="218" width="110" height="6" rx="2" fill="#444"/>
+          <!-- rear wing support struts -->
+          <line x1="660" y1="193" x2="655" y2="240" stroke="#444" stroke-width="4" stroke-linecap="round"/>
+          <line x1="710" y1="193" x2="715" y2="240" stroke="#444" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- ── EXHAUST ── -->
+          <ellipse cx="570" cy="195" rx="8" ry="5" fill="#111" stroke="#555" stroke-width="1"/>
+
+          <!-- ── LIVERY STRIPE ── -->
+          <path d="M 185 225 Q 300 218 400 215 Q 500 213 560 220 L 560 228 Q 500 222 400 224 Q 300 227 185 235 Z"
+                fill="#e10600" opacity="0.7"/>
+
+          <!-- ── HOTSPOTS (SVG-native so they always align) ── -->
+          <!-- front wing -->
           <g class="hs-group" onclick="showComponent('frontwing')">
-            <circle cx="130" cy="232" r="18" class="hs-bg"/>
-            <circle cx="130" cy="232" r="22" class="hs-pulse"/>
+            <circle cx="107" cy="238" r="18" class="hs-bg"/>
+            <circle cx="107" cy="238" r="24" class="hs-pulse"/>
           </g>
+          <!-- front tire -->
           <g class="hs-group" onclick="showComponent('fronttire')">
-            <circle cx="168" cy="252" r="18" class="hs-bg"/>
-            <circle cx="168" cy="252" r="22" class="hs-pulse"/>
+            <circle cx="200" cy="242" r="18" class="hs-bg"/>
+            <circle cx="200" cy="242" r="24" class="hs-pulse"/>
           </g>
+          <!-- halo -->
           <g class="hs-group" onclick="showComponent('halo')">
-            <circle cx="330" cy="148" r="18" class="hs-bg"/>
-            <circle cx="330" cy="148" r="22" class="hs-pulse"/>
+            <circle cx="333" cy="142" r="18" class="hs-bg"/>
+            <circle cx="333" cy="142" r="24" class="hs-pulse"/>
           </g>
+          <!-- sidepod -->
           <g class="hs-group" onclick="showComponent('sidepod')">
-            <circle cx="390" cy="198" r="18" class="hs-bg"/>
-            <circle cx="390" cy="198" r="22" class="hs-pulse"/>
+            <circle cx="430" cy="203" r="18" class="hs-bg"/>
+            <circle cx="430" cy="203" r="24" class="hs-pulse"/>
           </g>
+          <!-- rear wing -->
           <g class="hs-group" onclick="showComponent('rearwing')">
-            <circle cx="592" cy="176" r="18" class="hs-bg"/>
-            <circle cx="592" cy="176" r="22" class="hs-pulse"/>
+            <circle cx="683" cy="178" r="18" class="hs-bg"/>
+            <circle cx="683" cy="178" r="24" class="hs-pulse"/>
           </g>
+          <!-- rear tire -->
           <g class="hs-group" onclick="showComponent('reartire')">
-            <circle cx="548" cy="256" r="18" class="hs-bg"/>
-            <circle cx="548" cy="256" r="22" class="hs-pulse"/>
+            <circle cx="590" cy="242" r="18" class="hs-bg"/>
+            <circle cx="590" cy="242" r="24" class="hs-pulse"/>
           </g>
         </svg>
       </div>
