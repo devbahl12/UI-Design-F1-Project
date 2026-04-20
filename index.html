@@ -144,28 +144,26 @@
     .section-label { font-size: 1rem; font-weight: 600; }
     .section-desc { font-size: 0.82rem; color: #888; margin-top: 2px; }
 
-    /* ── CAR COMPONENTS - hotspot overlay ── */
-    /* positioned absolutely over the SVG car diagram */
-    .hotspot {
-      position: absolute;
-      width: 38px;
-      height: 38px;
-      cursor: pointer;
-      transform: translate(-50%, -50%);
+    /* ── CAR COMPONENTS - hotspots live inside the SVG so they always align ── */
+    .hs-group { cursor: pointer; }
+    .hs-group circle.hs-bg {
+      fill: rgba(225,6,0,0.18);
+      stroke: #e10600;
+      stroke-width: 2.5;
     }
-    .hs-ring {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(225,6,0,0.2);
-      border: 3px solid #e10600;
+    .hs-group circle.hs-pulse {
+      fill: none;
+      stroke: #e10600;
+      stroke-width: 2;
       animation: hsPulse 1.6s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
     }
-    /* stop pulsing on hover so it feels like it's ready to be clicked */
-    .hotspot:hover .hs-ring { background: rgba(225,6,0,0.45); animation: none; transform: scale(1.1); }
+    .hs-group:hover circle.hs-bg   { fill: rgba(225,6,0,0.42); }
+    .hs-group:hover circle.hs-pulse { animation: none; }
     @keyframes hsPulse {
-      0%,100% { transform: scale(1); opacity:1; }
-      50%      { transform: scale(1.25); opacity:.6; }
+      0%,100% { transform: scale(1);    opacity: 1;  }
+      50%      { transform: scale(1.35); opacity: 0.4; }
     }
 
     /* ── TIRES ── */
@@ -377,9 +375,9 @@
     <p style="margin-top:6px; color:#aaa;">Click the red hotspots to learn about each part of the car.</p>
 
     <div style="flex:1; display:flex; gap:40px; align-items:center; margin-top:24px; overflow:hidden;">
-      <!-- SVG car drawn by hand - side profile, roughly 3/4 view -->
-      <div style="position:relative; flex:1; display:flex; align-items:center; justify-content:center;">
-        <svg viewBox="0 0 720 340" style="width:100%; max-width:580px;" xmlns="http://www.w3.org/2000/svg">
+      <!-- SVG car - hotspots are circles inside the SVG so they scale correctly -->
+      <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 720 340" style="width:100%; max-width:600px;" xmlns="http://www.w3.org/2000/svg">
           <!-- rear body mass -->
           <ellipse cx="420" cy="210" rx="220" ry="55" fill="#1e1e1e"/>
           <!-- pointed front nose cone -->
@@ -389,51 +387,68 @@
           <!-- cockpit cutout -->
           <ellipse cx="330" cy="178" rx="62" ry="30" fill="#1a1a1a"/>
           <ellipse cx="330" cy="168" rx="48" ry="20" fill="#111"/>
-          <!-- halo safety device - the curved titanium bar above cockpit -->
+          <!-- halo safety device -->
           <path d="M 285 163 Q 330 143 375 163" fill="none" stroke="#444" stroke-width="9" stroke-linecap="round"/>
-          <!-- front wing - main plane + flap -->
+          <!-- front wing main plane + flap -->
           <rect x="90" y="228" width="130" height="10" rx="4" fill="#333"/>
           <rect x="76" y="234" width="158" height="5" rx="3" fill="#404040"/>
-          <!-- front wing endplates (vertical fins on the sides) -->
+          <!-- front wing endplates -->
           <rect x="76" y="222" width="6" height="24" rx="2" fill="#3a3a3a"/>
           <rect x="234" y="222" width="6" height="24" rx="2" fill="#3a3a3a"/>
-          <!-- rear wing main plane -->
+          <!-- rear wing -->
           <rect x="538" y="178" width="108" height="9" rx="4" fill="#333"/>
           <rect x="534" y="187" width="116" height="6" rx="3" fill="#3d3d3d"/>
-          <!-- DRS flap (the movable element that opens on straights) -->
+          <!-- DRS flap -->
           <rect x="538" y="167" width="108" height="5" rx="2" fill="#444"/>
           <!-- rear wing endplates -->
           <rect x="534" y="160" width="7" height="40" rx="2" fill="#3a3a3a"/>
           <rect x="643" y="160" width="7" height="40" rx="2" fill="#3a3a3a"/>
-          <!-- sidepods - left (camera side) -->
+          <!-- sidepods -->
           <path d="M 248 198 Q 280 178 380 180 L 380 212 Q 280 214 248 230 Z" fill="#222"/>
-          <!-- sidepods - right -->
           <path d="M 380 180 Q 470 175 510 192 L 510 215 Q 470 222 380 212 Z" fill="#222"/>
-          <!-- floor undercut -->
+          <!-- floor -->
           <rect x="180" y="230" width="420" height="6" rx="2" fill="#1a1a1a"/>
-          <!-- front left tire (larger, closer to viewer) -->
+          <!-- front left tire -->
           <ellipse cx="168" cy="252" rx="32" ry="38" fill="#111" stroke="#2a2a2a" stroke-width="3"/>
           <ellipse cx="168" cy="252" rx="15" ry="18" fill="#1e1e1e"/>
-          <!-- front right tire barely peeking out from behind -->
+          <!-- front right tire -->
           <ellipse cx="190" cy="248" rx="10" ry="14" fill="#0e0e0e"/>
-          <!-- rear left tire - noticeably wider than front -->
+          <!-- rear left tire -->
           <ellipse cx="548" cy="256" rx="42" ry="50" fill="#111" stroke="#2a2a2a" stroke-width="3"/>
           <ellipse cx="548" cy="256" rx="20" ry="24" fill="#1e1e1e"/>
           <!-- rear right tire -->
           <ellipse cx="578" cy="250" rx="14" ry="18" fill="#0e0e0e"/>
-          <!-- engine cover cooling vents -->
+          <!-- engine cover vents -->
           <rect x="390" y="186" width="4" height="20" rx="1" fill="#333"/>
           <rect x="400" y="186" width="4" height="20" rx="1" fill="#333"/>
           <rect x="410" y="186" width="4" height="20" rx="1" fill="#333"/>
-        </svg>
 
-        <!-- hotspot positions tuned manually to sit on top of each car part -->
-        <div class="hotspot" style="left:19%;top:63%;" onclick="showComponent('frontwing')"><div class="hs-ring"></div></div>
-        <div class="hotspot" style="left:24%;top:76%;" onclick="showComponent('fronttire')"><div class="hs-ring"></div></div>
-        <div class="hotspot" style="left:46%;top:37%;" onclick="showComponent('halo')"><div class="hs-ring"></div></div>
-        <div class="hotspot" style="left:53%;top:57%;" onclick="showComponent('sidepod')"><div class="hs-ring"></div></div>
-        <div class="hotspot" style="left:77%;top:43%;" onclick="showComponent('rearwing')"><div class="hs-ring"></div></div>
-        <div class="hotspot" style="left:77%;top:76%;" onclick="showComponent('reartire')"><div class="hs-ring"></div></div>
+          <!-- hotspots as SVG circles - coordinates match the car parts exactly -->
+          <g class="hs-group" onclick="showComponent('frontwing')">
+            <circle cx="130" cy="232" r="18" class="hs-bg"/>
+            <circle cx="130" cy="232" r="22" class="hs-pulse"/>
+          </g>
+          <g class="hs-group" onclick="showComponent('fronttire')">
+            <circle cx="168" cy="252" r="18" class="hs-bg"/>
+            <circle cx="168" cy="252" r="22" class="hs-pulse"/>
+          </g>
+          <g class="hs-group" onclick="showComponent('halo')">
+            <circle cx="330" cy="148" r="18" class="hs-bg"/>
+            <circle cx="330" cy="148" r="22" class="hs-pulse"/>
+          </g>
+          <g class="hs-group" onclick="showComponent('sidepod')">
+            <circle cx="390" cy="198" r="18" class="hs-bg"/>
+            <circle cx="390" cy="198" r="22" class="hs-pulse"/>
+          </g>
+          <g class="hs-group" onclick="showComponent('rearwing')">
+            <circle cx="592" cy="176" r="18" class="hs-bg"/>
+            <circle cx="592" cy="176" r="22" class="hs-pulse"/>
+          </g>
+          <g class="hs-group" onclick="showComponent('reartire')">
+            <circle cx="548" cy="256" r="18" class="hs-bg"/>
+            <circle cx="548" cy="256" r="22" class="hs-pulse"/>
+          </g>
+        </svg>
       </div>
 
       <!-- info panel on the right - updates when you click a hotspot -->
