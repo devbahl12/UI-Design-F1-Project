@@ -208,6 +208,75 @@
       display: flex;
       align-items: center;
     }
+
+    /* ── TIRE DEGRADATION ── */
+    .slider-card {
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 36px 40px;
+      margin-top: 28px;
+      flex: 1;
+    }
+    /* custom range slider - default browser styling looks terrible on dark bg */
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background: linear-gradient(to right, #009688 var(--pct, 40%), #444 var(--pct, 40%));
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+    .grip-bar-wrap {
+      margin-top: 32px;
+      border-top: 1px solid #2a2a2a;
+      padding-top: 28px;
+    }
+    /* green → red gradient representing grip going away */
+    .grip-bar {
+      height: 18px;
+      border-radius: 9px;
+      background: linear-gradient(to right, #00c853, #ff5252);
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* dark overlay slides in from the right to "consume" the grip bar */
+    .grip-bar-cover {
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      background: rgba(20,20,20,0.75);
+      transition: width 0.25s;
+    }
+
+    /* ── PERFORMANCE DEGRADATION ── */
+    .track-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    #perf-car {
+      position: absolute;
+      font-size: 1.6rem;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .perf-slider-bar {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 18px 28px;
+    }
   </style>
 </head>
 <body>
@@ -421,6 +490,98 @@
     </div>
   </div>
 
+  <!-- TIRE DEGRADATION - interactive slider showing the "cliff" effect -->
+  <div class="screen" id="screen-tire-degradation">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
+      <span class="nav-title">Learning · 03 / 06</span>
+    </div>
+    <h2 style="font-size:1.8rem; font-weight:700;">Tire Degradation</h2>
+    <p style="margin-top:6px; color:#aaa; font-weight:600;">Slide to see how the cliff affects your lap time as tires wear.</p>
+
+    <div class="slider-card">
+      <!-- lap time readout at the top -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <span style="color:#00c853; font-size:0.9rem;">↑ Lower Lap Time</span>
+        <div style="text-align:center;">
+          <div style="font-size:0.85rem; color:#888; margin-bottom:4px;">Lap Time</div>
+          <div id="laptime-display" style="font-size:2rem; font-weight:800; color:#e10600;">1:20.0</div>
+        </div>
+        <span style="color:#e10600; font-size:0.9rem;">↓ Higher Lap Time</span>
+      </div>
+
+      <input type="range" id="wear-slider" min="0" max="100" value="20"
+             oninput="updateDegradation(this.value)" style="--pct:20%;">
+
+      <!-- grip level bar - goes from green to red as you drag right -->
+      <div class="grip-bar-wrap">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-weight:700;">Grip Level</span>
+          <span id="grip-label" style="font-weight:700; color:#00c853;">High Grip</span>
+        </div>
+        <div class="grip-bar">
+          <div class="grip-bar-cover" id="grip-cover" style="width:80%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px;">
+          <span style="font-size:0.8rem; color:#00c853;">High Grip</span>
+          <span style="font-size:0.8rem; color:#e10600;">Low Grip</span>
+        </div>
+      </div>
+
+      <!-- status message changes based on where the slider is -->
+      <div id="degrad-msg" style="margin-top:24px; text-align:center; font-style:italic; font-size:0.95rem; color:#888; min-height:22px;"></div>
+    </div>
+
+    <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+      <button class="btn-primary" onclick="showScreen('performance-degradation')">Next: Performance →</button>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE DEGRADATION - animated car around a track, speed tied to grip slider -->
+  <div class="screen" id="screen-performance-degradation">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
+      <span class="nav-title">Learning · 04 / 06</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h2 style="font-size:1.8rem; font-weight:700;">Performance Degradation</h2>
+        <p style="margin-top:6px; color:#aaa; font-weight:600;">Slide to see how grip changes your speed.</p>
+      </div>
+      <!-- live lap time counter top right -->
+      <div style="text-align:right;">
+        <div style="font-size:0.82rem; color:#888;">Lap Time</div>
+        <div id="perf-laptime" style="font-size:2rem; font-weight:800; color:#e10600;">1:20.0</div>
+      </div>
+    </div>
+
+    <!-- oval track drawn in SVG, car animates around it via JS -->
+    <div class="track-wrapper">
+      <svg viewBox="0 0 700 300" style="width:88%; max-width:680px; opacity:0.9;">
+        <ellipse cx="350" cy="150" rx="290" ry="120" fill="none" stroke="#e10600" stroke-width="3" stroke-dasharray="8 4"/>
+      </svg>
+      <div id="perf-car">🏎️</div>
+    </div>
+
+    <div class="perf-slider-bar">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:700;">Grip Level</span>
+        <span id="perf-grip-label" style="font-weight:700; color:#00c853;">High Grip</span>
+      </div>
+      <input type="range" id="perf-slider" min="0" max="100" value="15"
+             oninput="updatePerf(this.value)" style="--pct:15%;">
+      <div style="display:flex; justify-content:space-between; margin-top:6px;">
+        <span style="font-size:0.8rem; color:#00c853;">High Grip</span>
+        <span style="font-size:0.8rem; color:#e10600;">Low Grip</span>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+      <button class="btn-primary" onclick="showScreen('aerodynamics')">Next: Aerodynamics →</button>
+    </div>
+  </div>
+
   <script>
     // tracks which mode the user picked on the home screen
     let selectedMode = 'learning';
@@ -484,6 +645,125 @@
       el.style.fontWeight = '600';
       el.textContent = d.text;
     }
+
+    // ── TIRE DEGRADATION ──
+
+    function updateDegradation(val) {
+      const v = parseInt(val);
+
+      // update the slider's teal fill via CSS custom property
+      document.getElementById('wear-slider').style.setProperty('--pct', v + '%');
+
+      // lap time formula - stays flat for first ~60% then "falls off the cliff"
+      const base = 80.0;
+      let lapTime;
+      if (v < 60) {
+        lapTime = base + (v / 60) * 3.5;
+      } else {
+        // cliff kicks in here - times get bad fast
+        lapTime = base + 3.5 + Math.pow((v - 60) / 40, 1.8) * 14;
+      }
+      const mins = Math.floor(lapTime / 60);
+      const secs = (lapTime % 60).toFixed(1).padStart(4, '0');
+      document.getElementById('laptime-display').textContent = `${mins}:${secs}`;
+
+      // grip bar cover shrinks from right as grip improves (lower wear = more grip)
+      document.getElementById('grip-cover').style.width = (100 - v) + '%';
+
+      // grip label color shifts through green → yellow → red
+      const gripEl = document.getElementById('grip-label');
+      if (v < 35)      { gripEl.textContent = 'High Grip';           gripEl.style.color = '#00c853'; }
+      else if (v < 65) { gripEl.textContent = 'Medium Grip';         gripEl.style.color = '#ffd600'; }
+      else if (v < 82) { gripEl.textContent = 'Low Grip';            gripEl.style.color = '#ff7043'; }
+      else             { gripEl.textContent = 'Critical — Pit Now!'; gripEl.style.color = '#e10600'; }
+
+      // status message at the bottom
+      const msg = document.getElementById('degrad-msg');
+      if (v >= 82) {
+        msg.textContent = '⚠️ Cliff reached — lap times collapsing. Box box box!';
+        msg.style.color = '#e10600';
+      } else if (v >= 60) {
+        msg.textContent = 'Approaching the cliff — consider pitting next lap.';
+        msg.style.color = '#ffd600';
+      } else {
+        msg.textContent = 'Tires in good shape. Stay out and keep pushing.';
+        msg.style.color = '#00c853';
+      }
+    }
+
+    // init with fresh tires
+    updateDegradation(20);
+
+    // ── PERFORMANCE DEGRADATION - car animation ──
+
+    let animFrame = null;
+    let carAngle = 0;
+    let perfWear = 15; // maps to slider value, 0 = fast, 100 = slow
+
+    // called when this screen becomes active
+    function startCarAnimation() {
+      if (animFrame) return;
+      tickCar();
+    }
+
+    function stopCarAnimation() {
+      cancelAnimationFrame(animFrame);
+      animFrame = null;
+    }
+
+    function tickCar() {
+      // speed is inversely proportional to wear level
+      const speed = 0.006 + ((100 - perfWear) / 100) * 0.032;
+      carAngle = (carAngle + speed) % (Math.PI * 2);
+
+      const wrapper = document.querySelector('.track-wrapper');
+      const car     = document.getElementById('perf-car');
+      if (!wrapper || !car) return;
+
+      const w = wrapper.offsetWidth;
+      const h = wrapper.offsetHeight;
+
+      // match the SVG ellipse proportions
+      const rx = Math.min(w * 0.41, 260);
+      const ry = Math.min(h * 0.40, 110);
+      const cx = w / 2;
+      const cy = h / 2;
+
+      const x = cx + rx * Math.cos(carAngle);
+      const y = cy + ry * Math.sin(carAngle);
+
+      // rotate the emoji to face the direction of travel
+      const deg = (carAngle * 180 / Math.PI) + 90;
+      car.style.left      = x + 'px';
+      car.style.top       = y + 'px';
+      car.style.transform = `translate(-50%,-50%) rotate(${deg}deg)`;
+
+      animFrame = requestAnimationFrame(tickCar);
+    }
+
+    function updatePerf(val) {
+      perfWear = parseInt(val);
+      document.getElementById('perf-slider').style.setProperty('--pct', val + '%');
+
+      // update lap time display
+      const lapTime = 80.0 + (perfWear / 100) * 10;
+      const mins = Math.floor(lapTime / 60);
+      const secs = (lapTime % 60).toFixed(1).padStart(4, '0');
+      document.getElementById('perf-laptime').textContent = `${mins}:${secs}`;
+
+      const label = document.getElementById('perf-grip-label');
+      if (perfWear < 35)      { label.textContent = 'High Grip';   label.style.color = '#00c853'; }
+      else if (perfWear < 65) { label.textContent = 'Medium Grip'; label.style.color = '#ffd600'; }
+      else                    { label.textContent = 'Low Grip';    label.style.color = '#e10600'; }
+    }
+
+    // hook into showScreen to start/stop the animation only when on that screen
+    const _origShowScreen = showScreen;
+    showScreen = function(id) {
+      _origShowScreen(id);
+      if (id === 'performance-degradation') startCarAnimation();
+      else stopCarAnimation();
+    };
   </script>
 </body>
 </html>
