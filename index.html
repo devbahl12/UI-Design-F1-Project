@@ -5,254 +5,367 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intro to Formula 1</title>
   <style>
-    /* reset - keeping it simple */
+    /* ── design tokens ── */
+    :root {
+      --bg:        #0c0c0f;
+      --surface:   #13131a;
+      --surface2:  #1a1a24;
+      --border:    rgba(255,255,255,0.07);
+      --border-hi: rgba(255,255,255,0.13);
+      --red:       #e10600;
+      --red-glow:  rgba(225,6,0,0.25);
+      --teal:      #00c9a7;
+      --teal-dim:  rgba(0,201,167,0.12);
+      --text:      #f0f0f2;
+      --text-2:    #8888a0;
+      --text-3:    #55555f;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      /* dark theme throughout, matches F1's broadcast aesthetic */
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: #2a2a2a;
-      color: #fff;
+      background: var(--bg);
+      color: var(--text);
       height: 100vh;
       overflow: hidden;
     }
 
-    /* each "page" is a screen div, only one visible at a time */
+    /* subtle noise texture on the bg */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .screen {
       display: none;
       height: 100vh;
-      padding: 48px 64px;
+      padding: 36px 56px;
       flex-direction: column;
+      position: relative;
+      z-index: 1;
     }
-    .screen.active { display: flex; animation: fadeIn 0.3s ease; }
+    .screen.active { display: flex; animation: fadeUp 0.35s cubic-bezier(0.22,1,0.36,1); }
 
-    /* subtle slide-up on screen transitions, feels nicer than a hard swap */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* teal is the main action color - picked to contrast against the dark bg */
+    /* ── buttons ── */
     .btn-primary {
-      background: #009688;
-      color: #111;
+      background: linear-gradient(135deg, #e10600, #ff3d2e);
+      color: #fff;
       border: none;
-      padding: 16px 40px;
-      border-radius: 12px;
-      font-size: 1.1rem;
+      padding: 14px 36px;
+      border-radius: 10px;
+      font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.02em;
+      transition: all 0.2s;
+      box-shadow: 0 0 0 rgba(225,6,0,0);
     }
-    .btn-primary:hover { background: #00b39d; transform: translateY(-1px); }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(225,6,0,0.45);
+    }
 
-    /* secondary buttons are just for less important actions like "back to learning" */
-    .btn-secondary {
-      background: #3d3d3d;
-      color: #fff;
-      border: 2px solid #555;
-      padding: 16px 40px;
-      border-radius: 12px;
-      font-size: 1.05rem;
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-hi);
+      padding: 14px 36px;
+      border-radius: 10px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
-    .btn-secondary:hover { background: #4d4d4d; }
+    .btn-ghost:hover { background: var(--surface2); border-color: var(--border-hi); }
 
-    /* ── HOME SCREEN ── */
-    #screen-home {
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .mode-cards {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 40px;
-    }
-
-    /* clicking a card highlights it before you hit Start */
-    .mode-card {
-      background: #3d3d3d;
-      border: 2px solid #555;
-      border-radius: 16px;
-      padding: 40px 60px;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 1.25rem;
-      font-weight: 700;
-      min-width: 260px;
-      justify-content: center;
-    }
-    .mode-card:hover { background: #4a4a4a; }
-    .mode-card.selected { border-color: #009688; background: #1d3532; }
-    .mode-card .icon { font-size: 1.8rem; }
-
-    /* ── SHARED TOP NAV ── */
-    /* reused on every learning/quiz screen */
+    /* ── shared nav ── */
     .nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
     .nav-back {
       background: none;
       border: none;
-      color: #888;
-      font-size: 0.95rem;
+      color: var(--text-2);
+      font-size: 0.88rem;
       cursor: pointer;
+      letter-spacing: 0.02em;
       transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .nav-back:hover { color: #fff; }
-    .nav-title {
-      /* red breadcrumb label top right */
-      color: #e10600;
-      font-size: 0.9rem;
+    .nav-back:hover { color: var(--text); }
+    .nav-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.78rem;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      color: var(--red);
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
+    /* progress dots shown on each learning screen */
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .pd { width: 6px; height: 6px; border-radius: 50%; background: var(--border-hi); transition: all 0.3s; }
+    .pd.active { background: var(--red); width: 20px; border-radius: 3px; }
+    .pd.done   { background: var(--teal); }
+
+    /* ── HOME ── */
+    #screen-home {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(225,6,0,0.06) 0%, transparent 70%);
+    }
+
+    .home-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+
+    .home-title {
+      font-size: 4.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      background: linear-gradient(160deg, #fff 40%, rgba(255,255,255,0.5));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .home-sub {
+      color: var(--text-2);
+      font-size: 1rem;
+      margin-bottom: 52px;
+    }
+
+    .mode-cards {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .mode-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 52px;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-width: 220px;
+    }
+    .mode-card:hover { background: var(--surface2); border-color: var(--border-hi); transform: translateY(-2px); }
+    .mode-card.selected {
+      border-color: var(--red);
+      background: rgba(225,6,0,0.08);
+      box-shadow: 0 0 0 1px var(--red), 0 8px 32px var(--red-glow);
+    }
+    .mode-card .icon { font-size: 2rem; }
+    .mode-card .label { font-size: 1rem; font-weight: 700; color: var(--text); }
+
     /* ── LEARNING MENU ── */
-    /* 2-column grid so all 6 modules fit without scrolling */
     .section-list {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-top: 28px;
+      gap: 10px;
+      margin-top: 24px;
+      flex: 1;
     }
+
     .section-item {
-      background: #3d3d3d;
-      border: 1px solid #555;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 22px 26px;
+      padding: 18px 22px;
       cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      transition: all 0.2s;
       display: flex;
       align-items: center;
       gap: 16px;
+      position: relative;
+      overflow: hidden;
     }
-    /* nudges right on hover to give a "drill-in" feeling */
-    .section-item:hover { background: #4a4a4a; border-color: #e10600; transform: translateX(4px); }
-    .section-num { color: #e10600; font-weight: 800; font-size: 1.3rem; min-width: 30px; }
-    .section-label { font-size: 1rem; font-weight: 600; }
-    .section-desc { font-size: 0.82rem; color: #888; margin-top: 2px; }
+    .section-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--red);
+      transform: scaleY(0);
+      transition: transform 0.2s;
+      border-radius: 0 2px 2px 0;
+    }
+    .section-item:hover { background: var(--surface2); border-color: var(--border-hi); transform: translateX(3px); }
+    .section-item:hover::before { transform: scaleY(1); }
 
-    /* ── CAR COMPONENTS - hotspots live inside the SVG so they always align ── */
+    .section-num {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--red);
+      letter-spacing: 0.08em;
+      min-width: 24px;
+      opacity: 0.8;
+    }
+    .section-icon { font-size: 1.4rem; }
+    .section-label { font-size: 0.95rem; font-weight: 600; }
+    .section-desc  { font-size: 0.78rem; color: var(--text-2); margin-top: 2px; }
+
+    /* ── CAR COMPONENTS ── */
     .hs-group { cursor: pointer; }
     .hs-group circle.hs-bg {
-      fill: rgba(225,6,0,0.18);
-      stroke: #e10600;
-      stroke-width: 2.5;
+      fill: rgba(225,6,0,0.15);
+      stroke: var(--red);
+      stroke-width: 2;
     }
     .hs-group circle.hs-pulse {
       fill: none;
-      stroke: #e10600;
-      stroke-width: 2;
-      animation: hsPulse 1.6s ease-in-out infinite;
+      stroke: var(--red);
+      stroke-width: 1.5;
+      animation: hsPulse 1.8s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
     }
-    .hs-group:hover circle.hs-bg   { fill: rgba(225,6,0,0.42); }
-    .hs-group:hover circle.hs-pulse { animation: none; }
+    .hs-group:hover circle.hs-bg    { fill: rgba(225,6,0,0.35); }
+    .hs-group:hover circle.hs-pulse { animation: none; opacity: 0.8; }
     @keyframes hsPulse {
-      0%,100% { transform: scale(1);    opacity: 1;  }
-      50%      { transform: scale(1.35); opacity: 0.4; }
+      0%,100% { transform: scale(1);    opacity: 1;   }
+      50%      { transform: scale(1.45); opacity: 0.2; }
+    }
+
+    .comp-panel {
+      width: 260px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     /* ── TIRES ── */
-    /* Reya suggested using just the colored ring instead of actual tire images - cleaner */
-    .tire-grid {
-      display: flex;
-      gap: 14px;
-      margin-top: 36px;
-      flex-wrap: nowrap;
-    }
+    .tire-grid { display: flex; gap: 12px; margin-top: 28px; }
+
     .tire-card {
-      background: #3d3d3d;
-      border: 2px solid #555;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 28px 20px;
+      padding: 24px 16px;
       cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      transition: all 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
       flex: 1;
     }
-    .tire-card:hover { background: #4a4a4a; transform: translateY(-3px); }
-    .tire-card.active { background: #1d3532; }
-    /* the ring color is set inline to match Pirelli's actual color coding */
+    .tire-card:hover { background: var(--surface2); transform: translateY(-3px); }
+    .tire-card.active { border-color: var(--active-color, #fff); background: var(--surface2); box-shadow: 0 0 20px var(--active-glow, rgba(255,255,255,0.1)); }
+
     .tire-ring {
-      width: 54px;
-      height: 54px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
-      border: 4px solid;
+      border: 3.5px solid;
+      position: relative;
     }
-    .tire-name { font-weight: 700; font-size: 0.95rem; }
+    /* inner tire tread detail */
+    .tire-ring::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .tire-name { font-size: 0.85rem; font-weight: 700; color: var(--text-2); }
+
     .tire-info-box {
-      background: #1a1a1a;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 24px 32px;
-      margin-top: 28px;
-      min-height: 72px;
+      padding: 22px 28px;
+      margin-top: 20px;
+      min-height: 66px;
       display: flex;
       align-items: center;
     }
 
-    /* ── TIRE DEGRADATION ── */
+    /* ── SLIDERS ── */
     .slider-card {
-      background: #1a1a1a;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 36px 40px;
-      margin-top: 28px;
+      padding: 32px 36px;
+      margin-top: 24px;
       flex: 1;
     }
-    /* custom range slider - default browser styling looks terrible on dark bg */
+
     input[type="range"] {
       width: 100%;
-      height: 6px;
+      height: 5px;
       border-radius: 3px;
       outline: none;
       cursor: pointer;
       appearance: none;
-      background: linear-gradient(to right, #009688 var(--pct, 40%), #444 var(--pct, 40%));
+      background: linear-gradient(to right, var(--teal) var(--pct,20%), rgba(255,255,255,0.1) var(--pct,20%));
     }
     input[type="range"]::-webkit-slider-thumb {
       appearance: none;
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 0 3px rgba(255,255,255,0.15);
       cursor: pointer;
+      transition: transform 0.15s;
     }
-    .grip-bar-wrap {
-      margin-top: 32px;
-      border-top: 1px solid #2a2a2a;
-      padding-top: 28px;
-    }
-    /* green → red gradient representing grip going away */
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    .grip-bar-wrap { margin-top: 28px; border-top: 1px solid var(--border); padding-top: 24px; }
     .grip-bar {
-      height: 18px;
-      border-radius: 9px;
-      background: linear-gradient(to right, #00c853, #ff5252);
+      height: 16px;
+      border-radius: 8px;
+      background: linear-gradient(to right, #00c853, #ffd600 60%, #ff5252);
       margin-top: 10px;
       position: relative;
       overflow: hidden;
     }
-    /* dark overlay slides in from the right to "consume" the grip bar */
     .grip-bar-cover {
       position: absolute;
       right: 0; top: 0; bottom: 0;
-      background: rgba(20,20,20,0.75);
+      background: rgba(12,12,15,0.82);
       transition: width 0.25s;
     }
 
@@ -266,401 +379,402 @@
     }
     #perf-car {
       position: absolute;
-      font-size: 1.6rem;
-      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+      transform: translate(-50%,-50%);
       pointer-events: none;
+      filter: drop-shadow(0 0 8px rgba(225,6,0,0.6));
     }
     .perf-slider-bar {
-      background: #1a1a1a;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 18px 28px;
+      padding: 16px 24px;
     }
+
+    /* ── STAT CHIP ── */
+    .stat-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    .stat-chip .val { font-size: 1.7rem; font-weight: 800; color: var(--red); line-height: 1; }
+    .stat-chip .lbl { font-size: 0.72rem; color: var(--text-2); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
   </style>
 </head>
 <body>
 
-  <!-- HOME - first thing users see, pick learning or quiz mode -->
+  <!-- HOME -->
   <div class="screen active" id="screen-home">
-    <h1 style="color:#e10600; font-size:4rem; font-weight:800; margin-bottom:16px;">Intro to Formula 1</h1>
-    <p style="color:#888; margin-bottom:56px; font-size:1.05rem;">Select a mode to get started</p>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 35%, rgba(225,6,0,0.07),transparent 70%);pointer-events:none;"></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;">
+      <div class="home-eyebrow">Formula 1 Strategy Guide</div>
+      <h1 class="home-title">Intro to Formula 1</h1>
+      <p class="home-sub">Master tire compounds, aerodynamics, and pit strategy</p>
 
-    <div class="mode-cards">
-      <!-- learning is selected by default since most users will go through it first -->
-      <div class="mode-card selected" id="mode-learning" onclick="selectMode('learning')">
-        <span class="icon">🎓</span>
-        <span>Learning</span>
+      <div class="mode-cards">
+        <div class="mode-card selected" id="mode-learning" onclick="selectMode('learning')">
+          <span class="icon">🎓</span>
+          <span class="label">Learning</span>
+          <span style="font-size:0.75rem;color:var(--text-2);">6 interactive modules</span>
+        </div>
+        <div class="mode-card" id="mode-quiz" onclick="selectMode('quiz')">
+          <span class="icon">📝</span>
+          <span class="label">Interactive Quiz</span>
+          <span style="font-size:0.75rem;color:var(--text-2);">5 questions · ~2 min</span>
+        </div>
       </div>
-      <div class="mode-card" id="mode-quiz" onclick="selectMode('quiz')">
-        <span class="icon">📝</span>
-        <span>Interactive Quiz</span>
-      </div>
+
+      <button class="btn-primary" onclick="startSelected()" style="padding:16px 64px;font-size:1.05rem;">Start →</button>
     </div>
-
-    <button class="btn-primary" onclick="startSelected()" style="padding:18px 80px; font-size:1.2rem;">Start</button>
   </div>
 
-  <!-- LEARNING MENU - overview of all 6 modules -->
+  <!-- LEARNING MENU -->
   <div class="screen" id="screen-learning-menu">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('home')">← Home</button>
-      <span class="nav-title">F1 Strategies · Learn</span>
+      <span class="nav-badge">F1 Strategies</span>
     </div>
-    <h2 style="font-size:2rem; font-weight:700;">Learning Modules</h2>
-    <p style="margin-top:6px; color:#888;">Explore each topic to understand F1 race strategy.</p>
 
-    <!-- 2 columns so it fits without scrolling on a standard laptop screen -->
+    <h2 style="font-size:1.6rem;font-weight:800;letter-spacing:-0.02em;">Learning Modules</h2>
+    <p style="margin-top:5px;color:var(--text-2);font-size:0.9rem;">Work through each topic to understand modern F1 race strategy.</p>
+
     <div class="section-list">
       <div class="section-item" onclick="showScreen('car-components')">
         <span class="section-num">01</span>
-        <div>
-          <div class="section-label">Car Components</div>
-          <div class="section-desc">Explore key parts of an F1 car</div>
-        </div>
-        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+        <span class="section-icon">🏎️</span>
+        <div><div class="section-label">Car Components</div><div class="section-desc">Explore key parts of an F1 car</div></div>
+        <span style="margin-left:auto;color:var(--text-3);font-size:1rem;">›</span>
       </div>
       <div class="section-item" onclick="showScreen('tires')">
         <span class="section-num">02</span>
-        <div>
-          <div class="section-label">Tire Compounds</div>
-          <div class="section-desc">Soft, Medium, Hard, Inter, Wet</div>
-        </div>
-        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+        <span class="section-icon">🔴</span>
+        <div><div class="section-label">Tire Compounds</div><div class="section-desc">Soft, Medium, Hard, Inter, Wet</div></div>
+        <span style="margin-left:auto;color:var(--text-3);font-size:1rem;">›</span>
       </div>
       <div class="section-item" onclick="showScreen('tire-degradation')">
         <span class="section-num">03</span>
-        <div>
-          <div class="section-label">Tire Degradation</div>
-          <div class="section-desc">The cliff effect on lap times</div>
-        </div>
-        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+        <span class="section-icon">📉</span>
+        <div><div class="section-label">Tire Degradation</div><div class="section-desc">The cliff effect on lap times</div></div>
+        <span style="margin-left:auto;color:var(--text-3);font-size:1rem;">›</span>
       </div>
       <div class="section-item" onclick="showScreen('performance-degradation')">
         <span class="section-num">04</span>
-        <div>
-          <div class="section-label">Performance Degradation</div>
-          <div class="section-desc">How grip changes speed</div>
-        </div>
-        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+        <span class="section-icon">⚡</span>
+        <div><div class="section-label">Performance Degradation</div><div class="section-desc">How grip changes your speed</div></div>
+        <span style="margin-left:auto;color:var(--text-3);font-size:1rem;">›</span>
       </div>
       <div class="section-item" onclick="showScreen('aerodynamics')">
         <span class="section-num">05</span>
-        <div>
-          <div class="section-label">Aerodynamics</div>
-          <div class="section-desc">Clean air vs dirty air</div>
-        </div>
-        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+        <span class="section-icon">💨</span>
+        <div><div class="section-label">Aerodynamics</div><div class="section-desc">Clean air vs dirty air</div></div>
+        <span style="margin-left:auto;color:var(--text-3);font-size:1rem;">›</span>
       </div>
       <div class="section-item" onclick="showScreen('finding-the-gap')">
         <span class="section-num">06</span>
-        <div>
-          <div class="section-label">Finding the Gap</div>
-          <div class="section-desc">Select your pit window</div>
-        </div>
-        <span style="margin-left:auto; color:#555; font-size:1.2rem;">›</span>
+        <span class="section-icon">🏁</span>
+        <div><div class="section-label">Finding the Gap</div><div class="section-desc">Select your pit window</div></div>
+        <span style="margin-left:auto;color:var(--text-3);font-size:1rem;">›</span>
       </div>
     </div>
 
-    <div style="margin-top:28px; text-align:center;">
-      <button class="btn-primary" onclick="showScreen('quiz-intro')" style="padding:15px 48px;">Ready to Quiz? →</button>
+    <div style="margin-top:20px;display:flex;justify-content:flex-end;">
+      <button class="btn-primary" onclick="showScreen('quiz-intro')">Take the Quiz →</button>
     </div>
   </div>
 
-  <!-- CAR COMPONENTS - SVG car with clickable hotspots -->
+  <!-- CAR COMPONENTS -->
   <div class="screen" id="screen-car-components">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
-      <span class="nav-title">Learning · 01 / 06</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="progress-dots" id="pd-car"></div>
+        <span class="nav-badge">01 / 06</span>
+      </div>
     </div>
-    <h2 style="font-size:1.8rem; font-weight:700;">Car Components</h2>
-    <p style="margin-top:6px; color:#aaa;">Click the red hotspots to learn about each part of the car.</p>
+    <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">Car Components</h2>
+    <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">Click the red hotspots to learn about each part.</p>
 
-    <div style="flex:1; display:flex; gap:40px; align-items:center; margin-top:24px; overflow:hidden;">
-      <!-- SVG car - proper F1 side-profile silhouette with hotspots inside -->
-      <div style="flex:1; display:flex; align-items:center; justify-content:center;">
-        <svg viewBox="0 0 800 320" style="width:100%; max-width:640px;" xmlns="http://www.w3.org/2000/svg">
+    <div style="flex:1;display:flex;gap:32px;align-items:center;margin-top:20px;overflow:hidden;">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 800 320" style="width:100%;max-width:620px;" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#3a3a3a"/>
-              <stop offset="100%" stop-color="#1a1a1a"/>
+              <stop offset="0%" stop-color="#2e2e38"/>
+              <stop offset="100%" stop-color="#13131a"/>
             </linearGradient>
             <linearGradient id="tireGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#2a2a2a"/>
-              <stop offset="100%" stop-color="#111"/>
+              <stop offset="0%" stop-color="#252530"/>
+              <stop offset="100%" stop-color="#0c0c10"/>
             </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
           </defs>
-
-          <!-- ── TIRES (drawn first so body sits on top) ── -->
-          <!-- front tire -->
-          <ellipse cx="200" cy="242" rx="36" ry="36" fill="url(#tireGrad)" stroke="#444" stroke-width="2"/>
-          <ellipse cx="200" cy="242" rx="16" ry="16" fill="#333"/>
-          <ellipse cx="200" cy="242" rx="8"  ry="8"  fill="#222"/>
-          <!-- rear tire -->
-          <ellipse cx="590" cy="242" rx="46" ry="46" fill="url(#tireGrad)" stroke="#444" stroke-width="2"/>
-          <ellipse cx="590" cy="242" rx="20" ry="20" fill="#333"/>
-          <ellipse cx="590" cy="242" rx="10" ry="10" fill="#222"/>
-
-          <!-- ── FLOOR / UNDERFLOOR ── -->
-          <rect x="185" y="250" width="430" height="10" rx="3" fill="#1e1e1e"/>
-
-          <!-- ── SIDEPODS ── -->
-          <path d="M 310 205 Q 340 185 430 183 L 540 190 Q 540 220 430 222 Q 340 225 310 235 Z"
-                fill="#2e2e2e" stroke="#444" stroke-width="1"/>
-          <!-- sidepod air intake opening -->
-          <ellipse cx="320" cy="207" rx="14" ry="20" fill="#111"/>
-
-          <!-- ── MAIN CHASSIS / MONOCOQUE ── -->
-          <path d="M 185 215 Q 195 200 260 195 L 490 192 Q 545 192 565 215 L 565 248 L 185 248 Z"
-                fill="url(#bodyGrad)" stroke="#555" stroke-width="1"/>
-
-          <!-- ── ENGINE COVER (hump behind cockpit) ── -->
-          <path d="M 380 192 Q 400 165 450 160 Q 500 158 530 175 L 530 192 Z"
-                fill="#2a2a2a" stroke="#555" stroke-width="1"/>
-          <!-- air intake on top of engine cover -->
-          <path d="M 415 175 Q 430 158 445 158 Q 460 158 465 172 L 445 172 Q 440 162 430 163 Z"
-                fill="#111" stroke="#555" stroke-width="1"/>
-
-          <!-- ── COCKPIT ── -->
-          <path d="M 280 195 Q 295 162 330 155 Q 375 148 400 162 L 395 192 Z"
-                fill="#222" stroke="#555" stroke-width="1"/>
-          <!-- cockpit inner dark -->
-          <path d="M 288 192 Q 300 166 330 160 Q 368 153 390 166 L 387 190 Z"
-                fill="#111"/>
-
-          <!-- ── HALO ── -->
-          <path d="M 296 170 L 300 148 Q 330 132 365 148 L 368 168"
-                fill="none" stroke="#888" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="328" y1="132" x2="333" y2="168"
-                stroke="#888" stroke-width="6" stroke-linecap="round"/>
-
-          <!-- ── NOSE CONE (tapered front) ── -->
-          <path d="M 185 225 Q 150 222 90 228 Q 60 230 40 235 Q 60 237 90 238 Q 150 240 185 240 Z"
-                fill="#333" stroke="#555" stroke-width="1"/>
-          <!-- nose tip -->
-          <path d="M 40 235 Q 20 235 8 236 L 40 237 Z" fill="#2a2a2a"/>
-
-          <!-- ── FRONT WING ── -->
-          <!-- main plane -->
-          <path d="M 60 240 Q 40 240 20 244 L 20 248 Q 40 248 60 248 Z"
-                fill="#333"/>
-          <rect x="18" y="237" width="180" height="7" rx="2" fill="#3a3a3a"/>
-          <rect x="18" y="246" width="180" height="4" rx="1" fill="#444"/>
-          <!-- front wing endplates -->
-          <rect x="18"  y="232" width="5" height="22" rx="1" fill="#444"/>
-          <rect x="195" y="232" width="5" height="22" rx="1" fill="#444"/>
-          <!-- front wing cascade elements -->
-          <path d="M 30 237 Q 80 228 140 230 Q 160 231 185 234 L 185 237 Q 160 234 140 233 Q 80 231 30 240 Z"
-                fill="#2e2e2e"/>
-
-          <!-- ── REAR WING ── -->
-          <!-- main plane + DRS flap -->
-          <rect x="620" y="168" width="130" height="7"  rx="2" fill="#555"/>
-          <rect x="622" y="177" width="126" height="9"  rx="2" fill="#3a3a3a"/>
-          <rect x="620" y="188" width="130" height="5"  rx="2" fill="#444"/>
-          <!-- rear wing endplates -->
-          <rect x="617" y="162" width="8" height="42" rx="2" fill="#3d3d3d"/>
-          <rect x="748" y="162" width="8" height="42" rx="2" fill="#3d3d3d"/>
-          <!-- beam wing (lower element) -->
-          <rect x="630" y="218" width="110" height="6" rx="2" fill="#444"/>
-          <!-- rear wing support struts -->
-          <line x1="660" y1="193" x2="655" y2="240" stroke="#444" stroke-width="4" stroke-linecap="round"/>
-          <line x1="710" y1="193" x2="715" y2="240" stroke="#444" stroke-width="4" stroke-linecap="round"/>
-
-          <!-- ── EXHAUST ── -->
-          <ellipse cx="570" cy="195" rx="8" ry="5" fill="#111" stroke="#555" stroke-width="1"/>
-
-          <!-- ── LIVERY STRIPE ── -->
-          <path d="M 185 225 Q 300 218 400 215 Q 500 213 560 220 L 560 228 Q 500 222 400 224 Q 300 227 185 235 Z"
-                fill="#e10600" opacity="0.7"/>
-
-          <!-- ── HOTSPOTS (SVG-native so they always align) ── -->
-          <!-- front wing -->
-          <g class="hs-group" onclick="showComponent('frontwing')">
-            <circle cx="107" cy="238" r="18" class="hs-bg"/>
-            <circle cx="107" cy="238" r="24" class="hs-pulse"/>
-          </g>
-          <!-- front tire -->
-          <g class="hs-group" onclick="showComponent('fronttire')">
-            <circle cx="200" cy="242" r="18" class="hs-bg"/>
-            <circle cx="200" cy="242" r="24" class="hs-pulse"/>
-          </g>
+          <!-- tires -->
+          <ellipse cx="200" cy="242" rx="36" ry="36" fill="url(#tireGrad)" stroke="#333" stroke-width="2"/>
+          <ellipse cx="200" cy="242" rx="16" ry="16" fill="#252530"/>
+          <ellipse cx="200" cy="242" rx="7"  ry="7"  fill="#1a1a22"/>
+          <ellipse cx="590" cy="242" rx="46" ry="46" fill="url(#tireGrad)" stroke="#333" stroke-width="2"/>
+          <ellipse cx="590" cy="242" rx="20" ry="20" fill="#252530"/>
+          <ellipse cx="590" cy="242" rx="9"  ry="9"  fill="#1a1a22"/>
+          <!-- floor -->
+          <rect x="185" y="250" width="430" height="10" rx="3" fill="#1a1a22"/>
+          <!-- sidepods -->
+          <path d="M 310 205 Q 340 185 430 183 L 540 190 Q 540 220 430 222 Q 340 225 310 235 Z" fill="#1e1e28" stroke="#333" stroke-width="1"/>
+          <ellipse cx="320" cy="207" rx="14" ry="20" fill="#0c0c10"/>
+          <!-- main chassis -->
+          <path d="M 185 215 Q 195 200 260 195 L 490 192 Q 545 192 565 215 L 565 248 L 185 248 Z" fill="url(#bodyGrad)" stroke="#3a3a4a" stroke-width="1"/>
+          <!-- engine cover -->
+          <path d="M 380 192 Q 400 165 450 160 Q 500 158 530 175 L 530 192 Z" fill="#22222e" stroke="#3a3a4a" stroke-width="1"/>
+          <path d="M 415 175 Q 430 158 445 158 Q 460 158 465 172 L 445 172 Q 440 162 430 163 Z" fill="#0c0c10" stroke="#3a3a4a" stroke-width="1"/>
+          <!-- cockpit -->
+          <path d="M 280 195 Q 295 162 330 155 Q 375 148 400 162 L 395 192 Z" fill="#1a1a22" stroke="#3a3a4a" stroke-width="1"/>
+          <path d="M 288 192 Q 300 166 330 160 Q 368 153 390 166 L 387 190 Z" fill="#0c0c10"/>
           <!-- halo -->
-          <g class="hs-group" onclick="showComponent('halo')">
-            <circle cx="333" cy="142" r="18" class="hs-bg"/>
-            <circle cx="333" cy="142" r="24" class="hs-pulse"/>
-          </g>
-          <!-- sidepod -->
-          <g class="hs-group" onclick="showComponent('sidepod')">
-            <circle cx="430" cy="203" r="18" class="hs-bg"/>
-            <circle cx="430" cy="203" r="24" class="hs-pulse"/>
-          </g>
+          <path d="M 296 170 L 300 148 Q 330 132 365 148 L 368 168" fill="none" stroke="#666" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="328" y1="132" x2="333" y2="168" stroke="#666" stroke-width="6" stroke-linecap="round"/>
+          <!-- nose -->
+          <path d="M 185 225 Q 150 222 90 228 Q 60 230 40 235 Q 60 237 90 238 Q 150 240 185 240 Z" fill="#22222e" stroke="#3a3a4a" stroke-width="1"/>
+          <path d="M 40 235 Q 20 235 8 236 L 40 237 Z" fill="#1a1a22"/>
+          <!-- front wing -->
+          <rect x="18" y="237" width="180" height="7" rx="2" fill="#2a2a38"/>
+          <rect x="18" y="246" width="180" height="4" rx="1" fill="#333"/>
+          <rect x="18"  y="232" width="5" height="22" rx="1" fill="#333"/>
+          <rect x="195" y="232" width="5" height="22" rx="1" fill="#333"/>
+          <path d="M 30 237 Q 80 228 140 230 Q 160 231 185 234 L 185 237 Q 160 234 140 233 Q 80 231 30 240 Z" fill="#252535"/>
           <!-- rear wing -->
-          <g class="hs-group" onclick="showComponent('rearwing')">
-            <circle cx="683" cy="178" r="18" class="hs-bg"/>
-            <circle cx="683" cy="178" r="24" class="hs-pulse"/>
+          <rect x="620" y="168" width="130" height="7"  rx="2" fill="#444"/>
+          <rect x="622" y="177" width="126" height="9"  rx="2" fill="#2e2e3e"/>
+          <rect x="620" y="188" width="130" height="5"  rx="2" fill="#333"/>
+          <rect x="617" y="162" width="8" height="42" rx="2" fill="#303040"/>
+          <rect x="748" y="162" width="8" height="42" rx="2" fill="#303040"/>
+          <rect x="630" y="218" width="110" height="6" rx="2" fill="#333"/>
+          <line x1="660" y1="193" x2="655" y2="240" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+          <line x1="710" y1="193" x2="715" y2="240" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+          <!-- livery stripe -->
+          <path d="M 185 225 Q 300 218 400 215 Q 500 213 560 220 L 560 228 Q 500 222 400 224 Q 300 227 185 235 Z" fill="#e10600" opacity="0.85"/>
+          <!-- exhaust glow -->
+          <ellipse cx="570" cy="195" rx="8" ry="5" fill="#0c0c10" stroke="#444" stroke-width="1"/>
+          <!-- hotspots -->
+          <g class="hs-group" onclick="showComponent('frontwing')">
+            <circle cx="107" cy="238" r="17" class="hs-bg"/>
+            <circle cx="107" cy="238" r="26" class="hs-pulse"/>
           </g>
-          <!-- rear tire -->
+          <g class="hs-group" onclick="showComponent('fronttire')">
+            <circle cx="200" cy="242" r="17" class="hs-bg"/>
+            <circle cx="200" cy="242" r="26" class="hs-pulse"/>
+          </g>
+          <g class="hs-group" onclick="showComponent('halo')">
+            <circle cx="333" cy="142" r="17" class="hs-bg"/>
+            <circle cx="333" cy="142" r="26" class="hs-pulse"/>
+          </g>
+          <g class="hs-group" onclick="showComponent('sidepod')">
+            <circle cx="430" cy="203" r="17" class="hs-bg"/>
+            <circle cx="430" cy="203" r="26" class="hs-pulse"/>
+          </g>
+          <g class="hs-group" onclick="showComponent('rearwing')">
+            <circle cx="683" cy="178" r="17" class="hs-bg"/>
+            <circle cx="683" cy="178" r="26" class="hs-pulse"/>
+          </g>
           <g class="hs-group" onclick="showComponent('reartire')">
-            <circle cx="590" cy="242" r="18" class="hs-bg"/>
-            <circle cx="590" cy="242" r="24" class="hs-pulse"/>
+            <circle cx="590" cy="242" r="17" class="hs-bg"/>
+            <circle cx="590" cy="242" r="26" class="hs-pulse"/>
           </g>
         </svg>
       </div>
 
-      <!-- info panel on the right - updates when you click a hotspot -->
-      <div id="component-info" style="width:270px; flex-shrink:0; background:#1a1a1a; border-radius:16px; padding:32px; min-height:220px; display:flex; flex-direction:column; justify-content:center; transition:all 0.2s;">
-        <p style="color:#555; text-align:center; font-style:italic; font-size:0.95rem;">Click a red hotspot on the car to learn more.</p>
+      <div class="comp-panel" id="component-info">
+        <p style="color:var(--text-3);text-align:center;font-size:0.88rem;line-height:1.6;">Click a red hotspot on the car to learn more.</p>
       </div>
     </div>
 
-    <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+    <div style="margin-top:16px;display:flex;justify-content:flex-end;">
       <button class="btn-primary" onclick="showScreen('tires')">Next: Tires →</button>
     </div>
   </div>
 
-  <!-- TIRES - color-coded compound selector -->
+  <!-- TIRES -->
   <div class="screen" id="screen-tires">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
-      <span class="nav-title">Learning · 02 / 06</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="progress-dots" id="pd-tires"></div>
+        <span class="nav-badge">02 / 06</span>
+      </div>
     </div>
-    <h2 style="font-size:1.8rem; font-weight:700;">Tires</h2>
-    <p style="margin-top:6px; color:#aaa; font-weight:600;">F1 uses color-coded tire compounds. Click one to learn its purpose:</p>
+    <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">Tire Compounds</h2>
+    <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">F1 uses color-coded compounds. Click one to learn its purpose.</p>
 
-    <div class="tire-grid" id="tire-grid">
-      <!-- colors match official Pirelli tire markings -->
-      <div class="tire-card" onclick="selectTire(this,'soft')">
+    <div class="tire-grid">
+      <div class="tire-card" onclick="selectTire(this,'soft')"    style="--active-color:#e10600;--active-glow:rgba(225,6,0,0.2);">
         <div class="tire-ring" style="border-color:#e10600;"></div>
         <span class="tire-name">Soft</span>
       </div>
-      <div class="tire-card" onclick="selectTire(this,'med')">
+      <div class="tire-card" onclick="selectTire(this,'med')"     style="--active-color:#ffd600;--active-glow:rgba(255,214,0,0.15);">
         <div class="tire-ring" style="border-color:#ffd600;"></div>
-        <span class="tire-name">Med</span>
+        <span class="tire-name">Medium</span>
       </div>
-      <div class="tire-card" onclick="selectTire(this,'hard')">
-        <div class="tire-ring" style="border-color:#ffffff;"></div>
+      <div class="tire-card" onclick="selectTire(this,'hard')"    style="--active-color:#e0e0e0;--active-glow:rgba(224,224,224,0.1);">
+        <div class="tire-ring" style="border-color:#e0e0e0;"></div>
         <span class="tire-name">Hard</span>
       </div>
-      <div class="tire-card" onclick="selectTire(this,'inter')">
+      <div class="tire-card" onclick="selectTire(this,'inter')"   style="--active-color:#00c853;--active-glow:rgba(0,200,83,0.15);">
         <div class="tire-ring" style="border-color:#00c853;"></div>
         <span class="tire-name">Inter</span>
       </div>
-      <div class="tire-card" onclick="selectTire(this,'wet')">
+      <div class="tire-card" onclick="selectTire(this,'wet')"     style="--active-color:#2979ff;--active-glow:rgba(41,121,255,0.15);">
         <div class="tire-ring" style="border-color:#2979ff;"></div>
-        <span class="tire-name">Wet</span>
+        <span class="tire-name">Full Wet</span>
       </div>
     </div>
 
-    <!-- description text updates here when a tire is selected -->
     <div class="tire-info-box">
-      <p id="tire-text" style="color:#555; font-style:italic; font-size:1rem;">Select a tire compound above to see details.</p>
+      <p id="tire-text" style="color:var(--text-3);font-style:italic;font-size:0.95rem;">Select a compound above to see details.</p>
     </div>
 
-    <div style="margin-top:auto; padding-top:24px; display:flex; justify-content:flex-end;">
+    <div style="margin-top:auto;padding-top:20px;display:flex;justify-content:flex-end;">
       <button class="btn-primary" onclick="showScreen('tire-degradation')">Next: Tire Degradation →</button>
     </div>
   </div>
 
-  <!-- TIRE DEGRADATION - interactive slider showing the "cliff" effect -->
+  <!-- TIRE DEGRADATION -->
   <div class="screen" id="screen-tire-degradation">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
-      <span class="nav-title">Learning · 03 / 06</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="progress-dots" id="pd-degrad"></div>
+        <span class="nav-badge">03 / 06</span>
+      </div>
     </div>
-    <h2 style="font-size:1.8rem; font-weight:700;">Tire Degradation</h2>
-    <p style="margin-top:6px; color:#aaa; font-weight:600;">Slide to see how the cliff affects your lap time as tires wear.</p>
+    <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">Tire Degradation</h2>
+    <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">Drag the slider to see how tire wear affects lap time.</p>
 
     <div class="slider-card">
-      <!-- lap time readout at the top -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <span style="color:#00c853; font-size:0.9rem;">↑ Lower Lap Time</span>
-        <div style="text-align:center;">
-          <div style="font-size:0.85rem; color:#888; margin-bottom:4px;">Lap Time</div>
-          <div id="laptime-display" style="font-size:2rem; font-weight:800; color:#e10600;">1:20.0</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+        <div>
+          <div style="font-size:0.72rem;color:var(--text-2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Lap Time</div>
+          <div id="laptime-display" style="font-size:2.4rem;font-weight:800;color:var(--red);letter-spacing:-0.03em;line-height:1;">1:20.0</div>
         </div>
-        <span style="color:#e10600; font-size:0.9rem;">↓ Higher Lap Time</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <span style="color:#00c853;font-size:0.8rem;font-weight:600;">↑ Fresh tires</span>
+          <span style="color:var(--red);font-size:0.8rem;font-weight:600;">↓ Worn tires</span>
+        </div>
       </div>
 
-      <input type="range" id="wear-slider" min="0" max="100" value="20"
-             oninput="updateDegradation(this.value)" style="--pct:20%;">
+      <input type="range" id="wear-slider" min="0" max="100" value="20" oninput="updateDegradation(this.value)" style="--pct:20%;">
 
-      <!-- grip level bar - goes from green to red as you drag right -->
       <div class="grip-bar-wrap">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span style="font-weight:700;">Grip Level</span>
-          <span id="grip-label" style="font-weight:700; color:#00c853;">High Grip</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span style="font-size:0.85rem;font-weight:700;">Grip Level</span>
+          <span id="grip-label" style="font-size:0.85rem;font-weight:700;color:#00c853;">High Grip</span>
         </div>
         <div class="grip-bar">
           <div class="grip-bar-cover" id="grip-cover" style="width:80%;"></div>
         </div>
-        <div style="display:flex; justify-content:space-between; margin-top:6px;">
-          <span style="font-size:0.8rem; color:#00c853;">High Grip</span>
-          <span style="font-size:0.8rem; color:#e10600;">Low Grip</span>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span style="font-size:0.75rem;color:#00c853;font-weight:600;">High Grip</span>
+          <span style="font-size:0.75rem;color:var(--red);font-weight:600;">Low Grip</span>
         </div>
       </div>
 
-      <!-- status message changes based on where the slider is -->
-      <div id="degrad-msg" style="margin-top:24px; text-align:center; font-style:italic; font-size:0.95rem; color:#888; min-height:22px;"></div>
+      <div id="degrad-msg" style="margin-top:20px;padding:12px 16px;border-radius:8px;background:var(--surface2);font-size:0.88rem;font-style:italic;color:var(--text-2);min-height:42px;display:flex;align-items:center;"></div>
     </div>
 
-    <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+    <div style="margin-top:16px;display:flex;justify-content:flex-end;">
       <button class="btn-primary" onclick="showScreen('performance-degradation')">Next: Performance →</button>
     </div>
   </div>
 
-  <!-- PERFORMANCE DEGRADATION - animated car around a track, speed tied to grip slider -->
+  <!-- PERFORMANCE DEGRADATION -->
   <div class="screen" id="screen-performance-degradation">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
-      <span class="nav-title">Learning · 04 / 06</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="progress-dots" id="pd-perf"></div>
+        <span class="nav-badge">04 / 06</span>
+      </div>
     </div>
 
-    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
       <div>
-        <h2 style="font-size:1.8rem; font-weight:700;">Performance Degradation</h2>
-        <p style="margin-top:6px; color:#aaa; font-weight:600;">Slide to see how grip changes your speed.</p>
+        <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">Performance Degradation</h2>
+        <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">Drag to see how grip level changes lap speed.</p>
       </div>
-      <!-- live lap time counter top right -->
-      <div style="text-align:right;">
-        <div style="font-size:0.82rem; color:#888;">Lap Time</div>
-        <div id="perf-laptime" style="font-size:2rem; font-weight:800; color:#e10600;">1:20.0</div>
+      <div class="stat-chip">
+        <div class="val" id="perf-laptime">1:20.0</div>
+        <div class="lbl">Lap Time</div>
       </div>
     </div>
 
-    <!-- oval track drawn in SVG, car animates around it via rAF loop in JS -->
     <div class="track-wrapper">
-      <svg viewBox="0 0 700 300" style="width:88%; max-width:680px; opacity:0.9;">
-        <ellipse cx="350" cy="150" rx="290" ry="120" fill="none" stroke="#e10600" stroke-width="3" stroke-dasharray="8 4"/>
+      <svg viewBox="0 0 700 280" style="width:88%;max-width:660px;">
+        <!-- outer track border -->
+        <ellipse cx="350" cy="140" rx="292" ry="118" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="28"/>
+        <!-- track surface -->
+        <ellipse cx="350" cy="140" rx="292" ry="118" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="22"/>
+        <!-- racing line -->
+        <ellipse cx="350" cy="140" rx="280" ry="106" fill="none" stroke="#e10600" stroke-width="2" stroke-dasharray="10 6" opacity="0.7"/>
+        <!-- start/finish line -->
+        <rect x="348" y="20" width="4" height="20" rx="1" fill="#e10600" opacity="0.8"/>
       </svg>
       <div id="perf-car">🏎️</div>
     </div>
 
     <div class="perf-slider-bar">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <span style="font-weight:700;">Grip Level</span>
-        <span id="perf-grip-label" style="font-weight:700; color:#00c853;">High Grip</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:0.85rem;font-weight:700;">Grip Level</span>
+        <span id="perf-grip-label" style="font-size:0.85rem;font-weight:700;color:#00c853;">High Grip</span>
       </div>
-      <input type="range" id="perf-slider" min="0" max="100" value="15"
-             oninput="updatePerf(this.value)" style="--pct:15%;">
-      <div style="display:flex; justify-content:space-between; margin-top:6px;">
-        <span style="font-size:0.8rem; color:#00c853;">High Grip</span>
-        <span style="font-size:0.8rem; color:#e10600;">Low Grip</span>
+      <input type="range" id="perf-slider" min="0" max="100" value="15" oninput="updatePerf(this.value)" style="--pct:15%;">
+      <div style="display:flex;justify-content:space-between;margin-top:6px;">
+        <span style="font-size:0.75rem;color:#00c853;font-weight:600;">Fresh Tires</span>
+        <span style="font-size:0.75rem;color:var(--red);font-weight:600;">Worn Tires</span>
       </div>
     </div>
 
-    <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+    <div style="margin-top:14px;display:flex;justify-content:flex-end;">
       <button class="btn-primary" onclick="showScreen('aerodynamics')">Next: Aerodynamics →</button>
     </div>
   </div>
 
   <script>
-    // tracks which mode the user picked on the home screen
     let selectedMode = 'learning';
 
-    // swap the visible screen by toggling the .active class
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const el = document.getElementById('screen-' + id);
       if (el) el.classList.add('active');
+      // update progress dots whenever we switch screens
+      updateProgressDots(id);
+    }
+
+    // render progress dots for the 6 learning screens
+    function updateProgressDots(screenId) {
+      const order = ['car-components','tires','tire-degradation','performance-degradation','aerodynamics','finding-the-gap'];
+      const currentIdx = order.indexOf(screenId);
+      if (currentIdx === -1) return;
+      // each screen has its own dot container
+      const dotContainerIds = {
+        'car-components':       'pd-car',
+        'tires':                'pd-tires',
+        'tire-degradation':     'pd-degrad',
+        'performance-degradation': 'pd-perf',
+        'aerodynamics':         'pd-aero',
+        'finding-the-gap':      'pd-gap',
+      };
+      const containerId = dotContainerIds[screenId];
+      if (!containerId) return;
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = order.map((_, i) => {
+        let cls = 'pd';
+        if (i === currentIdx) cls += ' active';
+        else if (i < currentIdx) cls += ' done';
+        return `<div class="${cls}"></div>`;
+      }).join('');
     }
 
     function selectMode(mode) {
@@ -669,108 +783,95 @@
       document.getElementById('mode-' + mode).classList.add('selected');
     }
 
-    // routes to the right starting screen based on mode selection
     function startSelected() {
       showScreen(selectedMode === 'learning' ? 'learning-menu' : 'quiz-intro');
     }
 
-    // content for each clickable car part
-    // descriptions kept short - Nitish mentioned users don't read walls of text
+    // car component descriptions
     const componentData = {
-      frontwing: { icon: '⬛', name: 'Front Wing', desc: 'Generates downforce at the nose of the car. Small angle adjustments shift balance between understeer and oversteer — teams tweak it lap by lap via radio.' },
-      fronttire: { icon: '⭕', name: 'Front Tires', desc: 'Pirelli-supplied slick tires. The fronts handle braking and steering loads and are typically cooler than rears — meaning they\'re less prone to graining.' },
-      halo:      { icon: '🛡️', name: 'Halo', desc: 'A mandatory titanium safety structure above the cockpit that protects the driver\'s head from debris and rollover forces. Introduced in 2018 after several fatal incidents.' },
-      sidepod:   { icon: '❄️', name: 'Sidepod', desc: 'Houses the water and oil radiators that cool the engine and hybrid battery system. Sidepod shape is one of the most aerodynamically contested areas between teams.' },
-      rearwing:  { icon: '✈️', name: 'Rear Wing', desc: 'The largest downforce element on the car. The DRS (Drag Reduction System) opens a flap in the rear wing on designated straights, reducing drag to aid overtaking.' },
-      reartire:  { icon: '🔄', name: 'Rear Tires', desc: 'Wider than the fronts to transmit engine and hybrid power to the track. Under heavy acceleration they\'re most vulnerable to overheating and degradation.' }
+      frontwing: { icon: '🔻', name: 'Front Wing', desc: 'Generates downforce at the nose. Small angle tweaks shift the handling balance — teams adjust it lap by lap via radio to counter tire wear.' },
+      fronttire: { icon: '⭕', name: 'Front Tires', desc: 'Pirelli-supplied slicks. The fronts handle braking and turn-in loads, and run cooler than the rears — making them less prone to graining.' },
+      halo:      { icon: '🛡️', name: 'Halo', desc: 'Mandatory titanium safety arch above the cockpit. Protects the driver from debris and rollover forces. Introduced in 2018 and has since saved multiple lives.' },
+      sidepod:   { icon: '❄️', name: 'Sidepod', desc: 'Houses the water and oil radiators. The shape is among the most contested aerodynamic battlegrounds — teams spend millions optimizing the airflow around it.' },
+      rearwing:  { icon: '✈️', name: 'Rear Wing', desc: 'The main downforce generator. DRS opens the rear flap on designated straights, cutting drag and increasing top speed by up to 15 km/h.' },
+      reartire:  { icon: '🔄', name: 'Rear Tires', desc: 'Wider than the fronts to handle power delivery. Most vulnerable to degradation under heavy acceleration — often the deciding factor in pit strategy.' }
     };
 
-    // render component info into the side panel when a hotspot is clicked
     function showComponent(key) {
       const d = componentData[key];
       document.getElementById('component-info').innerHTML = `
-        <div style="font-size:2.4rem; margin-bottom:14px;">${d.icon}</div>
-        <h3 style="color:#e10600; margin-bottom:10px; font-size:1.1rem;">${d.name}</h3>
-        <p style="color:#aaa; line-height:1.75; font-size:0.9rem;">${d.desc}</p>
+        <div style="font-size:2rem;margin-bottom:12px;">${d.icon}</div>
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">${d.name}</div>
+        <p style="color:var(--text-2);line-height:1.7;font-size:0.86rem;">${d.desc}</p>
       `;
     }
 
-    // tire info text - color matches the ring on the card
+    // tire compound details
     const tireData = {
-      soft:  { color: '#e10600', text: 'SOFT: The fastest compound on track, generating peak grip — but typically lasts only 10–15 laps before falling off the cliff. Used in qualifying and short stints.' },
-      med:   { color: '#ffd600', text: 'MEDIUM: The go-to compound for most races. Balanced grip and durability, usually lasting 20–30 laps. Teams often build strategies around it.' },
-      hard:  { color: '#e0e0e0', text: 'HARD: Slowest but most durable — can run 40+ laps. Preferred for long stints or when track temperatures are very high. Less sensitive to heat cycles.' },
-      inter: { color: '#00c853', text: 'INTERMEDIATE: Designed for damp or light rain conditions. The tread evacuates water without the full channel depth of a wet tire. Often the fastest in tricky weather windows.' },
-      wet:   { color: '#2979ff', text: 'FULL WET: For heavy rain. Deep grooves channel up to 85 litres of water per second per tire. Drivers switch to slicks the moment the track begins to dry.' }
+      soft:  { color: '#e10600', text: 'SOFT — Fastest compound on track, generating maximum grip. Typically lasts only 10–15 laps before the cliff. Used in qualifying and attack stints.' },
+      med:   { color: '#ffd600', text: 'MEDIUM — The race workhorse. Balanced grip and durability, usually good for 20–30 laps. Most strategies are built around it.' },
+      hard:  { color: '#e0e0e0', text: 'HARD — Slowest but can run 40+ laps. Preferred for long stints or when track temps are extreme. Less sensitive to thermal degradation.' },
+      inter: { color: '#00c853', text: 'INTERMEDIATE — Built for damp or drying conditions. Deep tread evacuates water without full wet grooves. Often the fastest option in tricky weather transitions.' },
+      wet:   { color: '#2979ff', text: 'FULL WET — For heavy rain. Channels up to 85 litres of water per second per tire. Teams move to slicks as soon as conditions allow.' }
     };
 
     function selectTire(card, type) {
-      // clear previous selection first
       document.querySelectorAll('.tire-card').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
       const d = tireData[type];
       const el = document.getElementById('tire-text');
       el.style.color = d.color;
-      el.style.fontStyle = 'italic';
       el.style.fontWeight = '600';
       el.textContent = d.text;
     }
 
     // ── TIRE DEGRADATION ──
-
     function updateDegradation(val) {
       const v = parseInt(val);
-
-      // update the slider's teal fill via CSS custom property
       document.getElementById('wear-slider').style.setProperty('--pct', v + '%');
 
-      // lap time formula - stays flat for first ~60% then "falls off the cliff"
+      // flat curve early on, sharp cliff after ~60% wear
       const base = 80.0;
-      let lapTime;
-      if (v < 60) {
-        lapTime = base + (v / 60) * 3.5;
-      } else {
-        // cliff kicks in here - times get bad fast
-        lapTime = base + 3.5 + Math.pow((v - 60) / 40, 1.8) * 14;
-      }
+      let lapTime = v < 60
+        ? base + (v / 60) * 3.5
+        : base + 3.5 + Math.pow((v - 60) / 40, 1.8) * 14;
+
       const mins = Math.floor(lapTime / 60);
       const secs = (lapTime % 60).toFixed(1).padStart(4, '0');
       document.getElementById('laptime-display').textContent = `${mins}:${secs}`;
 
-      // grip bar cover shrinks from right as grip improves (lower wear = more grip)
+      // grip bar - cover slides from right
       document.getElementById('grip-cover').style.width = (100 - v) + '%';
 
-      // grip label color shifts through green → yellow → red
       const gripEl = document.getElementById('grip-label');
-      if (v < 35)      { gripEl.textContent = 'High Grip';           gripEl.style.color = '#00c853'; }
+      if      (v < 35) { gripEl.textContent = 'High Grip';           gripEl.style.color = '#00c853'; }
       else if (v < 65) { gripEl.textContent = 'Medium Grip';         gripEl.style.color = '#ffd600'; }
       else if (v < 82) { gripEl.textContent = 'Low Grip';            gripEl.style.color = '#ff7043'; }
       else             { gripEl.textContent = 'Critical — Pit Now!'; gripEl.style.color = '#e10600'; }
 
-      // status message at the bottom
       const msg = document.getElementById('degrad-msg');
       if (v >= 82) {
         msg.textContent = '⚠️ Cliff reached — lap times collapsing. Box box box!';
         msg.style.color = '#e10600';
+        msg.style.background = 'rgba(225,6,0,0.08)';
       } else if (v >= 60) {
-        msg.textContent = 'Approaching the cliff — consider pitting next lap.';
+        msg.textContent = '⚡ Approaching the cliff — consider pitting in the next 2–3 laps.';
         msg.style.color = '#ffd600';
+        msg.style.background = 'rgba(255,214,0,0.06)';
       } else {
-        msg.textContent = 'Tires in good shape. Stay out and keep pushing.';
+        msg.textContent = '✓ Tires in good shape. Stay out and push.';
         msg.style.color = '#00c853';
+        msg.style.background = 'rgba(0,200,83,0.06)';
       }
     }
 
-    // init with fresh tires
     updateDegradation(20);
 
-    // ── PERFORMANCE DEGRADATION - car animation ──
-
+    // ── PERFORMANCE DEGRADATION animation ──
     let animFrame = null;
-    let carAngle = 0;
-    let perfWear = 15; // maps to slider value, 0 = fast, 100 = slow
+    let carAngle  = 0;
+    let perfWear  = 15;
 
-    // called when this screen becomes active
     function startCarAnimation() {
       if (animFrame) return;
       tickCar();
@@ -782,28 +883,25 @@
     }
 
     function tickCar() {
-      // speed is inversely proportional to wear level
-      const speed = 0.006 + ((100 - perfWear) / 100) * 0.032;
+      const speed = 0.005 + ((100 - perfWear) / 100) * 0.03;
       carAngle = (carAngle + speed) % (Math.PI * 2);
 
       const wrapper = document.querySelector('.track-wrapper');
       const car     = document.getElementById('perf-car');
       if (!wrapper || !car) return;
 
-      const w = wrapper.offsetWidth;
-      const h = wrapper.offsetHeight;
-
-      // match the SVG ellipse proportions
-      const rx = Math.min(w * 0.41, 260);
-      const ry = Math.min(h * 0.40, 110);
+      const w  = wrapper.offsetWidth;
+      const h  = wrapper.offsetHeight;
+      // match the SVG ellipse
+      const rx = Math.min(w * 0.40, 252);
+      const ry = Math.min(h * 0.39, 96);
       const cx = w / 2;
       const cy = h / 2;
 
-      const x = cx + rx * Math.cos(carAngle);
-      const y = cy + ry * Math.sin(carAngle);
-
-      // rotate the emoji to face the direction of travel
+      const x   = cx + rx * Math.cos(carAngle);
+      const y   = cy + ry * Math.sin(carAngle);
       const deg = (carAngle * 180 / Math.PI) + 90;
+
       car.style.left      = x + 'px';
       car.style.top       = y + 'px';
       car.style.transform = `translate(-50%,-50%) rotate(${deg}deg)`;
@@ -815,19 +913,18 @@
       perfWear = parseInt(val);
       document.getElementById('perf-slider').style.setProperty('--pct', val + '%');
 
-      // update lap time display
       const lapTime = 80.0 + (perfWear / 100) * 10;
-      const mins = Math.floor(lapTime / 60);
-      const secs = (lapTime % 60).toFixed(1).padStart(4, '0');
+      const mins    = Math.floor(lapTime / 60);
+      const secs    = (lapTime % 60).toFixed(1).padStart(4, '0');
       document.getElementById('perf-laptime').textContent = `${mins}:${secs}`;
 
       const label = document.getElementById('perf-grip-label');
-      if (perfWear < 35)      { label.textContent = 'High Grip';   label.style.color = '#00c853'; }
+      if      (perfWear < 35) { label.textContent = 'High Grip';   label.style.color = '#00c853'; }
       else if (perfWear < 65) { label.textContent = 'Medium Grip'; label.style.color = '#ffd600'; }
       else                    { label.textContent = 'Low Grip';    label.style.color = '#e10600'; }
     }
 
-    // hook into showScreen to start/stop the animation only when on that screen
+    // intercept showScreen to start/stop the animation
     const _origShowScreen = showScreen;
     showScreen = function(id) {
       _origShowScreen(id);
