@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="screen-page">
+  <div class="nav-row d-flex justify-content-between align-items-center mb-3">
+    <a class="nav-back" href="{{ url_for('home') }}">← Home</a>
+    <span class="nav-badge">Results</span>
+  </div>
+
+  <div class="text-center mt-4">
+    <div class="small-label mb-3">Quiz Complete</div>
+
+    <div class="score-card mx-auto">
+      <div class="small text-muted mb-2">Your Score</div>
+      <div class="final-score">{{ score }} / {{ total }}</div>
+      <div class="score-title">{{ title }}</div>
+    </div>
+
+    <div class="small-label mt-4 mb-2">Topic Breakdown</div>
+    <div class="d-flex flex-wrap gap-3 justify-content-center mb-4">
+      {% for topic, total_n in topic_total.items() %}
+      <div class="topic-chip">
+        <div class="topic-name">{{ topic | capitalize }}</div>
+        <div class="topic-score">{{ topic_score.get(topic, 0) }}/{{ total_n }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="d-flex gap-2 justify-content-center">
+      <form method="post" action="{{ url_for('reset') }}" class="d-inline">
+        <input type="hidden" name="mode" value="quiz">
+        <button class="btn btn-primary-f1" type="submit"
+                formaction="{{ url_for('start') }}">Retake Quiz</button>
+      </form>
+      <a class="btn btn-ghost-f1" href="{{ url_for('learning_menu') }}">Back to Learning</a>
+    </div>
+
+    <details class="mt-4 text-start mx-auto" style="max-width:720px;">
+      <summary class="text-muted small">Answer review</summary>
+      <ol class="mt-2">
+        {% for q in questions %}
+          {% set a = answers[loop.index0] %}
+          <li class="mb-2">
+            <div class="small fw-bold">{{ q.text }}</div>
+            <div class="small {% if a and a.correct %}text-success{% else %}text-danger{% endif %}">
+              {% if a and a.choice is defined and a.choice >= 0 %}
+                Your answer: {{ q.options[a.choice] }}
+              {% else %}
+                Not answered
+              {% endif %}
+              — Correct: {{ q.options[q.correct] }}
+            </div>
+          </li>
+        {% endfor %}
+      </ol>
+    </details>
+  </div>
+</div>
+{% endblock %}

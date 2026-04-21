@@ -1,0 +1,37 @@
+[
+  {
+    "topic": "tires",
+    "text": "Which tire compound is the most durable and typically used for the longest stints?",
+    "options": ["Soft", "Medium", "Hard", "Intermediate"],
+    "correct": 2,
+    "explanation": "The Hard compound can last 40+ laps, making it the go-to for teams planning a one-stop strategy."
+  },
+  {
+    "topic": "tires",
+    "text": "A driver is told \"box box box\" over the radio. What does this mean?",
+    "options": ["Push harder — attack mode", "Pit this lap", "Let the car behind pass", "Save fuel"],
+    "correct": 1,
+    "explanation": "\"Box\" is F1 shorthand for pit lane (from the German \"Box\"). \"Box box box\" means come in and pit immediately."
+  },
+  {
+    "topic": "aero",
+    "text": "Why is \"dirty air\" harmful to a following car's performance?",
+    "options": ["It contains exhaust gases that overheat the engine", "It reduces downforce, causing slower corners and tire overheating", "It only affects top speed on straights", "It improves fuel economy for the chasing car"],
+    "correct": 1,
+    "explanation": "Turbulent wake from the car ahead can cut downforce by up to 30%, making corners slower and tires overheat faster."
+  },
+  {
+    "topic": "aero",
+    "text": "What does DRS (Drag Reduction System) do when activated?",
+    "options": ["Increases braking force", "Opens the rear wing flap to reduce drag", "Cools the rear tires", "Locks the front differential"],
+    "correct": 1,
+    "explanation": "DRS opens a slot in the rear wing element, reducing aerodynamic drag and adding up to 15 km/h of top speed on designated straight sections."
+  },
+  {
+    "topic": "pit",
+    "text": "What is the \"undercut\" strategy in F1?",
+    "options": ["Pitting before a rival to gain track position on fresher tires", "Staying out longer than a rival to save pit stop time", "Pitting twice in a row to beat a safety car", "Using a softer compound to set the fastest qualifying lap"],
+    "correct": 0,
+    "explanation": "The undercut means pitting before your rival. Your new tires are faster, so if the gap is large enough you emerge ahead when they eventually pit."
+  }
+]

@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "slug": "car-components",
+    "title": "Car Components",
+    "icon": "🏎️",
+    "subtitle": "Click the red hotspots to learn about each part.",
+    "type": "hotspots",
+    "image": "/static/img/ferrari_sf24.jpg",
+    "hotspots": [
+      { "key": "frontwing", "x": 7,  "y": 72, "icon": "🔻", "name": "Front Wing", "desc": "Generates downforce at the nose. Small angle tweaks shift the handling balance — teams adjust it lap by lap via radio to counter tire wear." },
+      { "key": "fronttire", "x": 21, "y": 72, "icon": "⭕", "name": "Front Tires", "desc": "Pirelli-supplied slicks. The fronts handle braking and turn-in loads, and run cooler than the rears — making them less prone to graining." },
+      { "key": "halo",      "x": 38, "y": 40, "icon": "🛡️", "name": "Halo", "desc": "Mandatory titanium safety arch above the cockpit. Protects the driver from debris and rollover forces. Introduced in 2018 and has since saved multiple lives." },
+      { "key": "sidepod",   "x": 55, "y": 59, "icon": "❄️", "name": "Sidepod", "desc": "Houses the water and oil radiators. The shape is among the most contested aerodynamic battlegrounds — teams spend millions optimizing the airflow around it." },
+      { "key": "reartire",  "x": 78, "y": 72, "icon": "🔄", "name": "Rear Tires", "desc": "Wider than the fronts to handle power delivery. Most vulnerable to degradation under heavy acceleration — often the deciding factor in pit strategy." },
+      { "key": "rearwing",  "x": 89, "y": 35, "icon": "✈️", "name": "Rear Wing", "desc": "The main downforce generator. DRS opens the rear flap on designated straights, cutting drag and increasing top speed by up to 15 km/h." }
+    ]
+  },
+  {
+    "id": 2,
+    "slug": "tires",
+    "title": "Tire Compounds",
+    "icon": "🔴",
+    "subtitle": "F1 uses color-coded compounds. Click one to learn its purpose.",
+    "type": "tires",
+    "tires": [
+      { "key": "soft",  "name": "Soft",     "color": "#e10600", "text": "SOFT — Fastest compound on track, generating maximum grip. Typically lasts only 10–15 laps before the cliff. Used in qualifying and attack stints." },
+      { "key": "med",   "name": "Medium",   "color": "#ffd600", "text": "MEDIUM — The race workhorse. Balanced grip and durability, usually good for 20–30 laps. Most strategies are built around it." },
+      { "key": "hard",  "name": "Hard",     "color": "#e0e0e0", "text": "HARD — Slowest but can run 40+ laps. Preferred for long stints or when track temps are extreme. Less sensitive to thermal degradation." },
+      { "key": "inter", "name": "Inter",    "color": "#00c853", "text": "INTERMEDIATE — Built for damp or drying conditions. Deep tread evacuates water without full wet grooves. Often the fastest option in tricky weather transitions." },
+      { "key": "wet",   "name": "Full Wet", "color": "#2979ff", "text": "FULL WET — For heavy rain. Channels up to 85 litres of water per second per tire. Teams move to slicks as soon as conditions allow." }
+    ]
+  },
+  {
+    "id": 3,
+    "slug": "tire-degradation",
+    "title": "Tire Degradation",
+    "icon": "📉",
+    "subtitle": "Drag the slider to see how tire wear affects lap time.",
+    "type": "wear-slider"
+  },
+  {
+    "id": 4,
+    "slug": "performance-degradation",
+    "title": "Performance Degradation",
+    "icon": "⚡",
+    "subtitle": "Drag to see how grip level changes lap speed.",
+    "type": "perf-slider"
+  },
+  {
+    "id": 5,
+    "slug": "aerodynamics",
+    "title": "Aerodynamics",
+    "icon": "💨",
+    "subtitle": "Why air turbulence is one of the biggest weapons in F1 strategy.",
+    "type": "aero",
+    "cards": [
+      {
+        "key": "clean",
+        "icon": "💨",
+        "label": "Clean Air",
+        "color": "#00c853",
+        "desc": "Running in open track, your car cuts through smooth, undisturbed air. Downforce is maximized, cornering speeds are higher, and tires behave predictably.",
+        "chips": ["Max Downforce", "Stable Tires", "Faster Corners"]
+      },
+      {
+        "key": "dirty",
+        "icon": "🌀",
+        "label": "Dirty Air",
+        "color": "#e10600",
+        "desc": "Following another car closely puts you in its turbulent wake. Downforce drops, corners get slower, and tires slide and overheat — erasing any speed advantage from new rubber.",
+        "chips": ["–30% Downforce", "Tire Overheat", "Slower Corners"]
+      }
+    ],
+    "note": "Teams must decide: pit early for fresh tires and race in clean air — or stay out and hope the car ahead pits first. Dirty air can completely negate a tire compound advantage, making track position as important as pace."
+  },
+  {
+    "id": 6,
+    "slug": "finding-the-gap",
+    "title": "Finding the Gap",
+    "icon": "🏁",
+    "subtitle": "Select the best gap to pit into. You want clean air and track position.",
+    "type": "gap",
+    "gaps": [
+      { "key": "a", "label": "TOO SMALL",       "correct": false, "feedback": "✗ Too tight — you'd emerge right behind that car and lose all your fresh tire advantage in dirty air." },
+      { "key": "b", "label": "Click to pit here","correct": true,  "feedback": "✓ Perfect call! This gap gives enough clean air and track position after the pit stop." },
+      { "key": "c", "label": "Click to pit here","correct": false, "feedback": "⚠ Possible, but you'd lap behind a backmarker. Gap B gives cleaner air and stronger track position." }
+    ]
+  }
+]
