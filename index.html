@@ -241,26 +241,66 @@
     .section-desc  { font-size: 0.78rem; color: var(--text-2); margin-top: 2px; }
 
     /* ── CAR COMPONENTS ── */
-    .hs-group { cursor: pointer; }
-    .hs-group circle.hs-bg {
-      fill: rgba(225,6,0,0.15);
-      stroke: var(--red);
-      stroke-width: 2;
+    .car-photo-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
     }
-    .hs-group circle.hs-pulse {
-      fill: none;
-      stroke: var(--red);
-      stroke-width: 1.5;
+    .car-photo-wrap img {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
+    }
+    .hs-dot {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      z-index: 2;
+    }
+    .hs-dot::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      background: rgba(225,6,0,0.2);
+      border: 2px solid var(--red);
+      transition: background 0.2s;
+    }
+    .hs-dot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.5px solid var(--red);
       animation: hsPulse 1.8s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center;
     }
-    .hs-group:hover circle.hs-bg    { fill: rgba(225,6,0,0.35); }
-    .hs-group:hover circle.hs-pulse { animation: none; opacity: 0.8; }
+    .hs-dot:hover::before { background: rgba(225,6,0,0.4); }
+    .hs-dot:hover::after  { animation: none; opacity: 0.7; }
     @keyframes hsPulse {
-      0%,100% { transform: scale(1);    opacity: 1;   }
-      50%      { transform: scale(1.45); opacity: 0.2; }
+      0%,100% { transform: scale(1);   opacity: 1; }
+      50%      { transform: scale(1.6); opacity: 0; }
     }
+
+    /* ── QUIZ ANSWERS ── */
+    .answer-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      color: var(--text);
+      font-size: 0.92rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1.4;
+    }
+    .answer-btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--border-hi); transform: translateY(-1px); }
+    .answer-btn:disabled { cursor: default; }
+    .answer-btn.correct   { border-color: #00c853; background: rgba(0,200,83,0.12); color: #00c853; }
+    .answer-btn.incorrect { border-color: var(--red); background: rgba(225,6,0,0.1); color: var(--red); }
 
     .comp-panel {
       width: 260px;
@@ -498,92 +538,22 @@
 
     <div style="flex:1;display:flex;gap:32px;align-items:center;margin-top:20px;overflow:hidden;">
       <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 800 320" style="width:100%;max-width:620px;" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#2e2e38"/>
-              <stop offset="100%" stop-color="#13131a"/>
-            </linearGradient>
-            <linearGradient id="tireGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#252530"/>
-              <stop offset="100%" stop-color="#0c0c10"/>
-            </linearGradient>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <!-- tires -->
-          <ellipse cx="200" cy="242" rx="36" ry="36" fill="url(#tireGrad)" stroke="#333" stroke-width="2"/>
-          <ellipse cx="200" cy="242" rx="16" ry="16" fill="#252530"/>
-          <ellipse cx="200" cy="242" rx="7"  ry="7"  fill="#1a1a22"/>
-          <ellipse cx="590" cy="242" rx="46" ry="46" fill="url(#tireGrad)" stroke="#333" stroke-width="2"/>
-          <ellipse cx="590" cy="242" rx="20" ry="20" fill="#252530"/>
-          <ellipse cx="590" cy="242" rx="9"  ry="9"  fill="#1a1a22"/>
-          <!-- floor -->
-          <rect x="185" y="250" width="430" height="10" rx="3" fill="#1a1a22"/>
-          <!-- sidepods -->
-          <path d="M 310 205 Q 340 185 430 183 L 540 190 Q 540 220 430 222 Q 340 225 310 235 Z" fill="#1e1e28" stroke="#333" stroke-width="1"/>
-          <ellipse cx="320" cy="207" rx="14" ry="20" fill="#0c0c10"/>
-          <!-- main chassis -->
-          <path d="M 185 215 Q 195 200 260 195 L 490 192 Q 545 192 565 215 L 565 248 L 185 248 Z" fill="url(#bodyGrad)" stroke="#3a3a4a" stroke-width="1"/>
-          <!-- engine cover -->
-          <path d="M 380 192 Q 400 165 450 160 Q 500 158 530 175 L 530 192 Z" fill="#22222e" stroke="#3a3a4a" stroke-width="1"/>
-          <path d="M 415 175 Q 430 158 445 158 Q 460 158 465 172 L 445 172 Q 440 162 430 163 Z" fill="#0c0c10" stroke="#3a3a4a" stroke-width="1"/>
-          <!-- cockpit -->
-          <path d="M 280 195 Q 295 162 330 155 Q 375 148 400 162 L 395 192 Z" fill="#1a1a22" stroke="#3a3a4a" stroke-width="1"/>
-          <path d="M 288 192 Q 300 166 330 160 Q 368 153 390 166 L 387 190 Z" fill="#0c0c10"/>
-          <!-- halo -->
-          <path d="M 296 170 L 300 148 Q 330 132 365 148 L 368 168" fill="none" stroke="#666" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="328" y1="132" x2="333" y2="168" stroke="#666" stroke-width="6" stroke-linecap="round"/>
-          <!-- nose -->
-          <path d="M 185 225 Q 150 222 90 228 Q 60 230 40 235 Q 60 237 90 238 Q 150 240 185 240 Z" fill="#22222e" stroke="#3a3a4a" stroke-width="1"/>
-          <path d="M 40 235 Q 20 235 8 236 L 40 237 Z" fill="#1a1a22"/>
+        <div class="car-photo-wrap">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/FIA_F1_Austria_2024_Nr._16_Leclerc.jpg/1200px-FIA_F1_Austria_2024_Nr._16_Leclerc.jpg"
+               alt="Ferrari SF-24 — 2024 Austrian Grand Prix">
           <!-- front wing -->
-          <rect x="18" y="237" width="180" height="7" rx="2" fill="#2a2a38"/>
-          <rect x="18" y="246" width="180" height="4" rx="1" fill="#333"/>
-          <rect x="18"  y="232" width="5" height="22" rx="1" fill="#333"/>
-          <rect x="195" y="232" width="5" height="22" rx="1" fill="#333"/>
-          <path d="M 30 237 Q 80 228 140 230 Q 160 231 185 234 L 185 237 Q 160 234 140 233 Q 80 231 30 240 Z" fill="#252535"/>
+          <div class="hs-dot" style="left:13%;top:72%;" onclick="showComponent('frontwing')"></div>
+          <!-- front tire -->
+          <div class="hs-dot" style="left:24%;top:82%;" onclick="showComponent('fronttire')"></div>
+          <!-- halo -->
+          <div class="hs-dot" style="left:41%;top:34%;" onclick="showComponent('halo')"></div>
+          <!-- sidepod -->
+          <div class="hs-dot" style="left:56%;top:52%;" onclick="showComponent('sidepod')"></div>
+          <!-- rear tire -->
+          <div class="hs-dot" style="left:74%;top:80%;" onclick="showComponent('reartire')"></div>
           <!-- rear wing -->
-          <rect x="620" y="168" width="130" height="7"  rx="2" fill="#444"/>
-          <rect x="622" y="177" width="126" height="9"  rx="2" fill="#2e2e3e"/>
-          <rect x="620" y="188" width="130" height="5"  rx="2" fill="#333"/>
-          <rect x="617" y="162" width="8" height="42" rx="2" fill="#303040"/>
-          <rect x="748" y="162" width="8" height="42" rx="2" fill="#303040"/>
-          <rect x="630" y="218" width="110" height="6" rx="2" fill="#333"/>
-          <line x1="660" y1="193" x2="655" y2="240" stroke="#333" stroke-width="4" stroke-linecap="round"/>
-          <line x1="710" y1="193" x2="715" y2="240" stroke="#333" stroke-width="4" stroke-linecap="round"/>
-          <!-- livery stripe -->
-          <path d="M 185 225 Q 300 218 400 215 Q 500 213 560 220 L 560 228 Q 500 222 400 224 Q 300 227 185 235 Z" fill="#e10600" opacity="0.85"/>
-          <!-- exhaust glow -->
-          <ellipse cx="570" cy="195" rx="8" ry="5" fill="#0c0c10" stroke="#444" stroke-width="1"/>
-          <!-- hotspots -->
-          <g class="hs-group" onclick="showComponent('frontwing')">
-            <circle cx="107" cy="238" r="17" class="hs-bg"/>
-            <circle cx="107" cy="238" r="26" class="hs-pulse"/>
-          </g>
-          <g class="hs-group" onclick="showComponent('fronttire')">
-            <circle cx="200" cy="242" r="17" class="hs-bg"/>
-            <circle cx="200" cy="242" r="26" class="hs-pulse"/>
-          </g>
-          <g class="hs-group" onclick="showComponent('halo')">
-            <circle cx="333" cy="142" r="17" class="hs-bg"/>
-            <circle cx="333" cy="142" r="26" class="hs-pulse"/>
-          </g>
-          <g class="hs-group" onclick="showComponent('sidepod')">
-            <circle cx="430" cy="203" r="17" class="hs-bg"/>
-            <circle cx="430" cy="203" r="26" class="hs-pulse"/>
-          </g>
-          <g class="hs-group" onclick="showComponent('rearwing')">
-            <circle cx="683" cy="178" r="17" class="hs-bg"/>
-            <circle cx="683" cy="178" r="26" class="hs-pulse"/>
-          </g>
-          <g class="hs-group" onclick="showComponent('reartire')">
-            <circle cx="590" cy="242" r="17" class="hs-bg"/>
-            <circle cx="590" cy="242" r="26" class="hs-pulse"/>
-          </g>
-        </svg>
+          <div class="hs-dot" style="left:85%;top:32%;" onclick="showComponent('rearwing')"></div>
+        </div>
       </div>
 
       <div class="comp-panel" id="component-info">
@@ -737,6 +707,198 @@
 
     <div style="margin-top:14px;display:flex;justify-content:flex-end;">
       <button class="btn-primary" onclick="showScreen('aerodynamics')">Next: Aerodynamics →</button>
+    </div>
+  </div>
+
+  <!-- AERODYNAMICS -->
+  <div class="screen" id="screen-aerodynamics">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="progress-dots" id="pd-aero"></div>
+        <span class="nav-badge">05 / 06</span>
+      </div>
+    </div>
+    <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">Aerodynamics</h2>
+    <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">Why air turbulence is one of the biggest weapons in F1 strategy.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;flex:1;">
+      <!-- clean air card -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 30px;border-top:3px solid #00c853;display:flex;flex-direction:column;gap:14px;">
+        <div style="font-size:2.2rem;">💨</div>
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#00c853;">Clean Air</div>
+        <p style="color:var(--text-2);font-size:0.9rem;line-height:1.75;">Running in open track, your car cuts through smooth, undisturbed air. Downforce is maximized, cornering speeds are higher, and tires behave predictably.</p>
+        <div style="display:flex;gap:10px;margin-top:auto;flex-wrap:wrap;">
+          <span style="background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:#00c853;">Max Downforce</span>
+          <span style="background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:#00c853;">Stable Tires</span>
+          <span style="background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:#00c853;">Faster Corners</span>
+        </div>
+      </div>
+
+      <!-- dirty air card -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 30px;border-top:3px solid var(--red);display:flex;flex-direction:column;gap:14px;">
+        <div style="font-size:2.2rem;">🌀</div>
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);">Dirty Air</div>
+        <p style="color:var(--text-2);font-size:0.9rem;line-height:1.75;">Following another car closely puts you in its turbulent wake. Downforce drops, corners get slower, and tires slide and overheat — erasing any speed advantage from new rubber.</p>
+        <div style="display:flex;gap:10px;margin-top:auto;flex-wrap:wrap;">
+          <span style="background:rgba(225,6,0,0.1);border:1px solid rgba(225,6,0,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--red);">–30% Downforce</span>
+          <span style="background:rgba(225,6,0,0.1);border:1px solid rgba(225,6,0,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--red);">Tire Overheat</span>
+          <span style="background:rgba(225,6,0,0.1);border:1px solid rgba(225,6,0,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--red);">Slower Corners</span>
+        </div>
+      </div>
+
+      <!-- strategy implication -->
+      <div style="grid-column:1/-1;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 28px;">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-2);margin-bottom:10px;">Why It Matters Strategically</div>
+        <p style="color:var(--text-2);font-size:0.9rem;line-height:1.75;">Teams must decide: pit early for fresh tires and race in clean air — or stay out and hope the car ahead pits first. Dirty air can completely negate a tire compound advantage, making track position as important as pace.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+      <button class="btn-primary" onclick="showScreen('finding-the-gap')">Next: Finding the Gap →</button>
+    </div>
+  </div>
+
+  <!-- FINDING THE GAP -->
+  <div class="screen" id="screen-finding-the-gap">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('learning-menu')">← Back</button>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="progress-dots" id="pd-gap"></div>
+        <span class="nav-badge">06 / 06</span>
+      </div>
+    </div>
+    <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">Finding the Gap</h2>
+    <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">Select the best gap to pit into. You want clean air and track position.</p>
+
+    <!-- track strip with cars and gaps -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-top:24px;display:flex;align-items:center;gap:0;overflow:hidden;">
+      <div style="font-size:2rem;flex-shrink:0;">🏎️</div>
+
+      <div id="gap-a" onclick="selectGap('a')" style="flex:0 0 80px;height:64px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;letter-spacing:0.06em;border:1px solid rgba(225,6,0,0.3);background:rgba(225,6,0,0.08);color:var(--red);transition:all 0.2s;margin:0 8px;">
+        TOO<br>SMALL
+      </div>
+
+      <div style="font-size:2rem;flex-shrink:0;">🏎️</div>
+
+      <div id="gap-b" onclick="selectGap('b')" style="flex:1;height:64px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;letter-spacing:0.05em;border:1px solid var(--border);background:var(--surface2);color:var(--text-3);transition:all 0.2s;margin:0 8px;">
+        Click to pit here
+      </div>
+
+      <div style="font-size:2rem;flex-shrink:0;">🏎️</div>
+
+      <div id="gap-c" onclick="selectGap('c')" style="flex:0 0 100px;height:64px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;letter-spacing:0.06em;border:1px solid var(--border);background:var(--surface2);color:var(--text-3);transition:all 0.2s;margin:0 8px;">
+        Click to<br>pit here
+      </div>
+
+      <div style="font-size:2rem;flex-shrink:0;">🏎️</div>
+    </div>
+
+    <div id="gap-feedback" style="margin-top:16px;padding:14px 20px;border-radius:10px;background:var(--surface);border:1px solid var(--border);font-size:0.9rem;font-weight:600;min-height:48px;display:flex;align-items:center;color:var(--text-3);font-style:italic;">
+      Select a gap above to see if it's the right call.
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-top:16px;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:10px;">What makes a good pit window?</div>
+      <ul style="color:var(--text-2);font-size:0.88rem;line-height:1.9;padding-left:18px;">
+        <li>At least 2–3 seconds gap behind — accounting for pit stop time loss (~22s)</li>
+        <li>Clean air to emerge into, not right behind a slower car</li>
+        <li>Strategic track position relative to rivals who are also pitting</li>
+      </ul>
+    </div>
+
+    <div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end;">
+      <button class="btn-ghost" onclick="showScreen('learning-menu')">← All Modules</button>
+      <button class="btn-primary" onclick="showScreen('quiz-intro')">Take the Quiz →</button>
+    </div>
+  </div>
+
+  <!-- QUIZ INTRO -->
+  <div class="screen" id="screen-quiz-intro">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('home')">← Home</button>
+      <span class="nav-badge">Quiz</span>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--red);margin-bottom:14px;">Knowledge Check</div>
+      <h2 style="font-size:2.4rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:10px;">Quiz Time</h2>
+      <p style="color:var(--text-2);max-width:420px;font-size:0.95rem;line-height:1.6;margin-bottom:40px;">5 questions on tires, aerodynamics, and pit strategy. Pick the right answer to lock it in.</p>
+
+      <!-- 5 progress dots -->
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-hi);"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-hi);"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-hi);"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-hi);"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-hi);"></div>
+      </div>
+      <p style="color:var(--text-3);font-size:0.8rem;margin-bottom:36px;">5 questions · ~2 minutes</p>
+
+      <button class="btn-primary" onclick="startQuiz()" style="padding:16px 56px;font-size:1.05rem;">Start Quiz →</button>
+    </div>
+  </div>
+
+  <!-- QUIZ QUESTION (populated by JS) -->
+  <div class="screen" id="screen-quiz-question">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('quiz-intro')">✕ Quit</button>
+      <span class="nav-badge" id="quiz-nav-label">1 / 5</span>
+    </div>
+
+    <!-- red progress bar -->
+    <div style="height:3px;background:var(--surface2);border-radius:2px;margin-bottom:32px;">
+      <div id="quiz-prog" style="height:100%;background:var(--red);border-radius:2px;transition:width 0.4s ease;width:20%;"></div>
+    </div>
+
+    <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:12px;" id="quiz-q-num">Question 1 of 5</div>
+    <div style="font-size:1.35rem;font-weight:700;line-height:1.45;margin-bottom:32px;max-width:820px;" id="quiz-q-text"></div>
+
+    <div id="quiz-answers" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:820px;"></div>
+
+    <div id="quiz-feedback" style="margin-top:20px;font-size:0.88rem;font-style:italic;min-height:22px;color:#00c853;"></div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:auto;">
+      <button class="btn-primary" id="quiz-next-btn" onclick="nextQuestion()" style="display:none;">Next →</button>
+    </div>
+  </div>
+
+  <!-- QUIZ COMPLETE -->
+  <div class="screen" id="screen-quiz-complete">
+    <div class="nav">
+      <button class="nav-back" onclick="showScreen('home')">← Home</button>
+      <span class="nav-badge">Results</span>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-2);margin-bottom:14px;">Quiz Complete</div>
+
+      <!-- score card -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 56px;margin-bottom:32px;min-width:320px;">
+        <div style="font-size:0.78rem;color:var(--text-2);margin-bottom:8px;">Your Score</div>
+        <div id="final-score" style="font-size:5rem;font-weight:800;color:var(--red);letter-spacing:-0.04em;line-height:1;">4 / 5</div>
+        <div id="score-title" style="color:var(--text-2);font-style:italic;margin-top:10px;font-size:0.95rem;">Strategist in Training</div>
+      </div>
+
+      <!-- topic breakdown -->
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:14px;align-self:flex-start;margin-left:auto;margin-right:auto;">Topic Breakdown</div>
+      <div style="display:flex;gap:12px;margin-bottom:36px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 28px;text-align:left;">
+          <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:4px;">Tires</div>
+          <div id="breakdown-tires" style="font-size:1.4rem;font-weight:800;">2/2</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 28px;text-align:left;">
+          <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:4px;">Aero</div>
+          <div id="breakdown-aero" style="font-size:1.4rem;font-weight:800;">1/1</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 28px;text-align:left;">
+          <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:4px;">Pit Strategy</div>
+          <div id="breakdown-pit" style="font-size:1.4rem;font-weight:800;">1/2</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;">
+        <button class="btn-primary" onclick="retakeQuiz()">Retake Quiz</button>
+        <button class="btn-ghost" onclick="showScreen('learning-menu')">Back to Learning</button>
+      </div>
     </div>
   </div>
 
@@ -931,6 +1093,7 @@
       if (id === 'performance-degradation') startCarAnimation();
       else stopCarAnimation();
     };
+
   </script>
 </body>
 </html>
