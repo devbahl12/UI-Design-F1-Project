@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="screen-page">
+  <div class="nav-row d-flex justify-content-between align-items-center mb-4">
+    <a class="nav-back" href="{{ url_for('home') }}">← Home</a>
+    <span class="nav-badge">F1 Strategies</span>
+  </div>
+
+  <h2 class="page-title">Learning Modules</h2>
+  <p class="page-sub">Work through each topic to understand modern F1 race strategy.</p>
+
+  <div class="section-list row g-3 mt-2">
+    {% for lesson in lessons %}
+    <div class="col-12 col-md-6">
+      <a href="{{ url_for('learn', n=lesson.id) }}" class="section-item">
+        <span class="section-num">{{ '%02d' % lesson.id }}</span>
+        <span class="section-icon">{{ lesson.icon }}</span>
+        <div class="flex-grow-1">
+          <div class="section-label">{{ lesson.title }}</div>
+          <div class="section-desc">{{ lesson.subtitle }}</div>
+        </div>
+        <span class="section-caret">›</span>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="d-flex justify-content-end mt-4">
+    <a class="btn btn-primary-f1" href="{{ url_for('quiz', n=1) }}">Take the Quiz →</a>
+  </div>
+</div>
+{% endblock %}

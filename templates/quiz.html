@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="screen-page">
+  <div class="nav-row d-flex justify-content-between align-items-center mb-3">
+    <a class="nav-back" href="{{ url_for('home') }}">✕ Quit</a>
+    <span class="nav-badge">{{ n }} / {{ total }}</span>
+  </div>
+
+  <div class="quiz-progress"><div class="quiz-progress-bar" style="width: {{ (n / total) * 100 }}%;"></div></div>
+
+  <div class="small-label mt-4 mb-2">Question {{ n }} of {{ total }}</div>
+  <div class="quiz-q-text">{{ q.text }}</div>
+
+  <form id="quiz-form" method="post" action="{{ url_for('quiz', n=n) }}">
+    <div id="quiz-answers" class="row g-2 mt-3" data-correct="{{ q.correct }}"
+         data-explanation="{{ q.explanation | e }}">
+      {% for opt in q.options %}
+        <div class="col-12 col-md-6">
+          <button type="button" class="answer-btn w-100" data-idx="{{ loop.index0 }}">{{ opt }}</button>
+        </div>
+      {% endfor %}
+    </div>
+    <input type="hidden" name="choice" id="choice-input" value="">
+    <div id="quiz-feedback" class="quiz-feedback"></div>
+
+    <div class="d-flex justify-content-between mt-4">
+      {% if n > 1 %}
+        <a class="btn btn-ghost-f1" href="{{ url_for('quiz', n=n-1) }}">← Previous</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      <button type="submit" id="quiz-next-btn" class="btn btn-primary-f1" disabled>
+        {% if n == total %}See Results →{% else %}Next →{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $(function () {
+    const $answers = $('#quiz-answers');
+    const correct = parseInt($answers.data('correct'), 10);
+    const explanation = $answers.data('explanation');
+
+    $('.answer-btn').on('click', function () {
+      const idx = parseInt($(this).data('idx'), 10);
+      $('.answer-btn').prop('disabled', true);
+      const isCorrect = idx === correct;
+      $(this).addClass(isCorrect ? 'correct' : 'incorrect');
+      if (!isCorrect) $('.answer-btn[data-idx=' + correct + ']').addClass('correct');
+      $('#choice-input').val(idx);
+      $('#quiz-feedback')
+        .text((isCorrect ? '✓ Correct! ' : '✗ Not quite. ') + explanation)
+        .css('color', isCorrect ? '#00c853' : '#ff7043');
+      $('#quiz-next-btn').prop('disabled', false);
+    });
+  });
+</script>
+{% endblock %}
