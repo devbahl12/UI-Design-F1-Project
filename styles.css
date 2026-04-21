@@ -517,6 +517,34 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   100% { transform: translate(var(--fly-x, 0), var(--fly-y, -80px)) scale(0.4); opacity: 0; }
 }
 
+/* ── HOME CAR PHOTO ── */
+.home-car-wrap {
+  position: relative;
+  width: 560px;
+  max-width: 92vw;
+  margin-bottom: 20px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(225,6,0,0.22), 0 24px 60px rgba(0,0,0,0.6);
+}
+.home-car-img {
+  width: 100%;
+  display: block;
+  border-radius: 18px;
+  filter: brightness(1.05) contrast(1.08) saturate(1.1);
+}
+/* fade edges into dark background */
+.home-car-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background:
+    linear-gradient(to right,  var(--bg) 0%, transparent 12%, transparent 88%, var(--bg) 100%),
+    linear-gradient(to bottom, transparent 65%, var(--bg) 100%);
+  pointer-events: none;
+}
+
 /* ── HOME PAGE ── */
 .home-scene {
   position: absolute;

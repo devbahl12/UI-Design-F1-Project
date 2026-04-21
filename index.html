@@ -14,53 +14,10 @@
     <div class="home-scene" id="home-scene"></div>
 
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;z-index:2;">
-      <!-- F1 car SVG hero -->
-      <svg viewBox="0 0 480 120" width="380" height="95" style="margin-bottom:28px;filter:drop-shadow(0 0 24px rgba(225,6,0,0.35));" aria-hidden="true">
-        <!-- rear tire -->
-        <ellipse cx="370" cy="88" rx="28" ry="28" fill="#1a1a22" stroke="#333" stroke-width="2"/>
-        <ellipse cx="370" cy="88" rx="12" ry="12" fill="#252530"/>
-        <!-- front tire -->
-        <ellipse cx="118" cy="88" rx="22" ry="22" fill="#1a1a22" stroke="#333" stroke-width="2"/>
-        <ellipse cx="118" cy="88" rx="9"  ry="9"  fill="#252530"/>
-        <!-- floor plate -->
-        <rect x="108" y="92" width="280" height="8" rx="3" fill="#111118"/>
-        <!-- sidepods -->
-        <path d="M 200 68 Q 225 52 310 50 L 358 56 Q 358 78 310 80 Q 225 82 200 88 Z" fill="#1c1c28" stroke="#2a2a38" stroke-width="1"/>
-        <ellipse cx="208" cy="70" rx="10" ry="15" fill="#0a0a0e"/>
-        <!-- main chassis -->
-        <path d="M 108 72 Q 116 58 168 53 L 340 50 Q 362 50 374 72 L 374 93 L 108 93 Z" fill="#1e1e2e" stroke="#2e2e42" stroke-width="1"/>
-        <!-- red livery stripe -->
-        <path d="M 108 74 Q 220 67 300 65 Q 340 64 368 72 L 368 80 Q 340 74 300 74 Q 220 77 108 84 Z" fill="#e10600" opacity="0.9"/>
-        <!-- white accent stripe -->
-        <path d="M 108 74 Q 220 67 300 65 Q 340 64 368 72 L 368 73.5 Q 340 66 300 66.5 Q 220 68.5 108 75.5 Z" fill="rgba(255,255,255,0.35)"/>
-        <!-- cockpit -->
-        <path d="M 172 53 Q 184 22 218 16 Q 256 10 276 24 L 272 52 Z" fill="#13131e" stroke="#2a2a3c" stroke-width="1"/>
-        <path d="M 178 52 Q 188 26 218 20 Q 250 14 268 27 L 265 50 Z" fill="#080810"/>
-        <!-- halo -->
-        <path d="M 184 40 L 186 20 Q 215 5 248 20 L 250 38" fill="none" stroke="#555" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="218" y1="6" x2="220" y2="40" stroke="#555" stroke-width="4" stroke-linecap="round"/>
-        <!-- engine cover / airbox -->
-        <path d="M 255 50 Q 272 28 310 24 Q 348 22 365 38 L 364 50 Z" fill="#16161f" stroke="#2a2a3c" stroke-width="1"/>
-        <path d="M 278 38 Q 294 22 308 22 Q 322 22 327 36 L 308 36 Q 304 25 296 26 Z" fill="#0a0a0e" stroke="#2a2a3c" stroke-width="1"/>
-        <!-- nose cone -->
-        <path d="M 108 76 Q 70 74 26 78 Q 8 80 2 82 Q 8 84 26 84 Q 70 86 108 84 Z" fill="#1c1c28" stroke="#2a2a3c" stroke-width="1"/>
-        <!-- front wing -->
-        <rect x="4" y="84"  width="120" height="6" rx="2" fill="#242432"/>
-        <rect x="4" y="82"  width="4" height="16" rx="1" fill="#1e1e2c"/>
-        <rect x="120" y="82" width="4" height="16" rx="1" fill="#1e1e2c"/>
-        <path d="M 14 84 Q 60 76 90 78 Q 108 79 122 82 L 122 84 Q 108 82 90 80 Q 60 78 14 86 Z" fill="#2a2a3e"/>
-        <!-- rear wing -->
-        <rect x="392" y="38" width="84" height="6"  rx="2" fill="#303040"/>
-        <rect x="393" y="46" width="82" height="7"  rx="2" fill="#26263a"/>
-        <rect x="392" y="55" width="84" height="4"  rx="2" fill="#222230"/>
-        <rect x="390" y="32" width="6"  height="36" rx="2" fill="#26263a"/>
-        <rect x="472" y="32" width="6"  height="36" rx="2" fill="#26263a"/>
-        <rect x="400" y="70" width="70" height="5"  rx="2" fill="#222230"/>
-        <line x1="422" y1="59" x2="418" y2="88" stroke="#222" stroke-width="3" stroke-linecap="round"/>
-        <line x1="452" y1="59" x2="456" y2="88" stroke="#222" stroke-width="3" stroke-linecap="round"/>
-        <!-- exhaust -->
-        <ellipse cx="375" cy="56" rx="5" ry="4" fill="#0a0a0e" stroke="#333" stroke-width="1"/>
-      </svg>
+      <!-- Ferrari SF-24 hero photo -->
+      <div class="home-car-wrap">
+        <img src="ferrari_home.jpg" class="home-car-img" alt="Ferrari SF-24">
+      </div>
 
       <div class="home-eyebrow">Formula 1 Strategy Guide</div>
       <h1 class="home-title">Intro to Formula 1</h1>
@@ -154,18 +111,18 @@
         <div class="car-photo-wrap">
           <img src="ferrari_sf24.jpg"
                alt="Ferrari SF-24 — 2024 Austrian Grand Prix">
-          <!-- front wing: main plane left of front tire -->
-          <div class="hs-dot" style="left:10%;top:73%;" onclick="showComponent('frontwing')"></div>
+          <!-- front wing -->
+          <div class="hs-dot" style="left:7%;top:72%;" onclick="showComponent('frontwing')"></div>
           <!-- front tire center -->
-          <div class="hs-dot" style="left:23%;top:65%;" onclick="showComponent('fronttire')"></div>
-          <!-- halo: titanium arch above cockpit -->
-          <div class="hs-dot" style="left:41%;top:30%;" onclick="showComponent('halo')"></div>
-          <!-- sidepod: Shell logo area, mid-body -->
-          <div class="hs-dot" style="left:58%;top:49%;" onclick="showComponent('sidepod')"></div>
+          <div class="hs-dot" style="left:21%;top:72%;" onclick="showComponent('fronttire')"></div>
+          <!-- halo: arch above cockpit (accounts for ~30% grass at top) -->
+          <div class="hs-dot" style="left:38%;top:40%;" onclick="showComponent('halo')"></div>
+          <!-- sidepod: Shell logo area -->
+          <div class="hs-dot" style="left:55%;top:59%;" onclick="showComponent('sidepod')"></div>
           <!-- rear tire center -->
-          <div class="hs-dot" style="left:79%;top:65%;" onclick="showComponent('reartire')"></div>
+          <div class="hs-dot" style="left:78%;top:72%;" onclick="showComponent('reartire')"></div>
           <!-- rear wing: upper right -->
-          <div class="hs-dot" style="left:89%;top:22%;" onclick="showComponent('rearwing')"></div>
+          <div class="hs-dot" style="left:89%;top:35%;" onclick="showComponent('rearwing')"></div>
         </div>
       </div>
 
