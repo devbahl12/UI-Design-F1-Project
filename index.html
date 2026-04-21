@@ -1094,6 +1094,163 @@
       else stopCarAnimation();
     };
 
+    // ── FINDING THE GAP ──
+    function selectGap(gap) {
+      const ids = ['gap-a', 'gap-b', 'gap-c'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        el.style.borderColor = 'var(--border)';
+        el.style.background  = 'var(--surface2)';
+        el.style.color       = 'var(--text-3)';
+      });
+
+      const fb = document.getElementById('gap-feedback');
+      fb.style.border = '1px solid var(--border)';
+
+      if (gap === 'b') {
+        document.getElementById('gap-b').style.borderColor = '#00c853';
+        document.getElementById('gap-b').style.background  = 'rgba(0,200,83,0.1)';
+        document.getElementById('gap-b').style.color       = '#00c853';
+        fb.textContent      = '✓ Perfect call! This gap gives enough clean air and track position after the pit stop.';
+        fb.style.color      = '#00c853';
+        fb.style.border     = '1px solid rgba(0,200,83,0.25)';
+        fb.style.background = 'rgba(0,200,83,0.06)';
+      } else if (gap === 'a') {
+        document.getElementById('gap-a').style.borderColor = 'var(--red)';
+        document.getElementById('gap-a').style.background  = 'rgba(225,6,0,0.1)';
+        document.getElementById('gap-a').style.color       = 'var(--red)';
+        fb.textContent      = '✗ Too tight — you\'d emerge right behind that car and lose all your fresh tire advantage in dirty air.';
+        fb.style.color      = 'var(--red)';
+        fb.style.border     = '1px solid rgba(225,6,0,0.25)';
+        fb.style.background = 'rgba(225,6,0,0.06)';
+      } else {
+        document.getElementById('gap-c').style.borderColor = '#ffd600';
+        document.getElementById('gap-c').style.background  = 'rgba(255,214,0,0.08)';
+        document.getElementById('gap-c').style.color       = '#ffd600';
+        fb.textContent      = '⚠ Possible, but you\'d lap behind a backmarker. Gap B gives cleaner air and stronger track position.';
+        fb.style.color      = '#ffd600';
+        fb.style.border     = '1px solid rgba(255,214,0,0.2)';
+        fb.style.background = 'rgba(255,214,0,0.06)';
+      }
+      fb.style.fontStyle = 'normal';
+    }
+
+    // ── QUIZ ──
+    const questions = [
+      {
+        topic: 'tires',
+        text: 'Which tire compound is the most durable and typically used for the longest stints?',
+        options: ['Soft', 'Medium', 'Hard', 'Intermediate'],
+        correct: 2,
+        explanation: 'The Hard compound can last 40+ laps, making it the go-to for teams planning a one-stop strategy.'
+      },
+      {
+        topic: 'tires',
+        text: 'A driver is told "box box box" over the radio. What does this mean?',
+        options: ['Push harder — attack mode', 'Pit this lap', 'Let the car behind pass', 'Save fuel'],
+        correct: 1,
+        explanation: '"Box" is F1 shorthand for pit lane (from the German "Box"). "Box box box" means come in and pit immediately.'
+      },
+      {
+        topic: 'aero',
+        text: 'Why is "dirty air" harmful to a following car\'s performance?',
+        options: ['It contains exhaust gases that overheat the engine', 'It reduces downforce, causing slower corners and tire overheating', 'It only affects top speed on straights', 'It improves fuel economy for the chasing car'],
+        correct: 1,
+        explanation: 'Turbulent wake from the car ahead can cut downforce by up to 30%, making corners slower and tires overheat faster.'
+      },
+      {
+        topic: 'aero',
+        text: 'What does DRS (Drag Reduction System) do when activated?',
+        options: ['Increases braking force', 'Opens the rear wing flap to reduce drag', 'Cools the rear tires', 'Locks the front differential'],
+        correct: 1,
+        explanation: 'DRS opens a slot in the rear wing element, reducing aerodynamic drag and adding up to 15 km/h of top speed on designated straight sections.'
+      },
+      {
+        topic: 'pit',
+        text: 'What is the "undercut" strategy in F1?',
+        options: ['Pitting before a rival to gain track position on fresher tires', 'Staying out longer than a rival to save pit stop time', 'Pitting twice in a row to beat a safety car', 'Using a softer compound to set the fastest qualifying lap'],
+        correct: 0,
+        explanation: 'The undercut means pitting before your rival. Your new tires are faster, so if the gap is large enough you emerge ahead when they eventually pit.'
+      }
+    ];
+
+    let currentQuestion = 0;
+    let quizScore       = 0;
+    let userAnswers     = [];
+    let topicScores     = {};
+    let topicTotals     = {};
+
+    function startQuiz() {
+      currentQuestion = 0;
+      quizScore       = 0;
+      userAnswers     = [];
+      topicScores     = { tires: 0, aero: 0, pit: 0 };
+      topicTotals     = { tires: 0, aero: 0, pit: 0 };
+      showScreen('quiz-question');
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      const n = questions.length;
+
+      document.getElementById('quiz-nav-label').textContent  = `${currentQuestion + 1} / ${n}`;
+      document.getElementById('quiz-q-num').textContent      = `Question ${currentQuestion + 1} of ${n}`;
+      document.getElementById('quiz-q-text').textContent     = q.text;
+      document.getElementById('quiz-prog').style.width       = `${((currentQuestion + 1) / n) * 100}%`;
+      document.getElementById('quiz-feedback').textContent   = '';
+      document.getElementById('quiz-next-btn').style.display = 'none';
+
+      document.getElementById('quiz-answers').innerHTML = q.options
+        .map((opt, i) => `<button class="answer-btn" onclick="selectAnswer(${i})">${opt}</button>`)
+        .join('');
+    }
+
+    function selectAnswer(idx) {
+      const q    = questions[currentQuestion];
+      const btns = document.querySelectorAll('.answer-btn');
+      btns.forEach(b => b.disabled = true);
+
+      const correct = idx === q.correct;
+      btns[idx].classList.add(correct ? 'correct' : 'incorrect');
+      if (!correct) btns[q.correct].classList.add('correct');
+
+      if (correct) quizScore++;
+      topicScores[q.topic] = (topicScores[q.topic] || 0) + (correct ? 1 : 0);
+      topicTotals[q.topic] = (topicTotals[q.topic] || 0) + 1;
+      userAnswers.push(idx);
+
+      const fb = document.getElementById('quiz-feedback');
+      fb.textContent = (correct ? '✓ Correct! ' : '✗ Not quite. ') + q.explanation;
+      fb.style.color = correct ? '#00c853' : '#ff7043';
+
+      document.getElementById('quiz-next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion >= questions.length) showResults();
+      else showQuestion();
+    }
+
+    function showResults() {
+      showScreen('quiz-complete');
+      const n = questions.length;
+      document.getElementById('final-score').textContent = `${quizScore} / ${n}`;
+
+      const titles = ['Keep Studying!', 'Getting There', 'Strategist in Training', 'Race Engineer Material', 'F1 Mastermind'];
+      document.getElementById('score-title').textContent = titles[Math.min(quizScore, titles.length - 1)];
+
+      const tireQ = questions.filter(q => q.topic === 'tires').length;
+      const aeroQ = questions.filter(q => q.topic === 'aero').length;
+      const pitQ  = questions.filter(q => q.topic === 'pit').length;
+      document.getElementById('breakdown-tires').textContent = `${topicScores.tires || 0}/${tireQ}`;
+      document.getElementById('breakdown-aero').textContent  = `${topicScores.aero  || 0}/${aeroQ}`;
+      document.getElementById('breakdown-pit').textContent   = `${topicScores.pit   || 0}/${pitQ}`;
+    }
+
+    function retakeQuiz() { startQuiz(); }
+
   </script>
 </body>
 </html>
