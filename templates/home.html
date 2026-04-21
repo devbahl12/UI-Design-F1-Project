@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="screen-home" class="screen-home">
+  <div class="home-inner text-center">
+    <div class="home-car-wrap">
+      <img src="{{ url_for('static', filename='img/ferrari_home.jpg') }}" class="home-car-img" alt="Ferrari SF-24">
+    </div>
+    <div class="home-eyebrow">Formula 1 Strategy Guide</div>
+    <h1 class="home-title">Intro to Formula 1</h1>
+    <p class="home-sub">Master tire compounds, aerodynamics, and pit strategy</p>
+
+    <form id="start-form" method="post" action="{{ url_for('start') }}">
+      <div class="mode-cards d-flex gap-3 justify-content-center flex-wrap mb-4">
+        <label class="mode-card selected" data-mode="learning">
+          <input type="radio" name="mode" value="learning" checked hidden>
+          <span class="icon">🎓</span>
+          <span class="label">Learning</span>
+          <span class="mode-sub">6 interactive modules</span>
+        </label>
+        <label class="mode-card" data-mode="quiz">
+          <input type="radio" name="mode" value="quiz" hidden>
+          <span class="icon">📝</span>
+          <span class="label">Interactive Quiz</span>
+          <span class="mode-sub">5 questions · ~2 min</span>
+        </label>
+      </div>
+
+      <button type="submit" id="start-btn" class="btn btn-primary-f1 btn-lg px-5">Start →</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $(function () {
+    $('.mode-card').on('click', function () {
+      $('.mode-card').removeClass('selected');
+      $(this).addClass('selected');
+      $(this).find('input[type=radio]').prop('checked', true);
+    });
+  });
+</script>
+{% endblock %}
