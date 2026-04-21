@@ -399,25 +399,42 @@ function showResults() {
   const n    = questions.length;
   const name = quizPlayerName || 'Racer';
 
-  document.getElementById('final-score').textContent = `${quizScore} / ${n}`;
-
-  // personalised, fun titles based on score
-  const titleData = [
-    { title: 'Back to the Pits, ' + name + '! 😬',          sub: 'Everyone starts somewhere. Hit the learning modules and come back stronger!' },
-    { title: name + ', Keep Pushing! 💪',                    sub: 'You\'ve got the basics down — now fine-tune your strategy knowledge.' },
-    { title: name + ', Not Bad at All! 👍',                  sub: 'Solid effort! A couple more sessions and you\'ll be calling strategy like a pro.' },
-    { title: name + ', You\'re Race Ready! 🏎️',             sub: 'Strong performance! You understand the fundamentals that win championships.' },
-    { title: 'Flawless, ' + name + '! 🏆 P1 Finish!',       sub: 'Perfect score. You could be on the pit wall at the next race weekend.' },
-  ];
-  const td = titleData[Math.min(quizScore, titleData.length - 1)];
-
-  document.getElementById('score-title').textContent   = td.title;
-  document.getElementById('score-sub').textContent     = td.sub;
+  // trophy and colour based on score
+  const trophies = ['📚', '💡', '👍', '🏎️', '🥇'];
+  document.getElementById('result-trophy').textContent = trophies[Math.min(quizScore, trophies.length - 1)];
 
   const scoreEl = document.getElementById('final-score');
-  if (quizScore >= 4)      scoreEl.style.color = '#00c853';
-  else if (quizScore >= 3) scoreEl.style.color = '#ffd600';
-  else                     scoreEl.style.color = 'var(--red)';
+  const targetColor = quizScore >= 4 ? '#00c853' : quizScore >= 3 ? '#ffd600' : '#e10600';
+
+  // count-up animation: 0 → actual score over 800ms
+  scoreEl.textContent = `0 / ${n}`;
+  scoreEl.style.color = targetColor;
+  let displayed = 0;
+  const step = Math.ceil(800 / (quizScore || 1));
+  const counter = setInterval(() => {
+    displayed++;
+    scoreEl.textContent = `${displayed} / ${n}`;
+    if (displayed >= quizScore) clearInterval(counter);
+  }, step);
+
+  // personalised titles
+  const titleData = [
+    { title: 'Back to the Pits, ' + name + '! 😬',     sub: 'Everyone starts somewhere. Revisit the modules and come back stronger!' },
+    { title: name + ', Keep Pushing! 💪',               sub: 'You\'ve got the basics down — fine-tune that strategy knowledge.' },
+    { title: name + ', Not Bad at All! 👍',             sub: 'Solid effort! A couple more sessions and you\'ll be calling strategy like a pro.' },
+    { title: name + ', You\'re Race Ready! 🏎️',        sub: 'Strong performance! You understand the fundamentals that win championships.' },
+    { title: 'Flawless, ' + name + '! P1 Finish! 🥇',  sub: 'Perfect score. You belong on the pit wall at the next race weekend.' },
+  ];
+  const td = titleData[Math.min(quizScore, titleData.length - 1)];
+  document.getElementById('score-title').textContent = td.title;
+  document.getElementById('score-sub').textContent   = td.sub;
+
+  // confetti burst for 4+ correct
+  if (quizScore >= 4) spawnConfetti();
+
+  // retake button personalisation
+  const retakeBtn = document.getElementById('retake-btn');
+  if (retakeBtn && quizPlayerName) retakeBtn.textContent = `Try Again, ${quizPlayerName}!`;
 
   const tireQ = questions.filter(q => q.topic === 'tires').length;
   const aeroQ = questions.filter(q => q.topic === 'aero').length;
@@ -427,4 +444,28 @@ function showResults() {
   document.getElementById('breakdown-pit').textContent   = `${topicScores.pit   || 0}/${pitQ}`;
 }
 
-function retakeQuiz() { startQuiz(); }
+function spawnConfetti() {
+  const card   = document.getElementById('result-score-card');
+  if (!card) return;
+  const colors = ['#e10600','#ffd600','#00c853','#ffffff','#ff6b35','#00c9a7'];
+  for (let i = 0; i < 28; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'confetti-dot';
+    dot.style.cssText = `
+      left:${20 + Math.random() * 60}%;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      animation-delay:${Math.random() * 0.4}s;
+      animation-duration:${0.7 + Math.random() * 0.5}s;
+      --fly-x:${(Math.random() - 0.5) * 80}px;
+      --fly-y:${-(60 + Math.random() * 80)}px;
+    `;
+    card.appendChild(dot);
+    setTimeout(() => dot.remove(), 1400);
+  }
+}
+
+function retakeQuiz() {
+  const retakeBtn = document.getElementById('retake-btn');
+  if (retakeBtn) retakeBtn.textContent = 'Retake Quiz';
+  startQuiz();
+}

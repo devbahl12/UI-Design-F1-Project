@@ -152,14 +152,20 @@
     <div style="flex:1;display:flex;gap:32px;align-items:center;margin-top:20px;overflow:hidden;">
       <div style="flex:1;display:flex;align-items:center;justify-content:center;">
         <div class="car-photo-wrap">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/FIA_F1_Austria_2024_Nr._16_Leclerc.jpg/1200px-FIA_F1_Austria_2024_Nr._16_Leclerc.jpg"
+          <img src="ferrari_sf24.jpg"
                alt="Ferrari SF-24 — 2024 Austrian Grand Prix">
-          <div class="hs-dot" style="left:13%;top:72%;" onclick="showComponent('frontwing')"></div>
-          <div class="hs-dot" style="left:24%;top:82%;" onclick="showComponent('fronttire')"></div>
-          <div class="hs-dot" style="left:41%;top:34%;" onclick="showComponent('halo')"></div>
-          <div class="hs-dot" style="left:56%;top:52%;" onclick="showComponent('sidepod')"></div>
-          <div class="hs-dot" style="left:74%;top:80%;" onclick="showComponent('reartire')"></div>
-          <div class="hs-dot" style="left:85%;top:32%;" onclick="showComponent('rearwing')"></div>
+          <!-- front wing: main plane left of front tire -->
+          <div class="hs-dot" style="left:10%;top:73%;" onclick="showComponent('frontwing')"></div>
+          <!-- front tire center -->
+          <div class="hs-dot" style="left:23%;top:65%;" onclick="showComponent('fronttire')"></div>
+          <!-- halo: titanium arch above cockpit -->
+          <div class="hs-dot" style="left:41%;top:30%;" onclick="showComponent('halo')"></div>
+          <!-- sidepod: Shell logo area, mid-body -->
+          <div class="hs-dot" style="left:58%;top:49%;" onclick="showComponent('sidepod')"></div>
+          <!-- rear tire center -->
+          <div class="hs-dot" style="left:79%;top:65%;" onclick="showComponent('reartire')"></div>
+          <!-- rear wing: upper right -->
+          <div class="hs-dot" style="left:89%;top:22%;" onclick="showComponent('rearwing')"></div>
         </div>
       </div>
 
@@ -502,11 +508,12 @@
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-2);margin-bottom:14px;">Quiz Complete</div>
 
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 52px;margin-bottom:24px;min-width:320px;">
+      <div id="result-score-card" style="position:relative;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 52px;margin-bottom:24px;min-width:320px;overflow:hidden;">
+        <div id="result-trophy" style="font-size:2.6rem;line-height:1;margin-bottom:8px;animation:trophyBounce 0.6s cubic-bezier(0.22,1,0.36,1);">🏆</div>
         <div style="font-size:0.78rem;color:var(--text-2);margin-bottom:8px;">Your Score</div>
-        <div id="final-score" style="font-size:5rem;font-weight:800;color:var(--red);letter-spacing:-0.04em;line-height:1;">4 / 5</div>
-        <div id="score-title" style="color:var(--text);font-weight:700;margin-top:12px;font-size:1.05rem;line-height:1.4;"></div>
-        <div id="score-sub"   style="color:var(--text-2);font-style:italic;margin-top:8px;font-size:0.88rem;line-height:1.55;max-width:320px;"></div>
+        <div id="final-score" style="font-size:5rem;font-weight:800;color:var(--red);letter-spacing:-0.04em;line-height:1;">0 / 5</div>
+        <div id="score-title" class="score-fade-in" style="color:var(--text);font-weight:700;margin-top:12px;font-size:1.05rem;line-height:1.4;"></div>
+        <div id="score-sub"   class="score-fade-in" style="color:var(--text-2);font-style:italic;margin-top:8px;font-size:0.88rem;line-height:1.55;max-width:320px;"></div>
       </div>
 
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:14px;">Topic Breakdown</div>
@@ -526,7 +533,7 @@
       </div>
 
       <div style="display:flex;gap:12px;">
-        <button class="btn-primary" onclick="retakeQuiz()">Retake Quiz</button>
+        <button class="btn-primary" id="retake-btn" onclick="retakeQuiz()">Retake Quiz</button>
         <button class="btn-ghost" onclick="showScreen('learning-menu')">Back to Learning</button>
       </div>
     </div>

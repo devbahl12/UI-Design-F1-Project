@@ -494,6 +494,29 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   pointer-events: none;
 }
 
+/* ── QUIZ RESULTS ANIMATIONS ── */
+@keyframes trophyBounce {
+  0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+  70%  { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.score-fade-in {
+  animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) 0.5s both;
+}
+.confetti-dot {
+  position: absolute;
+  bottom: 40%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: confettiFly var(--fly-dur, 0.9s) ease-out forwards;
+}
+@keyframes confettiFly {
+  0%   { transform: translate(0, 0) scale(1);   opacity: 1; }
+  100% { transform: translate(var(--fly-x, 0), var(--fly-y, -80px)) scale(0.4); opacity: 0; }
+}
+
 /* ── HOME PAGE ── */
 .home-scene {
   position: absolute;
