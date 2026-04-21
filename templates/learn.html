@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="screen-page" data-lesson-id="{{ n }}" data-lesson-slug="{{ lesson.slug }}">
+  <div class="nav-row d-flex justify-content-between align-items-center mb-3">
+    <a class="nav-back" href="{{ url_for('learning_menu') }}">← Back</a>
+    <div class="d-flex align-items-center gap-3">
+      <div class="progress-dots">
+        {% for i in range(1, total + 1) %}
+          <span class="pd {% if i == n %}active{% elif i < n %}done{% endif %}"></span>
+        {% endfor %}
+      </div>
+      <span class="nav-badge">{{ '%02d' % n }} / {{ '%02d' % total }}</span>
+    </div>
+  </div>
+
+  <h2 class="page-title">{{ lesson.title }}</h2>
+  <p class="page-sub">{{ lesson.subtitle }}</p>
+
+  {% if lesson.type == 'hotspots' %}
+    <div class="row g-4 mt-2 align-items-center">
+      <div class="col-12 col-lg-8">
+        <div class="car-photo-wrap">
+          <img src="{{ lesson.image }}" alt="{{ lesson.title }}">
+          {% for hs in lesson.hotspots %}
+            <div class="hs-dot" style="left:{{ hs.x }}%;top:{{ hs.y }}%;"
+                 data-hotspot='{{ hs | tojson }}'></div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="comp-panel" id="component-info">
+          <p class="text-muted text-center small">Click a red hotspot on the car to learn more.</p>
+        </div>
+      </div>
+    </div>
+  {% elif lesson.type == 'tires' %}
+    <div class="tire-grid row g-2 mt-3">
+      {% for t in lesson.tires %}
+      <div class="col">
+        <div class="tire-card" data-tire='{{ t | tojson }}'
+             style="--active-color: {{ t.color }};">
+          <div class="tire-ring" style="border-color: {{ t.color }};"></div>
+          <span class="tire-name">{{ t.name }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="tire-info-box mt-3">
+      <p id="tire-text" class="m-0">Select a compound above to see details.</p>
+    </div>
+  {% elif lesson.type == 'wear-slider' %}
+    <div class="slider-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <div class="small-label">Lap Time</div>
+          <div id="laptime-display" class="laptime">1:20.0</div>
+        </div>
+        <div class="text-end">
+          <div class="text-success fw-bold small">↑ Fresh tires</div>
+          <div class="text-danger fw-bold small">↓ Worn tires</div>
+        </div>
+      </div>
+      <input type="range" id="wear-slider" min="0" max="100" value="20" style="--pct:20%;">
+      <div class="grip-bar-wrap mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="fw-bold small">Grip Level</span>
+          <span id="grip-label" class="fw-bold small text-success">High Grip</span>
+        </div>
+        <div class="grip-bar"><div class="grip-bar-cover" id="grip-cover" style="width:80%;"></div></div>
+      </div>
+      <div id="degrad-msg" class="degrad-msg mt-3"></div>
+    </div>
+  {% elif lesson.type == 'perf-slider' %}
+    <div class="d-flex justify-content-between align-items-start">
+      <div></div>
+      <div class="stat-chip">
+        <div class="val" id="perf-laptime">1:20.0</div>
+        <div class="lbl">Lap Time</div>
+      </div>
+    </div>
+    <div class="track-wrapper">
+      <svg viewBox="0 0 700 280" class="track-svg">
+        <ellipse cx="350" cy="140" rx="292" ry="118" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="28"/>
+        <ellipse cx="350" cy="140" rx="292" ry="118" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="22"/>
+        <ellipse cx="350" cy="140" rx="280" ry="106" fill="none" stroke="#e10600" stroke-width="2" stroke-dasharray="10 6" opacity="0.7"/>
+        <rect x="348" y="20" width="4" height="20" rx="1" fill="#e10600" opacity="0.8"/>
+      </svg>
+      <div id="perf-car">🏎️</div>
+    </div>
+    <div class="perf-slider-bar">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="fw-bold small">Grip Level</span>
+        <span id="perf-grip-label" class="fw-bold small text-success">High Grip</span>
+      </div>
+      <input type="range" id="perf-slider" min="0" max="100" value="15" style="--pct:15%;">
+      <div class="d-flex justify-content-between mt-1">
+        <span class="small text-success fw-bold">Fresh Tires</span>
+        <span class="small text-danger fw-bold">Worn Tires</span>
+      </div>
+    </div>
+  {% elif lesson.type == 'aero' %}
+    <div class="row g-3 mt-2">
+      {% for c in lesson.cards %}
+      <div class="col-12 col-md-6">
+        <div class="aero-card" style="border-top-color: {{ c.color }};">
+          <div class="aero-icon">{{ c.icon }}</div>
+          <div class="aero-label" style="color: {{ c.color }};">{{ c.label }}</div>
+          <p class="text-muted small mb-3">{{ c.desc }}</p>
+          <div class="aero-chips mt-auto">
+            {% for chip in c.chips %}
+              <span class="aero-chip" style="color:{{ c.color }};border-color:{{ c.color }}33;background:{{ c.color }}1a;">{{ chip }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      <div class="col-12">
+        <div class="aero-note">
+          <div class="small-label mb-2">Why It Matters Strategically</div>
+          <p class="text-muted small mb-0">{{ lesson.note }}</p>
+        </div>
+      </div>
+    </div>
+  {% elif lesson.type == 'gap' %}
+    <div class="gap-strip d-flex align-items-center">
+      <span class="car-emoji">🏎️</span>
+      {% for g in lesson.gaps %}
+        <div class="gap-slot" data-gap='{{ g | tojson }}'>{{ g.label }}</div>
+        <span class="car-emoji">🏎️</span>
+      {% endfor %}
+    </div>
+    <div id="gap-feedback" class="gap-feedback">Select a gap above to see if it's the right call.</div>
+    <div class="gap-tips">
+      <div class="small-label mb-2">What makes a good pit window?</div>
+      <ul class="text-muted small mb-0">
+        <li>At least 2–3 seconds gap behind — accounting for pit stop time loss (~22s)</li>
+        <li>Clean air to emerge into, not right behind a slower car</li>
+        <li>Strategic track position relative to rivals who are also pitting</li>
+      </ul>
+    </div>
+  {% endif %}
+
+  <div class="d-flex gap-2 justify-content-end mt-4">
+    {% if prev_n %}
+      <a class="btn btn-ghost-f1" href="{{ url_for('learn', n=prev_n) }}">← Previous</a>
+    {% endif %}
+    {% if next_n %}
+      <a class="btn btn-primary-f1" href="{{ url_for('learn', n=next_n) }}">Next →</a>
+    {% else %}
+      <a class="btn btn-primary-f1" href="{{ url_for('quiz', n=1) }}">Take the Quiz →</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
