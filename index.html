@@ -4,451 +4,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intro to Formula 1</title>
-  <style>
-    /* ── design tokens ── */
-    :root {
-      --bg:        #0c0c0f;
-      --surface:   #13131a;
-      --surface2:  #1a1a24;
-      --border:    rgba(255,255,255,0.07);
-      --border-hi: rgba(255,255,255,0.13);
-      --red:       #e10600;
-      --red-glow:  rgba(225,6,0,0.25);
-      --teal:      #00c9a7;
-      --teal-dim:  rgba(0,201,167,0.12);
-      --text:      #f0f0f2;
-      --text-2:    #8888a0;
-      --text-3:    #55555f;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* subtle noise texture on the bg */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .screen {
-      display: none;
-      height: 100vh;
-      padding: 36px 56px;
-      flex-direction: column;
-      position: relative;
-      z-index: 1;
-    }
-    .screen.active { display: flex; animation: fadeUp 0.35s cubic-bezier(0.22,1,0.36,1); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── buttons ── */
-    .btn-primary {
-      background: linear-gradient(135deg, #e10600, #ff3d2e);
-      color: #fff;
-      border: none;
-      padding: 14px 36px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.02em;
-      transition: all 0.2s;
-      box-shadow: 0 0 0 rgba(225,6,0,0);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 28px rgba(225,6,0,0.45);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border-hi);
-      padding: 14px 36px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-ghost:hover { background: var(--surface2); border-color: var(--border-hi); }
-
-    /* ── shared nav ── */
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 32px;
-    }
-    .nav-back {
-      background: none;
-      border: none;
-      color: var(--text-2);
-      font-size: 0.88rem;
-      cursor: pointer;
-      letter-spacing: 0.02em;
-      transition: color 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .nav-back:hover { color: var(--text); }
-    .nav-badge {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 5px 14px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--red);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    /* progress dots shown on each learning screen */
-    .progress-dots {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .pd { width: 6px; height: 6px; border-radius: 50%; background: var(--border-hi); transition: all 0.3s; }
-    .pd.active { background: var(--red); width: 20px; border-radius: 3px; }
-    .pd.done   { background: var(--teal); }
-
-    /* ── HOME ── */
-    #screen-home {
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(225,6,0,0.06) 0%, transparent 70%);
-    }
-
-    .home-eyebrow {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--red);
-      margin-bottom: 16px;
-    }
-
-    .home-title {
-      font-size: 4.2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      background: linear-gradient(160deg, #fff 40%, rgba(255,255,255,0.5));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 12px;
-    }
-
-    .home-sub {
-      color: var(--text-2);
-      font-size: 1rem;
-      margin-bottom: 52px;
-    }
-
-    .mode-cards {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .mode-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 52px;
-      cursor: pointer;
-      transition: all 0.25s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      min-width: 220px;
-    }
-    .mode-card:hover { background: var(--surface2); border-color: var(--border-hi); transform: translateY(-2px); }
-    .mode-card.selected {
-      border-color: var(--red);
-      background: rgba(225,6,0,0.08);
-      box-shadow: 0 0 0 1px var(--red), 0 8px 32px var(--red-glow);
-    }
-    .mode-card .icon { font-size: 2rem; }
-    .mode-card .label { font-size: 1rem; font-weight: 700; color: var(--text); }
-
-    /* ── LEARNING MENU ── */
-    .section-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 24px;
-      flex: 1;
-    }
-
-    .section-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px 22px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-    .section-item::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: var(--red);
-      transform: scaleY(0);
-      transition: transform 0.2s;
-      border-radius: 0 2px 2px 0;
-    }
-    .section-item:hover { background: var(--surface2); border-color: var(--border-hi); transform: translateX(3px); }
-    .section-item:hover::before { transform: scaleY(1); }
-
-    .section-num {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--red);
-      letter-spacing: 0.08em;
-      min-width: 24px;
-      opacity: 0.8;
-    }
-    .section-icon { font-size: 1.4rem; }
-    .section-label { font-size: 0.95rem; font-weight: 600; }
-    .section-desc  { font-size: 0.78rem; color: var(--text-2); margin-top: 2px; }
-
-    /* ── CAR COMPONENTS ── */
-    .car-photo-wrap {
-      position: relative;
-      width: 100%;
-      max-width: 640px;
-    }
-    .car-photo-wrap img {
-      width: 100%;
-      border-radius: 12px;
-      display: block;
-    }
-    .hs-dot {
-      position: absolute;
-      width: 36px;
-      height: 36px;
-      transform: translate(-50%, -50%);
-      cursor: pointer;
-      z-index: 2;
-    }
-    .hs-dot::before {
-      content: '';
-      position: absolute;
-      inset: 6px;
-      border-radius: 50%;
-      background: rgba(225,6,0,0.2);
-      border: 2px solid var(--red);
-      transition: background 0.2s;
-    }
-    .hs-dot::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 1.5px solid var(--red);
-      animation: hsPulse 1.8s ease-in-out infinite;
-    }
-    .hs-dot:hover::before { background: rgba(225,6,0,0.4); }
-    .hs-dot:hover::after  { animation: none; opacity: 0.7; }
-    @keyframes hsPulse {
-      0%,100% { transform: scale(1);   opacity: 1; }
-      50%      { transform: scale(1.6); opacity: 0; }
-    }
-
-    /* ── QUIZ ANSWERS ── */
-    .answer-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 20px;
-      text-align: left;
-      color: var(--text);
-      font-size: 0.92rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      line-height: 1.4;
-    }
-    .answer-btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--border-hi); transform: translateY(-1px); }
-    .answer-btn:disabled { cursor: default; }
-    .answer-btn.correct   { border-color: #00c853; background: rgba(0,200,83,0.12); color: #00c853; }
-    .answer-btn.incorrect { border-color: var(--red); background: rgba(225,6,0,0.1); color: var(--red); }
-
-    .comp-panel {
-      width: 260px;
-      flex-shrink: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      min-height: 200px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    /* ── TIRES ── */
-    .tire-grid { display: flex; gap: 12px; margin-top: 28px; }
-
-    .tire-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px 16px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      flex: 1;
-    }
-    .tire-card:hover { background: var(--surface2); transform: translateY(-3px); }
-    .tire-card.active { border-color: var(--active-color, #fff); background: var(--surface2); box-shadow: 0 0 20px var(--active-glow, rgba(255,255,255,0.1)); }
-
-    .tire-ring {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      border: 3.5px solid;
-      position: relative;
-    }
-    /* inner tire tread detail */
-    .tire-ring::after {
-      content: '';
-      position: absolute;
-      inset: 8px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .tire-name { font-size: 0.85rem; font-weight: 700; color: var(--text-2); }
-
-    .tire-info-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px 28px;
-      margin-top: 20px;
-      min-height: 66px;
-      display: flex;
-      align-items: center;
-    }
-
-    /* ── SLIDERS ── */
-    .slider-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 36px;
-      margin-top: 24px;
-      flex: 1;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      height: 5px;
-      border-radius: 3px;
-      outline: none;
-      cursor: pointer;
-      appearance: none;
-      background: linear-gradient(to right, var(--teal) var(--pct,20%), rgba(255,255,255,0.1) var(--pct,20%));
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 0 3px rgba(255,255,255,0.15);
-      cursor: pointer;
-      transition: transform 0.15s;
-    }
-    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-
-    .grip-bar-wrap { margin-top: 28px; border-top: 1px solid var(--border); padding-top: 24px; }
-    .grip-bar {
-      height: 16px;
-      border-radius: 8px;
-      background: linear-gradient(to right, #00c853, #ffd600 60%, #ff5252);
-      margin-top: 10px;
-      position: relative;
-      overflow: hidden;
-    }
-    .grip-bar-cover {
-      position: absolute;
-      right: 0; top: 0; bottom: 0;
-      background: rgba(12,12,15,0.82);
-      transition: width 0.25s;
-    }
-
-    /* ── PERFORMANCE DEGRADATION ── */
-    .track-wrapper {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-    #perf-car {
-      position: absolute;
-      font-size: 1.5rem;
-      transform: translate(-50%,-50%);
-      pointer-events: none;
-      filter: drop-shadow(0 0 8px rgba(225,6,0,0.6));
-    }
-    .perf-slider-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 24px;
-    }
-
-    /* ── STAT CHIP ── */
-    .stat-chip {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 20px;
-      text-align: center;
-    }
-    .stat-chip .val { font-size: 1.7rem; font-weight: 800; color: var(--red); line-height: 1; }
-    .stat-chip .lbl { font-size: 0.72rem; color: var(--text-2); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <!-- HOME -->
   <div class="screen active" id="screen-home">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 35%, rgba(225,6,0,0.07),transparent 70%);pointer-events:none;"></div>
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;">
+    <!-- animated background scene -->
+    <div class="home-scene" id="home-scene"></div>
+
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;z-index:2;">
+      <!-- F1 car SVG hero -->
+      <svg viewBox="0 0 480 120" width="380" height="95" style="margin-bottom:28px;filter:drop-shadow(0 0 24px rgba(225,6,0,0.35));" aria-hidden="true">
+        <!-- rear tire -->
+        <ellipse cx="370" cy="88" rx="28" ry="28" fill="#1a1a22" stroke="#333" stroke-width="2"/>
+        <ellipse cx="370" cy="88" rx="12" ry="12" fill="#252530"/>
+        <!-- front tire -->
+        <ellipse cx="118" cy="88" rx="22" ry="22" fill="#1a1a22" stroke="#333" stroke-width="2"/>
+        <ellipse cx="118" cy="88" rx="9"  ry="9"  fill="#252530"/>
+        <!-- floor plate -->
+        <rect x="108" y="92" width="280" height="8" rx="3" fill="#111118"/>
+        <!-- sidepods -->
+        <path d="M 200 68 Q 225 52 310 50 L 358 56 Q 358 78 310 80 Q 225 82 200 88 Z" fill="#1c1c28" stroke="#2a2a38" stroke-width="1"/>
+        <ellipse cx="208" cy="70" rx="10" ry="15" fill="#0a0a0e"/>
+        <!-- main chassis -->
+        <path d="M 108 72 Q 116 58 168 53 L 340 50 Q 362 50 374 72 L 374 93 L 108 93 Z" fill="#1e1e2e" stroke="#2e2e42" stroke-width="1"/>
+        <!-- red livery stripe -->
+        <path d="M 108 74 Q 220 67 300 65 Q 340 64 368 72 L 368 80 Q 340 74 300 74 Q 220 77 108 84 Z" fill="#e10600" opacity="0.9"/>
+        <!-- white accent stripe -->
+        <path d="M 108 74 Q 220 67 300 65 Q 340 64 368 72 L 368 73.5 Q 340 66 300 66.5 Q 220 68.5 108 75.5 Z" fill="rgba(255,255,255,0.35)"/>
+        <!-- cockpit -->
+        <path d="M 172 53 Q 184 22 218 16 Q 256 10 276 24 L 272 52 Z" fill="#13131e" stroke="#2a2a3c" stroke-width="1"/>
+        <path d="M 178 52 Q 188 26 218 20 Q 250 14 268 27 L 265 50 Z" fill="#080810"/>
+        <!-- halo -->
+        <path d="M 184 40 L 186 20 Q 215 5 248 20 L 250 38" fill="none" stroke="#555" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="218" y1="6" x2="220" y2="40" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+        <!-- engine cover / airbox -->
+        <path d="M 255 50 Q 272 28 310 24 Q 348 22 365 38 L 364 50 Z" fill="#16161f" stroke="#2a2a3c" stroke-width="1"/>
+        <path d="M 278 38 Q 294 22 308 22 Q 322 22 327 36 L 308 36 Q 304 25 296 26 Z" fill="#0a0a0e" stroke="#2a2a3c" stroke-width="1"/>
+        <!-- nose cone -->
+        <path d="M 108 76 Q 70 74 26 78 Q 8 80 2 82 Q 8 84 26 84 Q 70 86 108 84 Z" fill="#1c1c28" stroke="#2a2a3c" stroke-width="1"/>
+        <!-- front wing -->
+        <rect x="4" y="84"  width="120" height="6" rx="2" fill="#242432"/>
+        <rect x="4" y="82"  width="4" height="16" rx="1" fill="#1e1e2c"/>
+        <rect x="120" y="82" width="4" height="16" rx="1" fill="#1e1e2c"/>
+        <path d="M 14 84 Q 60 76 90 78 Q 108 79 122 82 L 122 84 Q 108 82 90 80 Q 60 78 14 86 Z" fill="#2a2a3e"/>
+        <!-- rear wing -->
+        <rect x="392" y="38" width="84" height="6"  rx="2" fill="#303040"/>
+        <rect x="393" y="46" width="82" height="7"  rx="2" fill="#26263a"/>
+        <rect x="392" y="55" width="84" height="4"  rx="2" fill="#222230"/>
+        <rect x="390" y="32" width="6"  height="36" rx="2" fill="#26263a"/>
+        <rect x="472" y="32" width="6"  height="36" rx="2" fill="#26263a"/>
+        <rect x="400" y="70" width="70" height="5"  rx="2" fill="#222230"/>
+        <line x1="422" y1="59" x2="418" y2="88" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+        <line x1="452" y1="59" x2="456" y2="88" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+        <!-- exhaust -->
+        <ellipse cx="375" cy="56" rx="5" ry="4" fill="#0a0a0e" stroke="#333" stroke-width="1"/>
+      </svg>
+
       <div class="home-eyebrow">Formula 1 Strategy Guide</div>
       <h1 class="home-title">Intro to Formula 1</h1>
       <p class="home-sub">Master tire compounds, aerodynamics, and pit strategy</p>
@@ -541,17 +154,11 @@
         <div class="car-photo-wrap">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/FIA_F1_Austria_2024_Nr._16_Leclerc.jpg/1200px-FIA_F1_Austria_2024_Nr._16_Leclerc.jpg"
                alt="Ferrari SF-24 — 2024 Austrian Grand Prix">
-          <!-- front wing -->
           <div class="hs-dot" style="left:13%;top:72%;" onclick="showComponent('frontwing')"></div>
-          <!-- front tire -->
           <div class="hs-dot" style="left:24%;top:82%;" onclick="showComponent('fronttire')"></div>
-          <!-- halo -->
           <div class="hs-dot" style="left:41%;top:34%;" onclick="showComponent('halo')"></div>
-          <!-- sidepod -->
           <div class="hs-dot" style="left:56%;top:52%;" onclick="showComponent('sidepod')"></div>
-          <!-- rear tire -->
           <div class="hs-dot" style="left:74%;top:80%;" onclick="showComponent('reartire')"></div>
-          <!-- rear wing -->
           <div class="hs-dot" style="left:85%;top:32%;" onclick="showComponent('rearwing')"></div>
         </div>
       </div>
@@ -579,23 +186,23 @@
     <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">F1 uses color-coded compounds. Click one to learn its purpose.</p>
 
     <div class="tire-grid">
-      <div class="tire-card" onclick="selectTire(this,'soft')"    style="--active-color:#e10600;--active-glow:rgba(225,6,0,0.2);">
+      <div class="tire-card" onclick="selectTire(this,'soft')"  style="--active-color:#e10600;--active-glow:rgba(225,6,0,0.2);">
         <div class="tire-ring" style="border-color:#e10600;"></div>
         <span class="tire-name">Soft</span>
       </div>
-      <div class="tire-card" onclick="selectTire(this,'med')"     style="--active-color:#ffd600;--active-glow:rgba(255,214,0,0.15);">
+      <div class="tire-card" onclick="selectTire(this,'med')"   style="--active-color:#ffd600;--active-glow:rgba(255,214,0,0.15);">
         <div class="tire-ring" style="border-color:#ffd600;"></div>
         <span class="tire-name">Medium</span>
       </div>
-      <div class="tire-card" onclick="selectTire(this,'hard')"    style="--active-color:#e0e0e0;--active-glow:rgba(224,224,224,0.1);">
+      <div class="tire-card" onclick="selectTire(this,'hard')"  style="--active-color:#e0e0e0;--active-glow:rgba(224,224,224,0.1);">
         <div class="tire-ring" style="border-color:#e0e0e0;"></div>
         <span class="tire-name">Hard</span>
       </div>
-      <div class="tire-card" onclick="selectTire(this,'inter')"   style="--active-color:#00c853;--active-glow:rgba(0,200,83,0.15);">
+      <div class="tire-card" onclick="selectTire(this,'inter')" style="--active-color:#00c853;--active-glow:rgba(0,200,83,0.15);">
         <div class="tire-ring" style="border-color:#00c853;"></div>
         <span class="tire-name">Inter</span>
       </div>
-      <div class="tire-card" onclick="selectTire(this,'wet')"     style="--active-color:#2979ff;--active-glow:rgba(41,121,255,0.15);">
+      <div class="tire-card" onclick="selectTire(this,'wet')"   style="--active-color:#2979ff;--active-glow:rgba(41,121,255,0.15);">
         <div class="tire-ring" style="border-color:#2979ff;"></div>
         <span class="tire-name">Full Wet</span>
       </div>
@@ -681,13 +288,9 @@
 
     <div class="track-wrapper">
       <svg viewBox="0 0 700 280" style="width:88%;max-width:660px;">
-        <!-- outer track border -->
         <ellipse cx="350" cy="140" rx="292" ry="118" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="28"/>
-        <!-- track surface -->
         <ellipse cx="350" cy="140" rx="292" ry="118" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="22"/>
-        <!-- racing line -->
         <ellipse cx="350" cy="140" rx="280" ry="106" fill="none" stroke="#e10600" stroke-width="2" stroke-dasharray="10 6" opacity="0.7"/>
-        <!-- start/finish line -->
         <rect x="348" y="20" width="4" height="20" rx="1" fill="#e10600" opacity="0.8"/>
       </svg>
       <div id="perf-car">🏎️</div>
@@ -720,41 +323,65 @@
       </div>
     </div>
     <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">Aerodynamics</h2>
-    <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">Why air turbulence is one of the biggest weapons in F1 strategy.</p>
+    <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">Drag the slider to move the following car. See how dirty air destroys downforce.</p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;flex:1;">
-      <!-- clean air card -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 30px;border-top:3px solid #00c853;display:flex;flex-direction:column;gap:14px;">
-        <div style="font-size:2.2rem;">💨</div>
-        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#00c853;">Clean Air</div>
-        <p style="color:var(--text-2);font-size:0.9rem;line-height:1.75;">Running in open track, your car cuts through smooth, undisturbed air. Downforce is maximized, cornering speeds are higher, and tires behave predictably.</p>
-        <div style="display:flex;gap:10px;margin-top:auto;flex-wrap:wrap;">
-          <span style="background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:#00c853;">Max Downforce</span>
-          <span style="background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:#00c853;">Stable Tires</span>
-          <span style="background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:#00c853;">Faster Corners</span>
-        </div>
+    <!-- interactive slipstream simulator -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-top:16px;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:12px;">Slipstream Simulator — drag the slider</div>
+
+      <div class="aero-sim-wrap" id="aero-sim-wrap" style="height:100px;">
+        <!-- road markings -->
+        <div style="position:absolute;bottom:18px;left:0;right:0;height:3px;background:repeating-linear-gradient(to right,rgba(255,255,255,0.06) 0 30px,transparent 30px 60px);"></div>
+        <div id="aero-turbulence" class="aero-turbulence"></div>
+        <div class="aero-car-lead" id="aero-car-lead">🏎️</div>
+        <div class="aero-car-follow" id="aero-car-follow">🏎️</div>
       </div>
 
-      <!-- dirty air card -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 30px;border-top:3px solid var(--red);display:flex;flex-direction:column;gap:14px;">
-        <div style="font-size:2.2rem;">🌀</div>
-        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);">Dirty Air</div>
-        <p style="color:var(--text-2);font-size:0.9rem;line-height:1.75;">Following another car closely puts you in its turbulent wake. Downforce drops, corners get slower, and tires slide and overheat — erasing any speed advantage from new rubber.</p>
-        <div style="display:flex;gap:10px;margin-top:auto;flex-wrap:wrap;">
-          <span style="background:rgba(225,6,0,0.1);border:1px solid rgba(225,6,0,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--red);">–30% Downforce</span>
-          <span style="background:rgba(225,6,0,0.1);border:1px solid rgba(225,6,0,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--red);">Tire Overheat</span>
-          <span style="background:rgba(225,6,0,0.1);border:1px solid rgba(225,6,0,0.25);border-radius:6px;padding:4px 10px;font-size:0.75rem;font-weight:600;color:var(--red);">Slower Corners</span>
+      <div style="margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:0.8rem;color:var(--text-2);">← Closer (dirty air)</span>
+          <span style="font-size:0.8rem;color:var(--text-2);">Further (clean air) →</span>
         </div>
-      </div>
-
-      <!-- strategy implication -->
-      <div style="grid-column:1/-1;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 28px;">
-        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-2);margin-bottom:10px;">Why It Matters Strategically</div>
-        <p style="color:var(--text-2);font-size:0.9rem;line-height:1.75;">Teams must decide: pit early for fresh tires and race in clean air — or stay out and hope the car ahead pits first. Dirty air can completely negate a tire compound advantage, making track position as important as pace.</p>
+        <input type="range" id="aero-gap-slider" min="0" max="100" value="55"
+               oninput="setAeroGap(this.value)" style="--pct:55%;">
       </div>
     </div>
 
-    <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+    <!-- live stats -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:10px;">Downforce</div>
+        <div style="height:10px;background:rgba(255,255,255,0.07);border-radius:5px;overflow:hidden;">
+          <div id="aero-df-bar" style="height:100%;width:75%;background:#00c853;border-radius:5px;transition:width 0.2s,background 0.2s;"></div>
+        </div>
+        <div style="margin-top:6px;font-size:1.3rem;font-weight:800;" id="aero-df-label">75%</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:10px;">Tire Heat</div>
+        <div style="height:10px;background:rgba(255,255,255,0.07);border-radius:5px;overflow:hidden;">
+          <div id="aero-tire-bar" style="height:100%;width:20%;background:var(--red);border-radius:5px;transition:width 0.2s;"></div>
+        </div>
+        <div style="margin-top:6px;font-size:0.82rem;font-weight:600;color:var(--text-2);">Overheating risk</div>
+      </div>
+    </div>
+
+    <div id="aero-msg" style="margin-top:12px;padding:12px 16px;border-radius:8px;background:var(--surface2);font-size:0.88rem;color:#00c853;font-weight:600;min-height:40px;display:flex;align-items:center;">
+      ✓ Clean air — full downforce, tires behaving predictably.
+    </div>
+
+    <!-- info cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;flex:1;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid #00c853;border-radius:12px;padding:16px 18px;">
+        <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#00c853;margin-bottom:6px;">Clean Air</div>
+        <p style="color:var(--text-2);font-size:0.82rem;line-height:1.65;">Open track — max downforce, predictable tires, faster cornering.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--red);border-radius:12px;padding:16px 18px;">
+        <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">Dirty Air</div>
+        <p style="color:var(--text-2);font-size:0.82rem;line-height:1.65;">Turbulent wake — up to 30% downforce loss, tires overheat fast.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;display:flex;justify-content:flex-end;">
       <button class="btn-primary" onclick="showScreen('finding-the-gap')">Next: Finding the Gap →</button>
     </div>
   </div>
@@ -771,7 +398,6 @@
     <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">Finding the Gap</h2>
     <p style="margin-top:4px;color:var(--text-2);font-size:0.88rem;">Select the best gap to pit into. You want clean air and track position.</p>
 
-    <!-- track strip with cars and gaps -->
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-top:24px;display:flex;align-items:center;gap:0;overflow:hidden;">
       <div style="font-size:2rem;flex-shrink:0;">🏎️</div>
 
@@ -822,9 +448,15 @@
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
       <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--red);margin-bottom:14px;">Knowledge Check</div>
       <h2 style="font-size:2.4rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:10px;">Quiz Time</h2>
-      <p style="color:var(--text-2);max-width:420px;font-size:0.95rem;line-height:1.6;margin-bottom:40px;">5 questions on tires, aerodynamics, and pit strategy. Pick the right answer to lock it in.</p>
+      <p style="color:var(--text-2);max-width:420px;font-size:0.95rem;line-height:1.6;margin-bottom:32px;">5 questions on tires, aerodynamics, and pit strategy. Pick the right answer to lock it in.</p>
 
-      <!-- 5 progress dots -->
+      <!-- name input -->
+      <div style="margin-bottom:28px;">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:10px;">What should we call you?</div>
+        <input id="quiz-name-input" class="name-input" type="text" placeholder="Enter your name" maxlength="24"
+               onkeydown="if(event.key==='Enter') startQuiz()">
+      </div>
+
       <div style="display:flex;gap:10px;margin-bottom:10px;">
         <div style="width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-hi);"></div>
         <div style="width:10px;height:10px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-hi);"></div>
@@ -838,14 +470,13 @@
     </div>
   </div>
 
-  <!-- QUIZ QUESTION (populated by JS) -->
+  <!-- QUIZ QUESTION -->
   <div class="screen" id="screen-quiz-question">
     <div class="nav">
       <button class="nav-back" onclick="showScreen('quiz-intro')">✕ Quit</button>
       <span class="nav-badge" id="quiz-nav-label">1 / 5</span>
     </div>
 
-    <!-- red progress bar -->
     <div style="height:3px;background:var(--surface2);border-radius:2px;margin-bottom:32px;">
       <div id="quiz-prog" style="height:100%;background:var(--red);border-radius:2px;transition:width 0.4s ease;width:20%;"></div>
     </div>
@@ -871,16 +502,15 @@
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-2);margin-bottom:14px;">Quiz Complete</div>
 
-      <!-- score card -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 56px;margin-bottom:32px;min-width:320px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 52px;margin-bottom:24px;min-width:320px;">
         <div style="font-size:0.78rem;color:var(--text-2);margin-bottom:8px;">Your Score</div>
         <div id="final-score" style="font-size:5rem;font-weight:800;color:var(--red);letter-spacing:-0.04em;line-height:1;">4 / 5</div>
-        <div id="score-title" style="color:var(--text-2);font-style:italic;margin-top:10px;font-size:0.95rem;">Strategist in Training</div>
+        <div id="score-title" style="color:var(--text);font-weight:700;margin-top:12px;font-size:1.05rem;line-height:1.4;"></div>
+        <div id="score-sub"   style="color:var(--text-2);font-style:italic;margin-top:8px;font-size:0.88rem;line-height:1.55;max-width:320px;"></div>
       </div>
 
-      <!-- topic breakdown -->
-      <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:14px;align-self:flex-start;margin-left:auto;margin-right:auto;">Topic Breakdown</div>
-      <div style="display:flex;gap:12px;margin-bottom:36px;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);margin-bottom:14px;">Topic Breakdown</div>
+      <div style="display:flex;gap:12px;margin-bottom:32px;">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 28px;text-align:left;">
           <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:4px;">Tires</div>
           <div id="breakdown-tires" style="font-size:1.4rem;font-weight:800;">2/2</div>
@@ -902,355 +532,33 @@
     </div>
   </div>
 
+  <script src="app.js"></script>
   <script>
-    let selectedMode = 'learning';
+    // Animated speed lines + a second bg car on the home screen
+    (function initHomeScene() {
+      const scene = document.getElementById('home-scene');
+      if (!scene) return;
 
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      const el = document.getElementById('screen-' + id);
-      if (el) el.classList.add('active');
-      // update progress dots whenever we switch screens
-      updateProgressDots(id);
-    }
+      // add radial glow
+      const glow = document.createElement('div');
+      glow.style.cssText = 'position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 35%,rgba(225,6,0,0.07),transparent 70%);pointer-events:none;';
+      scene.appendChild(glow);
 
-    // render progress dots for the 6 learning screens
-    function updateProgressDots(screenId) {
-      const order = ['car-components','tires','tire-degradation','performance-degradation','aerodynamics','finding-the-gap'];
-      const currentIdx = order.indexOf(screenId);
-      if (currentIdx === -1) return;
-      // each screen has its own dot container
-      const dotContainerIds = {
-        'car-components':       'pd-car',
-        'tires':                'pd-tires',
-        'tire-degradation':     'pd-degrad',
-        'performance-degradation': 'pd-perf',
-        'aerodynamics':         'pd-aero',
-        'finding-the-gap':      'pd-gap',
-      };
-      const containerId = dotContainerIds[screenId];
-      if (!containerId) return;
-      const container = document.getElementById(containerId);
-      if (!container) return;
-      container.innerHTML = order.map((_, i) => {
-        let cls = 'pd';
-        if (i === currentIdx) cls += ' active';
-        else if (i < currentIdx) cls += ' done';
-        return `<div class="${cls}"></div>`;
-      }).join('');
-    }
-
-    function selectMode(mode) {
-      selectedMode = mode;
-      document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
-      document.getElementById('mode-' + mode).classList.add('selected');
-    }
-
-    function startSelected() {
-      showScreen(selectedMode === 'learning' ? 'learning-menu' : 'quiz-intro');
-    }
-
-    // car component descriptions
-    const componentData = {
-      frontwing: { icon: '🔻', name: 'Front Wing', desc: 'Generates downforce at the nose. Small angle tweaks shift the handling balance — teams adjust it lap by lap via radio to counter tire wear.' },
-      fronttire: { icon: '⭕', name: 'Front Tires', desc: 'Pirelli-supplied slicks. The fronts handle braking and turn-in loads, and run cooler than the rears — making them less prone to graining.' },
-      halo:      { icon: '🛡️', name: 'Halo', desc: 'Mandatory titanium safety arch above the cockpit. Protects the driver from debris and rollover forces. Introduced in 2018 and has since saved multiple lives.' },
-      sidepod:   { icon: '❄️', name: 'Sidepod', desc: 'Houses the water and oil radiators. The shape is among the most contested aerodynamic battlegrounds — teams spend millions optimizing the airflow around it.' },
-      rearwing:  { icon: '✈️', name: 'Rear Wing', desc: 'The main downforce generator. DRS opens the rear flap on designated straights, cutting drag and increasing top speed by up to 15 km/h.' },
-      reartire:  { icon: '🔄', name: 'Rear Tires', desc: 'Wider than the fronts to handle power delivery. Most vulnerable to degradation under heavy acceleration — often the deciding factor in pit strategy.' }
-    };
-
-    function showComponent(key) {
-      const d = componentData[key];
-      document.getElementById('component-info').innerHTML = `
-        <div style="font-size:2rem;margin-bottom:12px;">${d.icon}</div>
-        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">${d.name}</div>
-        <p style="color:var(--text-2);line-height:1.7;font-size:0.86rem;">${d.desc}</p>
-      `;
-    }
-
-    // tire compound details
-    const tireData = {
-      soft:  { color: '#e10600', text: 'SOFT — Fastest compound on track, generating maximum grip. Typically lasts only 10–15 laps before the cliff. Used in qualifying and attack stints.' },
-      med:   { color: '#ffd600', text: 'MEDIUM — The race workhorse. Balanced grip and durability, usually good for 20–30 laps. Most strategies are built around it.' },
-      hard:  { color: '#e0e0e0', text: 'HARD — Slowest but can run 40+ laps. Preferred for long stints or when track temps are extreme. Less sensitive to thermal degradation.' },
-      inter: { color: '#00c853', text: 'INTERMEDIATE — Built for damp or drying conditions. Deep tread evacuates water without full wet grooves. Often the fastest option in tricky weather transitions.' },
-      wet:   { color: '#2979ff', text: 'FULL WET — For heavy rain. Channels up to 85 litres of water per second per tire. Teams move to slicks as soon as conditions allow.' }
-    };
-
-    function selectTire(card, type) {
-      document.querySelectorAll('.tire-card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      const d = tireData[type];
-      const el = document.getElementById('tire-text');
-      el.style.color = d.color;
-      el.style.fontWeight = '600';
-      el.textContent = d.text;
-    }
-
-    // ── TIRE DEGRADATION ──
-    function updateDegradation(val) {
-      const v = parseInt(val);
-      document.getElementById('wear-slider').style.setProperty('--pct', v + '%');
-
-      // flat curve early on, sharp cliff after ~60% wear
-      const base = 80.0;
-      let lapTime = v < 60
-        ? base + (v / 60) * 3.5
-        : base + 3.5 + Math.pow((v - 60) / 40, 1.8) * 14;
-
-      const mins = Math.floor(lapTime / 60);
-      const secs = (lapTime % 60).toFixed(1).padStart(4, '0');
-      document.getElementById('laptime-display').textContent = `${mins}:${secs}`;
-
-      // grip bar - cover slides from right
-      document.getElementById('grip-cover').style.width = (100 - v) + '%';
-
-      const gripEl = document.getElementById('grip-label');
-      if      (v < 35) { gripEl.textContent = 'High Grip';           gripEl.style.color = '#00c853'; }
-      else if (v < 65) { gripEl.textContent = 'Medium Grip';         gripEl.style.color = '#ffd600'; }
-      else if (v < 82) { gripEl.textContent = 'Low Grip';            gripEl.style.color = '#ff7043'; }
-      else             { gripEl.textContent = 'Critical — Pit Now!'; gripEl.style.color = '#e10600'; }
-
-      const msg = document.getElementById('degrad-msg');
-      if (v >= 82) {
-        msg.textContent = '⚠️ Cliff reached — lap times collapsing. Box box box!';
-        msg.style.color = '#e10600';
-        msg.style.background = 'rgba(225,6,0,0.08)';
-      } else if (v >= 60) {
-        msg.textContent = '⚡ Approaching the cliff — consider pitting in the next 2–3 laps.';
-        msg.style.color = '#ffd600';
-        msg.style.background = 'rgba(255,214,0,0.06)';
-      } else {
-        msg.textContent = '✓ Tires in good shape. Stay out and push.';
-        msg.style.color = '#00c853';
-        msg.style.background = 'rgba(0,200,83,0.06)';
+      // spawn speed lines at random intervals
+      function spawnLine() {
+        const line = document.createElement('div');
+        line.className = 'home-speed-line';
+        const top = 30 + Math.random() * 40;
+        const width = 80 + Math.random() * 200;
+        const delay = Math.random() * 0.5;
+        const dur   = 1.8 + Math.random() * 1.2;
+        line.style.cssText = `top:${top}%;width:${width}px;animation-duration:${dur}s;animation-delay:${delay}s;`;
+        scene.appendChild(line);
+        setTimeout(() => line.remove(), (dur + delay + 0.2) * 1000);
       }
-    }
 
-    updateDegradation(20);
-
-    // ── PERFORMANCE DEGRADATION animation ──
-    let animFrame = null;
-    let carAngle  = 0;
-    let perfWear  = 15;
-
-    function startCarAnimation() {
-      if (animFrame) return;
-      tickCar();
-    }
-
-    function stopCarAnimation() {
-      cancelAnimationFrame(animFrame);
-      animFrame = null;
-    }
-
-    function tickCar() {
-      const speed = 0.005 + ((100 - perfWear) / 100) * 0.03;
-      carAngle = (carAngle + speed) % (Math.PI * 2);
-
-      const wrapper = document.querySelector('.track-wrapper');
-      const car     = document.getElementById('perf-car');
-      if (!wrapper || !car) return;
-
-      const w  = wrapper.offsetWidth;
-      const h  = wrapper.offsetHeight;
-      // match the SVG ellipse
-      const rx = Math.min(w * 0.40, 252);
-      const ry = Math.min(h * 0.39, 96);
-      const cx = w / 2;
-      const cy = h / 2;
-
-      const x   = cx + rx * Math.cos(carAngle);
-      const y   = cy + ry * Math.sin(carAngle);
-      const deg = (carAngle * 180 / Math.PI) + 90;
-
-      car.style.left      = x + 'px';
-      car.style.top       = y + 'px';
-      car.style.transform = `translate(-50%,-50%) rotate(${deg}deg)`;
-
-      animFrame = requestAnimationFrame(tickCar);
-    }
-
-    function updatePerf(val) {
-      perfWear = parseInt(val);
-      document.getElementById('perf-slider').style.setProperty('--pct', val + '%');
-
-      const lapTime = 80.0 + (perfWear / 100) * 10;
-      const mins    = Math.floor(lapTime / 60);
-      const secs    = (lapTime % 60).toFixed(1).padStart(4, '0');
-      document.getElementById('perf-laptime').textContent = `${mins}:${secs}`;
-
-      const label = document.getElementById('perf-grip-label');
-      if      (perfWear < 35) { label.textContent = 'High Grip';   label.style.color = '#00c853'; }
-      else if (perfWear < 65) { label.textContent = 'Medium Grip'; label.style.color = '#ffd600'; }
-      else                    { label.textContent = 'Low Grip';    label.style.color = '#e10600'; }
-    }
-
-    // intercept showScreen to start/stop the animation
-    const _origShowScreen = showScreen;
-    showScreen = function(id) {
-      _origShowScreen(id);
-      if (id === 'performance-degradation') startCarAnimation();
-      else stopCarAnimation();
-    };
-
-    // ── FINDING THE GAP ──
-    function selectGap(gap) {
-      const ids = ['gap-a', 'gap-b', 'gap-c'];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        el.style.borderColor = 'var(--border)';
-        el.style.background  = 'var(--surface2)';
-        el.style.color       = 'var(--text-3)';
-      });
-
-      const fb = document.getElementById('gap-feedback');
-      fb.style.border = '1px solid var(--border)';
-
-      if (gap === 'b') {
-        document.getElementById('gap-b').style.borderColor = '#00c853';
-        document.getElementById('gap-b').style.background  = 'rgba(0,200,83,0.1)';
-        document.getElementById('gap-b').style.color       = '#00c853';
-        fb.textContent      = '✓ Perfect call! This gap gives enough clean air and track position after the pit stop.';
-        fb.style.color      = '#00c853';
-        fb.style.border     = '1px solid rgba(0,200,83,0.25)';
-        fb.style.background = 'rgba(0,200,83,0.06)';
-      } else if (gap === 'a') {
-        document.getElementById('gap-a').style.borderColor = 'var(--red)';
-        document.getElementById('gap-a').style.background  = 'rgba(225,6,0,0.1)';
-        document.getElementById('gap-a').style.color       = 'var(--red)';
-        fb.textContent      = '✗ Too tight — you\'d emerge right behind that car and lose all your fresh tire advantage in dirty air.';
-        fb.style.color      = 'var(--red)';
-        fb.style.border     = '1px solid rgba(225,6,0,0.25)';
-        fb.style.background = 'rgba(225,6,0,0.06)';
-      } else {
-        document.getElementById('gap-c').style.borderColor = '#ffd600';
-        document.getElementById('gap-c').style.background  = 'rgba(255,214,0,0.08)';
-        document.getElementById('gap-c').style.color       = '#ffd600';
-        fb.textContent      = '⚠ Possible, but you\'d lap behind a backmarker. Gap B gives cleaner air and stronger track position.';
-        fb.style.color      = '#ffd600';
-        fb.style.border     = '1px solid rgba(255,214,0,0.2)';
-        fb.style.background = 'rgba(255,214,0,0.06)';
-      }
-      fb.style.fontStyle = 'normal';
-    }
-
-    // ── QUIZ ──
-    const questions = [
-      {
-        topic: 'tires',
-        text: 'Which tire compound is the most durable and typically used for the longest stints?',
-        options: ['Soft', 'Medium', 'Hard', 'Intermediate'],
-        correct: 2,
-        explanation: 'The Hard compound can last 40+ laps, making it the go-to for teams planning a one-stop strategy.'
-      },
-      {
-        topic: 'tires',
-        text: 'A driver is told "box box box" over the radio. What does this mean?',
-        options: ['Push harder — attack mode', 'Pit this lap', 'Let the car behind pass', 'Save fuel'],
-        correct: 1,
-        explanation: '"Box" is F1 shorthand for pit lane (from the German "Box"). "Box box box" means come in and pit immediately.'
-      },
-      {
-        topic: 'aero',
-        text: 'Why is "dirty air" harmful to a following car\'s performance?',
-        options: ['It contains exhaust gases that overheat the engine', 'It reduces downforce, causing slower corners and tire overheating', 'It only affects top speed on straights', 'It improves fuel economy for the chasing car'],
-        correct: 1,
-        explanation: 'Turbulent wake from the car ahead can cut downforce by up to 30%, making corners slower and tires overheat faster.'
-      },
-      {
-        topic: 'aero',
-        text: 'What does DRS (Drag Reduction System) do when activated?',
-        options: ['Increases braking force', 'Opens the rear wing flap to reduce drag', 'Cools the rear tires', 'Locks the front differential'],
-        correct: 1,
-        explanation: 'DRS opens a slot in the rear wing element, reducing aerodynamic drag and adding up to 15 km/h of top speed on designated straight sections.'
-      },
-      {
-        topic: 'pit',
-        text: 'What is the "undercut" strategy in F1?',
-        options: ['Pitting before a rival to gain track position on fresher tires', 'Staying out longer than a rival to save pit stop time', 'Pitting twice in a row to beat a safety car', 'Using a softer compound to set the fastest qualifying lap'],
-        correct: 0,
-        explanation: 'The undercut means pitting before your rival. Your new tires are faster, so if the gap is large enough you emerge ahead when they eventually pit.'
-      }
-    ];
-
-    let currentQuestion = 0;
-    let quizScore       = 0;
-    let userAnswers     = [];
-    let topicScores     = {};
-    let topicTotals     = {};
-
-    function startQuiz() {
-      currentQuestion = 0;
-      quizScore       = 0;
-      userAnswers     = [];
-      topicScores     = { tires: 0, aero: 0, pit: 0 };
-      topicTotals     = { tires: 0, aero: 0, pit: 0 };
-      showScreen('quiz-question');
-      showQuestion();
-    }
-
-    function showQuestion() {
-      const q = questions[currentQuestion];
-      const n = questions.length;
-
-      document.getElementById('quiz-nav-label').textContent  = `${currentQuestion + 1} / ${n}`;
-      document.getElementById('quiz-q-num').textContent      = `Question ${currentQuestion + 1} of ${n}`;
-      document.getElementById('quiz-q-text').textContent     = q.text;
-      document.getElementById('quiz-prog').style.width       = `${((currentQuestion + 1) / n) * 100}%`;
-      document.getElementById('quiz-feedback').textContent   = '';
-      document.getElementById('quiz-next-btn').style.display = 'none';
-
-      document.getElementById('quiz-answers').innerHTML = q.options
-        .map((opt, i) => `<button class="answer-btn" onclick="selectAnswer(${i})">${opt}</button>`)
-        .join('');
-    }
-
-    function selectAnswer(idx) {
-      const q    = questions[currentQuestion];
-      const btns = document.querySelectorAll('.answer-btn');
-      btns.forEach(b => b.disabled = true);
-
-      const correct = idx === q.correct;
-      btns[idx].classList.add(correct ? 'correct' : 'incorrect');
-      if (!correct) btns[q.correct].classList.add('correct');
-
-      if (correct) quizScore++;
-      topicScores[q.topic] = (topicScores[q.topic] || 0) + (correct ? 1 : 0);
-      topicTotals[q.topic] = (topicTotals[q.topic] || 0) + 1;
-      userAnswers.push(idx);
-
-      const fb = document.getElementById('quiz-feedback');
-      fb.textContent = (correct ? '✓ Correct! ' : '✗ Not quite. ') + q.explanation;
-      fb.style.color = correct ? '#00c853' : '#ff7043';
-
-      document.getElementById('quiz-next-btn').style.display = 'block';
-    }
-
-    function nextQuestion() {
-      currentQuestion++;
-      if (currentQuestion >= questions.length) showResults();
-      else showQuestion();
-    }
-
-    function showResults() {
-      showScreen('quiz-complete');
-      const n = questions.length;
-      document.getElementById('final-score').textContent = `${quizScore} / ${n}`;
-
-      const titles = ['Keep Studying!', 'Getting There', 'Strategist in Training', 'Race Engineer Material', 'F1 Mastermind'];
-      document.getElementById('score-title').textContent = titles[Math.min(quizScore, titles.length - 1)];
-
-      const tireQ = questions.filter(q => q.topic === 'tires').length;
-      const aeroQ = questions.filter(q => q.topic === 'aero').length;
-      const pitQ  = questions.filter(q => q.topic === 'pit').length;
-      document.getElementById('breakdown-tires').textContent = `${topicScores.tires || 0}/${tireQ}`;
-      document.getElementById('breakdown-aero').textContent  = `${topicScores.aero  || 0}/${aeroQ}`;
-      document.getElementById('breakdown-pit').textContent   = `${topicScores.pit   || 0}/${pitQ}`;
-    }
-
-    function retakeQuiz() { startQuiz(); }
-
+      setInterval(spawnLine, 280);
+    })();
   </script>
 </body>
 </html>
