@@ -2,8 +2,12 @@
 {% block content %}
 <div id="screen-home" class="screen-home">
   <div class="home-inner text-center">
+    <!-- 3D Three.js car canvas. <noscript> falls back to the still image. -->
     <div class="home-car-wrap">
-      <img src="{{ url_for('static', filename='img/ferrari_home.jpg') }}" class="home-car-img" alt="Ferrari SF-24">
+      <canvas id="hero-car" class="home-car-canvas" aria-label="Interactive 3D Formula 1 car"></canvas>
+      <noscript>
+        <img src="{{ url_for('static', filename='img/ferrari_home.jpg') }}" class="home-car-img" alt="Ferrari SF-24">
+      </noscript>
     </div>
     <div class="home-eyebrow">Formula 1 Strategy Guide</div>
     <h1 class="home-title">Intro to Formula 1</h1>
@@ -29,6 +33,18 @@
     </form>
   </div>
 </div>
+{% endblock %}
+
+{% block three_js %}
+<script type="module" src="{{ url_for('static', filename='js/car3d.js') }}"></script>
+<script type="module">
+  // Kick off the hero scene once the page has settled.
+  window.addEventListener('load', () => {
+    if (typeof window.initHeroCar === 'function') {
+      window.initHeroCar();
+    }
+  });
+</script>
 {% endblock %}
 
 {% block scripts %}
