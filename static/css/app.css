@@ -50,6 +50,17 @@
   --font-heading: "Titillium Web", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* ---- Type scale (size / line-height / weight / tracking) ----
+     Scale was tuned on an 8px baseline. .t-display and .t-h1 use
+     clamp() so they're fluid between mobile and desktop without
+     needing media-query switches. */
+  --fs-display:   3.5rem;   --lh-display: 1.05;  --fw-display: 700;  --ls-display: -0.02em;
+  --fs-h1:        2.25rem;  --lh-h1:      1.15;  --fw-h1:      700;  --ls-h1:      -0.01em;
+  --fs-h2:        1.5rem;   --lh-h2:      1.25;  --fw-h2:      600;  --ls-h2:       0;
+  --fs-h3:        1.125rem; --lh-h3:      1.35;  --fw-h3:      600;  --ls-h3:       0;
+  --fs-body:      1rem;     --lh-body:    1.6;   --fw-body:    400;  --ls-body:     0;
+  --fs-caption:   0.8125rem;--lh-caption: 1.45;  --fw-caption: 500;  --ls-caption:  0.02em;
 }
 
 /* =========================================================
@@ -71,6 +82,61 @@ h1, h2, h3, h4, h5, h6 {
 .laptime, .stat-chip .val, .final-score, .topic-score,
 .nav-badge, .home-eyebrow, .section-num {
   font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
+   Type utility classes — bundle family + size + weight + lh +
+   tracking. Pages consume these instead of re-specifying per
+   element, so if we retune the scale it updates everywhere.
+   ========================================================= */
+.t-display {
+  font-family: var(--font-heading);
+  /* Fluid: scales 2.5rem → 3.5rem across ~360px–1280px viewports. */
+  font-size: clamp(2.5rem, 2.1rem + 1.8vw, var(--fs-display));
+  line-height: var(--lh-display);
+  font-weight: var(--fw-display);
+  letter-spacing: var(--ls-display);
+}
+.t-h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 1.5rem + 1.1vw, var(--fs-h1));
+  line-height: var(--lh-h1);
+  font-weight: var(--fw-h1);
+  letter-spacing: var(--ls-h1);
+}
+.t-h2 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: var(--fw-h2);
+  letter-spacing: var(--ls-h2);
+}
+.t-h3 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  font-weight: var(--fw-h3);
+  letter-spacing: var(--ls-h3);
+}
+.t-body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-body);
+  letter-spacing: var(--ls-body);
+}
+.t-caption {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  font-weight: var(--fw-caption);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+}
+.t-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
 }
 
 /* =========================================================
