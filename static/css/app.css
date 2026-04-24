@@ -55,11 +55,48 @@
   --text-3:    #55555f;
 }
 
+/* =========================================================
+   Bootstrap 5 theme override — point BS CSS vars at our tokens
+   so cards, buttons, modals, etc. inherit the palette without
+   per-component overrides.
+   ========================================================= */
+:root {
+  --bs-primary:         var(--color-base);
+  --bs-primary-rgb:     220, 0, 0;
+  --bs-body-bg:         var(--color-dark-grey);
+  --bs-body-color:      var(--color-white);
+  --bs-body-font-family: var(--font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
+  --bs-border-color:    var(--color-hairline);
+  --bs-link-color:      var(--color-accent);
+  --bs-link-hover-color: var(--color-accent-hover);
+  --bs-focus-ring-color: var(--color-accent-subtle);
+  --bs-border-radius:       var(--r-md);
+  --bs-border-radius-sm:    var(--r-sm);
+  --bs-border-radius-lg:    var(--r-lg);
+  --bs-border-radius-pill:  var(--r-full);
+  --bs-secondary-color: var(--color-light-grey);
+}
+
+/* =========================================================
+   Modern base layer
+   ========================================================= */
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--bg);
-  color: var(--text);
+  background:
+    radial-gradient(ellipse 70% 55% at 85% 10%, var(--color-accent-subtle), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 90%, var(--color-base-subtle), transparent 65%),
+    var(--color-dark-grey);
+  color: var(--color-white);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body::before {
@@ -69,6 +106,34 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
+}
+
+/* Global keyboard focus: always visible, always accent. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* Mouse focus doesn't get the ring — keyboard users do. */
+:focus:not(:focus-visible) { outline: none; }
+
+::selection {
+  background: var(--color-base);
+  color: var(--color-white);
+}
+
+/* Respect reduced motion everywhere. Essential transitions
+   (opacity crossfades under 180ms) may still run. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .screen { position: relative; z-index: 1; }
