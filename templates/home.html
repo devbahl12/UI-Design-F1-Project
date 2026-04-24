@@ -1,48 +1,84 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="screen-home" class="screen-home">
-  <div class="home-inner text-center">
-    <!-- 3D Three.js car canvas. <noscript> falls back to the still image. -->
+<section class="home-hero">
+  <!-- Left rail: copy + CTAs. Right rail: 3D car canvas. -->
+  <div class="home-hero__copy" data-entrance>
+    <div class="home-eyebrow t-caption" data-entrance-step="1">COMS W4170 · F1 Primer</div>
+    <h1 class="home-title t-display" data-entrance-step="2">Understand Formula&nbsp;1 strategy in 20&nbsp;minutes.</h1>
+    <p class="home-sub t-body" data-entrance-step="3">Tires, aerodynamics, pit strategy — the six moves every race is built on, with a car you can rotate and poke at.</p>
+
+    <form id="start-form" method="post" action="{{ url_for('start') }}" class="home-hero__ctas" data-entrance-step="4">
+      <!-- Mode is set by whichever CTA is clicked, so the radios stay hidden. -->
+      <input type="radio" name="mode" value="learning" id="mode-learning" checked hidden>
+      <input type="radio" name="mode" value="quiz" id="mode-quiz" hidden>
+      <button type="submit" class="btn btn-primary-f1 btn-lg" data-mode="learning">Start learning →</button>
+      <button type="submit" class="btn btn-ghost-f1 btn-lg" data-mode="quiz">Take the quiz</button>
+    </form>
+  </div>
+
+  <div class="home-hero__canvas" data-entrance data-entrance-step="3">
     <div class="home-car-wrap">
       <canvas id="hero-car" class="home-car-canvas" aria-label="Interactive 3D Formula 1 car"></canvas>
       <noscript>
         <img src="{{ url_for('static', filename='img/ferrari_home.jpg') }}" class="home-car-img" alt="Ferrari SF-24">
       </noscript>
     </div>
-    <div class="home-eyebrow">Formula 1 Strategy Guide</div>
-    <h1 class="home-title">Intro to Formula 1</h1>
-    <p class="home-sub">Master tire compounds, aerodynamics, and pit strategy</p>
-
-    <form id="start-form" method="post" action="{{ url_for('start') }}">
-      <div class="mode-cards d-flex gap-3 justify-content-center flex-wrap mb-4">
-        <label class="mode-card selected" data-mode="learning">
-          <input type="radio" name="mode" value="learning" checked hidden>
-          <span class="icon">🎓</span>
-          <span class="label">Learning</span>
-          <span class="mode-sub">6 interactive modules</span>
-        </label>
-        <label class="mode-card" data-mode="quiz">
-          <input type="radio" name="mode" value="quiz" hidden>
-          <span class="icon">📝</span>
-          <span class="label">Interactive Quiz</span>
-          <span class="mode-sub">5 questions · ~2 min</span>
-        </label>
-      </div>
-
-      <button type="submit" id="start-btn" class="btn btn-primary-f1 btn-lg px-5">Start →</button>
-    </form>
   </div>
-</div>
+</section>
+
+<section class="home-features">
+  <h2 class="visually-hidden">Three things you'll understand by the end</h2>
+  <div class="home-features__grid">
+    <article class="feature card-modern">
+      <span class="feature__icon" aria-hidden="true">
+        <!-- Car silhouette -->
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 18h3l2-4h12l3 4h4"/>
+          <circle cx="8" cy="20" r="2.5"/>
+          <circle cx="20" cy="20" r="2.5"/>
+          <path d="M11 14l1-3h6l1 3"/>
+        </svg>
+      </span>
+      <h3 class="t-h3 feature__title">The car</h3>
+      <p class="t-body feature__desc">Six components that actually matter — from halo to diffuser — and why engineers obsess over each one.</p>
+    </article>
+    <article class="feature card-modern">
+      <span class="feature__icon" aria-hidden="true">
+        <!-- Tire -->
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="14" cy="14" r="10"/>
+          <circle cx="14" cy="14" r="5"/>
+          <path d="M14 4v4M14 20v4M4 14h4M20 14h4"/>
+        </svg>
+      </span>
+      <h3 class="t-h3 feature__title">The tires</h3>
+      <p class="t-body feature__desc">Five compounds, one cliff. Pick the wrong moment and your race is over — play with the slider and you'll feel it.</p>
+    </article>
+    <article class="feature card-modern">
+      <span class="feature__icon" aria-hidden="true">
+        <!-- Strategy flag -->
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 24V4"/>
+          <path d="M6 5h16l-3 4 3 4H6"/>
+        </svg>
+      </span>
+      <h3 class="t-h3 feature__title">The strategy</h3>
+      <p class="t-body feature__desc">Undercut, overcut, clean-air vs. dirty-air. The decisions that win Sundays and the ones that lose them.</p>
+    </article>
+  </div>
+</section>
+
+<footer class="home-footer t-caption">
+  <span>Reya Vir · Dev Bahl · Nitish Ramaraj</span>
+  <span>COMS W4170 · HW11</span>
+</footer>
 {% endblock %}
 
 {% block three_js %}
 <script type="module" src="{{ url_for('static', filename='js/car3d.js') }}"></script>
 <script type="module">
-  // Kick off the hero scene once the page has settled.
   window.addEventListener('load', () => {
-    if (typeof window.initHeroCar === 'function') {
-      window.initHeroCar();
-    }
+    if (typeof window.initHeroCar === 'function') window.initHeroCar();
   });
 </script>
 {% endblock %}
@@ -50,10 +86,21 @@
 {% block scripts %}
 <script>
   $(function () {
-    $('.mode-card').on('click', function () {
-      $('.mode-card').removeClass('selected');
-      $(this).addClass('selected');
-      $(this).find('input[type=radio]').prop('checked', true);
+    // Hero CTA routes mode via the hidden radio pair.
+    $('.home-hero__ctas button[data-mode]').on('click', function (e) {
+      const mode = $(this).data('mode');
+      $('#mode-' + mode).prop('checked', true);
+    });
+
+    // Staggered entrance: elements inside [data-entrance] fade+translate-up
+    // in sequence using their data-entrance-step value. Reduced-motion
+    // short-circuits to an instant opacity flip.
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $('[data-entrance-step]').each(function () {
+      const $el = $(this);
+      const step = parseInt($el.attr('data-entrance-step'), 10) || 1;
+      const delay = reduced ? 0 : step * 80;
+      setTimeout(() => $el.addClass('is-entered'), delay);
     });
   });
 </script>
