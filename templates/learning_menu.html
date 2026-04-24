@@ -1,32 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="screen-page">
-  <div class="nav-row d-flex justify-content-between align-items-center mb-4">
-    <a class="nav-back" href="{{ url_for('home') }}">← Home</a>
-    <span class="nav-badge">F1 Strategies</span>
+  <!-- Sticky progress: updates from localStorage on mount. -->
+  <div class="lesson-progress-rail" aria-label="Lesson progress">
+    <div class="lesson-progress-rail__label">
+      <span class="t-caption">Your progress</span>
+      <span class="t-caption" id="progress-count">0 of {{ lessons|length }} complete</span>
+    </div>
+    <div class="lesson-progress-rail__track">
+      <div class="lesson-progress-rail__fill" id="progress-fill" style="width:0%"></div>
+    </div>
   </div>
 
-  <h2 class="page-title">Learning Modules</h2>
-  <p class="page-sub">Work through each topic to understand modern F1 race strategy.</p>
+  <div class="nav-row d-flex justify-content-between align-items-center mb-3 mt-4">
+    <a class="nav-back" href="{{ url_for('home') }}">← Home</a>
+    <span class="nav-badge t-caption">F1 Strategies</span>
+  </div>
 
-  <div class="section-list row g-3 mt-2">
+  <div class="t-caption eyebrow-label" style="color: var(--color-base);">LEARN</div>
+  <h2 class="t-h1 page-title mt-1">Pick a lesson</h2>
+  <p class="t-body page-sub" style="color: var(--color-light-grey); max-width: 56ch;">
+    Six focused modules, roughly three minutes each. Work through in order or jump to the one you care about.
+  </p>
+
+  <div class="lesson-grid">
     {% for lesson in lessons %}
-    <div class="col-12 col-md-6">
-      <a href="{{ url_for('learn', n=lesson.id) }}" class="section-item">
-        <span class="section-num">{{ '%02d' % lesson.id }}</span>
-        <span class="section-icon">{{ lesson.icon }}</span>
-        <div class="flex-grow-1">
-          <div class="section-label">{{ lesson.title }}</div>
-          <div class="section-desc">{{ lesson.subtitle }}</div>
-        </div>
-        <span class="section-caret">›</span>
-      </a>
-    </div>
+    <a href="{{ url_for('learn', n=lesson.id) }}"
+       class="lesson-card card-modern"
+       data-lesson-slug="{{ lesson.slug }}">
+      <div class="lesson-card__head">
+        <span class="lesson-card__num t-caption">{{ '%02d' % lesson.id }}</span>
+        <span class="lesson-card__status t-caption" data-status-pill>
+          <span class="status-dot"></span>
+          <span class="status-label">Not started</span>
+        </span>
+      </div>
+      <span class="lesson-card__icon" aria-hidden="true">{{ lesson.icon }}</span>
+      <h3 class="t-h3 lesson-card__title">{{ lesson.title }}</h3>
+      <p class="t-body lesson-card__desc">{{ lesson.subtitle }}</p>
+    </a>
     {% endfor %}
   </div>
 
-  <div class="d-flex justify-content-end mt-4">
-    <a class="btn btn-primary-f1" href="{{ url_for('quiz', n=1) }}">Take the Quiz →</a>
-  </div>
+  <!-- Transition band — the learn→quiz handoff. -->
+  <section class="quiz-transition" aria-label="Go to quiz">
+    <div>
+      <div class="t-caption" style="color: var(--color-accent);">WHEN YOU'RE READY</div>
+      <h3 class="t-h2 mt-1">Ready? Take the quiz.</h3>
+      <p class="t-body" style="color: var(--color-light-grey); margin-top: 6px;">Five questions. No trick answers — just the core strategy.</p>
+    </div>
+    <a class="btn btn-primary-f1 btn-lg" href="{{ url_for('quiz', n=1) }}">Start quiz →</a>
+  </section>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Read which lessons the user has visited / completed from localStorage
+  // and decorate the cards. Keeps the backend contract untouched.
+  (function () {
+    const STORAGE_KEY = 'f1_lesson_state_v1';
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (_) {}
+
+    const total = {{ lessons|length }};
+    let done = 0;
+
+    document.querySelectorAll('.lesson-card').forEach((card) => {
+      const slug = card.dataset.lessonSlug;
+      const s = state[slug];
+      const pill = card.querySelector('[data-status-pill]');
+      const label = pill.querySelector('.status-label');
+      if (s === 'complete') {
+        card.classList.add('is-complete');
+        pill.classList.add('is-complete');
+        label.textContent = 'Complete';
+        done += 1;
+      } else if (s === 'in-progress') {
+        card.classList.add('is-in-progress');
+        pill.classList.add('is-in-progress');
+        label.textContent = 'In progress';
+      }
+    });
+
+    document.getElementById('progress-count').textContent = done + ' of ' + total + ' complete';
+    document.getElementById('progress-fill').style.width = Math.round((done / total) * 100) + '%';
+  })();
+</script>
 {% endblock %}
