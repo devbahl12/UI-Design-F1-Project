@@ -553,4 +553,96 @@
   }
 
   global.initLessonCar = initLessonCar;
+
+  /* ===========================================================
+     Victory lap — /results (when score ≥ 4)
+     - Car orbits slowly around a torus ground track.
+     - Always facing forward along the path (tangent rotation).
+     - Reduced-motion: pin car to a static 3/4 view on the track.
+     =========================================================== */
+  async function initVictoryCar(opts) {
+    opts = opts || {};
+    const canvas = document.getElementById(opts.canvasId || 'victory-car');
+    if (!canvas) return;
+
+    const THREE = await import(THREE_CDN);
+    const palette = {
+      base: TOKENS.base(), accent: TOKENS.accent(),
+      dark: TOKENS.dark(), mid: TOKENS.mid(),
+      light: TOKENS.light(), white: TOKENS.white(),
+    };
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+    camera.position.set(0, 4.4, 8.5);
+    camera.lookAt(0, 0, 0);
+
+    lightScene(THREE, scene, palette);
+
+    /* Track: a torus lying flat on the ground + a thin accent inner rim. */
+    const track = new THREE.Mesh(
+      new THREE.TorusGeometry(3.4, 0.55, 14, 80),
+      new THREE.MeshStandardMaterial({ color: palette.mid, metalness: 0.2, roughness: 0.8 })
+    );
+    track.rotation.x = Math.PI / 2;
+    scene.add(track);
+
+    const rim = new THREE.Mesh(
+      new THREE.TorusGeometry(3.4, 0.05, 10, 80),
+      new THREE.MeshStandardMaterial({ color: palette.base, emissive: palette.base, emissiveIntensity: 0.25 })
+    );
+    rim.rotation.x = Math.PI / 2;
+    rim.position.y = 0.6;
+    scene.add(rim);
+
+    const car = buildCar(THREE, palette);
+    car.scale.setScalar(0.55);
+    scene.add(car);
+
+    scene.add(buildGroundShadow(THREE));
+
+    const renderer = makeRenderer(THREE, canvas);
+
+    function resize() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    new ResizeObserver(resize).observe(canvas);
+
+    const reduced = prefersReducedMotion();
+    let angle = 0;
+    const RADIUS = 3.4;
+
+    function tick() {
+      if (reduced) {
+        car.position.set(RADIUS, 0.4, 0);
+        car.rotation.y = -Math.PI / 2;
+      } else {
+        angle += 0.006;
+        car.position.set(Math.cos(angle) * RADIUS, 0.4, Math.sin(angle) * RADIUS);
+        /* Face tangent to the circle. */
+        car.rotation.y = -angle + Math.PI / 2;
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    window.addEventListener('pagehide', () => {
+      renderer.dispose();
+      scene.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+          else o.material.dispose();
+        }
+      });
+    }, { once: true });
+  }
+
+  global.initVictoryCar = initVictoryCar;
 })(window);
