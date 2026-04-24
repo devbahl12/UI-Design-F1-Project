@@ -41,6 +41,36 @@
   --dur-base:    240ms;
   --dur-slow:    400ms;
 
+  /* ---- Type families ----
+     Concordant pairing: Titillium Web (F1's real typeface) and Inter
+     are both geometric humanist sans — they share a structural DNA,
+     so headlines and body type read as one voice, not a clash.
+     JetBrains Mono is reserved for lap times and numeric telemetry
+     where character width stability matters. */
+  --font-heading: "Titillium Web", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* =========================================================
+   Type foundations — apply families globally and turn on
+   tabular numerals everywhere numbers live.
+   ========================================================= */
+html {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Tabular numerals for lap times, score, progress counts — keeps
+   digit widths consistent so numbers don't shift as they tick. */
+.laptime, .stat-chip .val, .final-score, .topic-score,
+.nav-badge, .home-eyebrow, .section-num {
+  font-variant-numeric: tabular-nums;
 }
 
 /* =========================================================
