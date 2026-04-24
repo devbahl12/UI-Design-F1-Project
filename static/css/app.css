@@ -467,7 +467,43 @@ body::before {
 .section-desc { font-size: 0.78rem; color: var(--color-light-grey); margin-top: 2px; }
 .section-caret { color: var(--color-light-grey); opacity: 0.6; font-size: 1rem; }
 
-/* Car hotspots */
+/* =========================================================
+   Lesson 3D viewer — canvas + overlayed hotspot markers.
+   The canvas holds the Three.js scene; the overlay is a normal
+   DOM layer whose buttons are pinned to projected 3D positions.
+   ========================================================= */
+.lesson-car-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  background: var(--color-mid-grey);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--elev-1);
+}
+.lesson-car-canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+}
+.lesson-car-overlay {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.lesson-car-overlay .hs-dot-3d {
+  position: absolute; top: 0; left: 0;
+  pointer-events: auto;
+  background: none; border: none; padding: 0;
+  cursor: pointer;
+}
+.hs-dot-3d.is-active::before { background: var(--color-base); }
+.lesson-car-reset {
+  position: absolute; right: 12px; top: 12px;
+  padding: 8px 16px; font-size: 0.85rem;
+}
+
+/* Car hotspots (legacy 2D image fallback) */
 .car-photo-wrap { position: relative; width: 100%; max-width: 700px; }
 .car-photo-wrap img { width: 100%; border-radius: var(--r-md); display: block; }
 .hs-dot {
@@ -714,3 +750,19 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .topic-name { font-size: 0.75rem; color: var(--color-light-grey); margin-bottom: 4px; }
 .topic-score { font-size: 1.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* =========================================================
+   Type spec reference — for the design-system slide.
+   -----------------------------------------------------------
+   Role         | Family          | Size      | Weight | Line-height | Tracking | Example usage
+   -------------|-----------------|-----------|--------|-------------|----------|----------------
+   .t-display   | Titillium Web   | 3.5rem    | 700    | 1.05        | -0.02em  | Home hero, results score
+   .t-h1        | Titillium Web   | 2.25rem   | 700    | 1.15        | -0.01em  | Lesson titles, quiz question
+   .t-h2        | Titillium Web   | 1.5rem    | 600    | 1.25        |  0       | Section headings
+   .t-h3        | Titillium Web   | 1.125rem  | 600    | 1.35        |  0       | Lesson card titles
+   .t-body      | Inter           | 1rem      | 400    | 1.60        |  0       | Body copy, answer choices
+   .t-caption   | Inter           | 0.8125rem | 500    | 1.45        |  0.02em  | Eyebrows, labels, progress
+   .t-mono      | JetBrains Mono  | inherit   | 500/700| inherit     |  0       | Lap times, score, topic numbers
+   .t-display and .t-h1 fluid via clamp() between mobile and desktop.
+   Tabular numerals enabled on all numeric UI.
+   ========================================================= */

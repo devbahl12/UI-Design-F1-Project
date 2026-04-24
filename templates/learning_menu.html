@@ -6,18 +6,18 @@
     <span class="nav-badge">F1 Strategies</span>
   </div>
 
-  <h2 class="page-title">Learning Modules</h2>
-  <p class="page-sub">Work through each topic to understand modern F1 race strategy.</p>
+  <h2 class="t-h1 page-title">Learning Modules</h2>
+  <p class="t-body page-sub">Work through each topic to understand modern F1 race strategy.</p>
 
   <div class="section-list row g-3 mt-2">
     {% for lesson in lessons %}
     <div class="col-12 col-md-6">
       <a href="{{ url_for('learn', n=lesson.id) }}" class="section-item">
-        <span class="section-num">{{ '%02d' % lesson.id }}</span>
+        <span class="section-num t-caption">{{ '%02d' % lesson.id }}</span>
         <span class="section-icon">{{ lesson.icon }}</span>
         <div class="flex-grow-1">
-          <div class="section-label">{{ lesson.title }}</div>
-          <div class="section-desc">{{ lesson.subtitle }}</div>
+          <div class="section-label t-h3">{{ lesson.title }}</div>
+          <div class="section-desc t-body">{{ lesson.subtitle }}</div>
         </div>
         <span class="section-caret">›</span>
       </a>
