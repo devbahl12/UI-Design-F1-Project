@@ -1,4 +1,47 @@
+/* =========================================================
+   Design tokens — single source of truth for color, shape,
+   elevation, and motion. Consumed by Bootstrap overrides in
+   the next layer and by every component below.
+   ========================================================= */
 :root {
+  /* ---- Core palette ---- */
+  --color-base:         #DC0000;   /* Ferrari rosso corsa: primary CTAs, correct-answer ring, progress fills, livery */
+  /* Accent chosen over cyan because yellow reads as racing-safety / podium glyph — tighter semantic fit to F1. */
+  --color-accent:       #FFF200;   /* Racing yellow: focus rings, in-progress states, peripheral wayfinding */
+  --color-dark-grey:    #0F0F12;   /* Garage near-black: page background */
+  --color-mid-grey:     #1E1E24;   /* Surface: cards, panels, sticky nav fill */
+  --color-light-grey:   #A1A1AA;   /* Secondary text, rails, divider strokes */
+  --color-white:        #FAFAFA;   /* Primary text; softer than pure #FFF under the dark bg */
+
+  /* ---- Derived state tokens (hover / active / subtle overlays) ---- */
+  --color-base-hover:    color-mix(in srgb, var(--color-base) 88%, white 12%);
+  --color-base-active:   color-mix(in srgb, var(--color-base) 80%, black 20%);
+  --color-base-subtle:   color-mix(in srgb, var(--color-base) 14%, transparent);
+  --color-accent-hover:  color-mix(in srgb, var(--color-accent) 88%, white 12%);
+  --color-accent-subtle: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  --color-surface-hover: color-mix(in srgb, var(--color-mid-grey) 85%, var(--color-white) 15%);
+  --color-hairline:      color-mix(in srgb, var(--color-white) 8%, transparent);
+  --color-hairline-hi:   color-mix(in srgb, var(--color-white) 16%, transparent);
+
+  /* ---- Elevation (soft diffuse, never harsh) ---- */
+  --elev-1: 0 1px 2px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.25);
+  --elev-2: 0 2px 4px rgba(0,0,0,0.40), 0 8px 20px rgba(0,0,0,0.35);
+  --elev-3: 0 4px 8px rgba(0,0,0,0.45), 0 24px 48px rgba(0,0,0,0.45);
+
+  /* ---- Radius ---- */
+  --r-sm:   6px;
+  --r-md:   12px;
+  --r-lg:   20px;
+  --r-full: 999px;
+
+  /* ---- Motion ---- */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:    150ms;
+  --dur-base:    240ms;
+  --dur-slow:    400ms;
+
+  /* ---- Legacy tokens retained until consumers migrate (removed in the color-routing commit) ---- */
   --bg:        #0c0c0f;
   --surface:   #13131a;
   --surface2:  #1a1a24;
