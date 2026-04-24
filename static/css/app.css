@@ -299,6 +299,15 @@ body::before {
   border-radius: var(--r-lg);
   filter: brightness(1.05) contrast(1.08) saturate(1.1);
 }
+.home-car-canvas {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--color-base) 8%, var(--color-mid-grey)),
+    var(--color-mid-grey));
+}
 .home-car-wrap::after {
   content: '';
   position: absolute;
