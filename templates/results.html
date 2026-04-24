@@ -7,20 +7,20 @@
   </div>
 
   <div class="text-center mt-4">
-    <div class="small-label mb-3">Quiz Complete</div>
+    <div class="small-label t-caption mb-3">Quiz Complete</div>
 
     <div class="score-card mx-auto">
-      <div class="small text-muted mb-2">Your Score</div>
-      <div class="final-score">{{ score }} / {{ total }}</div>
-      <div class="score-title">{{ title }}</div>
+      <div class="small t-caption text-muted mb-2">Your Score</div>
+      <div class="final-score t-display">{{ score }} / {{ total }}</div>
+      <div class="score-title t-body">{{ title }}</div>
     </div>
 
-    <div class="small-label mt-4 mb-2">Topic Breakdown</div>
+    <div class="small-label t-caption mt-4 mb-2">Topic Breakdown</div>
     <div class="d-flex flex-wrap gap-3 justify-content-center mb-4">
       {% for topic, total_n in topic_total.items() %}
       <div class="topic-chip">
-        <div class="topic-name">{{ topic | capitalize }}</div>
-        <div class="topic-score">{{ topic_score.get(topic, 0) }}/{{ total_n }}</div>
+        <div class="topic-name t-caption">{{ topic | capitalize }}</div>
+        <div class="topic-score t-mono">{{ topic_score.get(topic, 0) }}/{{ total_n }}</div>
       </div>
       {% endfor %}
     </div>

@@ -6,22 +6,25 @@
     <span class="nav-badge">{{ n }} / {{ total }}</span>
   </div>
 
-  <div class="quiz-progress"><div class="quiz-progress-bar" style="width: {{ (n / total) * 100 }}%;"></div></div>
+  <div class="quiz-progress" role="progressbar"
+       aria-valuemin="1" aria-valuemax="{{ total }}" aria-valuenow="{{ n }}">
+    <div class="quiz-progress-bar" style="width: {{ (n / total) * 100 }}%;"></div>
+  </div>
 
-  <div class="small-label mt-4 mb-2">Question {{ n }} of {{ total }}</div>
-  <div class="quiz-q-text">{{ q.text }}</div>
+  <div class="small-label t-caption mt-4 mb-2">Question {{ n }} of {{ total }}</div>
+  <div class="quiz-q-text t-h1">{{ q.text }}</div>
 
   <form id="quiz-form" method="post" action="{{ url_for('quiz', n=n) }}">
     <div id="quiz-answers" class="row g-2 mt-3" data-correct="{{ q.correct }}"
          data-explanation="{{ q.explanation | e }}">
       {% for opt in q.options %}
         <div class="col-12 col-md-6">
-          <button type="button" class="answer-btn w-100" data-idx="{{ loop.index0 }}">{{ opt }}</button>
+          <button type="button" class="answer-btn t-body w-100" data-idx="{{ loop.index0 }}">{{ opt }}</button>
         </div>
       {% endfor %}
     </div>
     <input type="hidden" name="choice" id="choice-input" value="">
-    <div id="quiz-feedback" class="quiz-feedback"></div>
+    <div id="quiz-feedback" class="quiz-feedback t-body" aria-live="polite"></div>
 
     <div class="d-flex justify-content-between mt-4">
       {% if n > 1 %}

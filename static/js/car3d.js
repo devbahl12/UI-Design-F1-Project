@@ -347,4 +347,210 @@
   }
 
   global.initHeroCar = initHeroCar;
+
+  /* ===========================================================
+     Lesson car — /learn/1
+     - Orbitable via OrbitControls (damping, clamped zoom, no pan).
+     - 5 hotspots placed at 3D coords on the car; projected to 2D
+       each frame so DOM markers stay pinned to their part.
+     - Clicking a hotspot tweens the camera to a preset angle and
+       opens the side info panel.
+     - Keyboard accessible: hotspots are real <button>s, arrow keys
+       orbit the camera, Enter activates the focused hotspot.
+     - Reduced-motion: disable auto-orbit and tween instantly.
+     =========================================================== */
+  async function initLessonCar(opts) {
+    opts = opts || {};
+    const canvas = document.getElementById(opts.canvasId || 'lesson-car');
+    if (!canvas) return;
+    const overlay = document.getElementById(opts.overlayId || 'lesson-car-overlay');
+    const panel = document.getElementById(opts.panelId || 'component-info');
+    const resetBtn = document.getElementById(opts.resetBtnId || 'reset-view');
+
+    const THREE = await import(THREE_CDN);
+    const { OrbitControls } = await import(ORBIT_CDN);
+
+    const palette = {
+      base: TOKENS.base(), accent: TOKENS.accent(),
+      dark: TOKENS.dark(), mid: TOKENS.mid(),
+      light: TOKENS.light(), white: TOKENS.white(),
+    };
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+    const defaultCamPos = new THREE.Vector3(4.2, 2.2, 5.6);
+    camera.position.copy(defaultCamPos);
+    camera.lookAt(0, 0.45, 0);
+
+    lightScene(THREE, scene, palette);
+    const car = buildCar(THREE, palette);
+    scene.add(car);
+    scene.add(buildGroundShadow(THREE));
+
+    const renderer = makeRenderer(THREE, canvas);
+
+    function resize() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    new ResizeObserver(resize).observe(canvas);
+
+    const reduced = prefersReducedMotion();
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = false;
+    controls.minDistance = 3.2;
+    controls.maxDistance = 9;
+    controls.minPolarAngle = Math.PI / 6;
+    controls.maxPolarAngle = Math.PI / 2.1;
+    controls.target.set(0, 0.45, 0);
+    controls.autoRotate = !reduced;
+    controls.autoRotateSpeed = 0.7;
+    /* OrbitControls also binds arrow keys to camera-pan by default;
+       we re-route arrows to orbit ourselves below so keyboard users
+       can navigate the scene without a mouse. */
+    controls.listenToKeyEvents(canvas);
+
+    /* Hotspot 3D anchor positions (matched to the procedural car). */
+    const HOTSPOT_WORLD = {
+      frontwing: new THREE.Vector3( 0.0, 0.30, 2.05),
+      fronttire: new THREE.Vector3( 0.8, 0.34, 1.25),
+      halo:      new THREE.Vector3( 0.0, 0.75, 0.28),
+      sidepod:   new THREE.Vector3( 0.7, 0.45,-0.15),
+      reartire:  new THREE.Vector3( 0.8, 0.34,-1.25),
+      rearwing:  new THREE.Vector3( 0.0, 1.04,-1.75),
+    };
+    const HOTSPOT_CAM = {
+      frontwing: new THREE.Vector3( 0.8, 1.1, 4.5),
+      fronttire: new THREE.Vector3( 3.5, 1.2, 3.2),
+      halo:      new THREE.Vector3( 0.0, 1.9, 3.2),
+      sidepod:   new THREE.Vector3( 3.6, 1.5, 2.2),
+      reartire:  new THREE.Vector3( 3.6, 1.2,-2.8),
+      rearwing:  new THREE.Vector3(-0.8, 2.2,-4.3),
+    };
+
+    const hotspotEls = {};
+    if (overlay) {
+      overlay.querySelectorAll('[data-hotspot-key]').forEach((el) => {
+        hotspotEls[el.dataset.hotspotKey] = el;
+      });
+    }
+
+    /* Project 3D hotspot anchors to 2D each frame so DOM markers
+       track with the car as it rotates. */
+    function updateOverlayPositions() {
+      const rect = canvas.getBoundingClientRect();
+      const v = new THREE.Vector3();
+      for (const [key, worldPos] of Object.entries(HOTSPOT_WORLD)) {
+        const el = hotspotEls[key];
+        if (!el) continue;
+        v.copy(worldPos).project(camera);
+        const x = ( v.x * 0.5 + 0.5) * rect.width;
+        const y = (-v.y * 0.5 + 0.5) * rect.height;
+        /* Hide markers that are behind the camera (z > 1 in NDC). */
+        const visible = v.z < 1;
+        el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+        el.style.opacity = visible ? '1' : '0';
+        el.style.pointerEvents = visible ? 'auto' : 'none';
+      }
+    }
+
+    /* Camera tween for hotspot focus. */
+    let tweenState = null;
+    function tweenCameraTo(targetPos, duration) {
+      if (reduced || duration === 0) {
+        camera.position.copy(targetPos);
+        controls.target.set(0, 0.45, 0);
+        controls.update();
+        return;
+      }
+      const startPos = camera.position.clone();
+      const startTime = performance.now();
+      tweenState = { startPos, targetPos, startTime, duration };
+    }
+
+    function stepTween() {
+      if (!tweenState) return;
+      const t = (performance.now() - tweenState.startTime) / tweenState.duration;
+      if (t >= 1) {
+        camera.position.copy(tweenState.targetPos);
+        tweenState = null;
+        return;
+      }
+      /* cubic-bezier(0.4, 0, 0.2, 1) approximated. */
+      const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      camera.position.lerpVectors(tweenState.startPos, tweenState.targetPos, e);
+    }
+
+    function focusHotspot(key, data) {
+      const camTarget = HOTSPOT_CAM[key];
+      if (!camTarget) return;
+      controls.autoRotate = false;
+      tweenCameraTo(camTarget, 400);
+
+      Object.values(hotspotEls).forEach((el) => el.classList.remove('is-active'));
+      if (hotspotEls[key]) hotspotEls[key].classList.add('is-active');
+
+      if (panel && data) {
+        panel.innerHTML =
+          '<div style="font-size:2rem;margin-bottom:12px;">' + (data.icon || '') + '</div>' +
+          '<div class="t-caption" style="color:var(--color-base);margin-bottom:6px;">' + (data.name || '') + '</div>' +
+          '<p class="t-body" style="color:var(--color-light-grey);">' + (data.desc || '') + '</p>';
+      }
+    }
+
+    Object.entries(hotspotEls).forEach(([key, el]) => {
+      el.addEventListener('click', () => {
+        let data = {};
+        try { data = JSON.parse(el.dataset.hotspot || '{}'); } catch (_) {}
+        focusHotspot(key, data);
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        Object.values(hotspotEls).forEach((el) => el.classList.remove('is-active'));
+        controls.autoRotate = !reduced;
+        tweenCameraTo(defaultCamPos, 400);
+        if (panel) {
+          panel.innerHTML = '<p class="t-body" style="color:var(--color-light-grey);text-align:center;">Click a red hotspot on the car to learn more.</p>';
+        }
+      });
+    }
+
+    let running = true;
+    document.addEventListener('visibilitychange', () => {
+      running = !document.hidden;
+      if (running) tick();
+    });
+
+    function tick() {
+      if (!running) return;
+      stepTween();
+      controls.update();
+      renderer.render(scene, camera);
+      updateOverlayPositions();
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    window.addEventListener('pagehide', () => {
+      renderer.dispose();
+      scene.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+          else o.material.dispose();
+        }
+      });
+    }, { once: true });
+  }
+
+  global.initLessonCar = initLessonCar;
 })(window);
