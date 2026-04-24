@@ -177,4 +177,18 @@
   });
 </script>
 {% endif %}
+<script>
+  // Record lesson progress in localStorage so the learning menu can
+  // show per-module state without requiring a backend round-trip.
+  (function () {
+    try {
+      const KEY = 'f1_lesson_state_v1';
+      const slug = {{ lesson.slug | tojson }};
+      const state = JSON.parse(localStorage.getItem(KEY) || '{}');
+      // First visit marks in-progress; revisits mark complete.
+      state[slug] = state[slug] === 'in-progress' ? 'complete' : (state[slug] || 'in-progress');
+      localStorage.setItem(KEY, JSON.stringify(state));
+    } catch (_) { /* storage disabled is fine */ }
+  })();
+</script>
 {% endblock %}

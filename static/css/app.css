@@ -521,6 +521,128 @@ body::before {
 .mode-card .label { font-size: 1rem; font-weight: 700; }
 .mode-card .mode-sub { font-size: 0.75rem; color: var(--color-light-grey); }
 
+/* =========================================================
+   Learning menu — sticky progress rail + modern lesson cards +
+   transition band to the quiz.
+   ========================================================= */
+.lesson-progress-rail {
+  position: sticky; top: 54px; z-index: 20;
+  background: color-mix(in srgb, var(--color-dark-grey) 82%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-hairline);
+  padding: 10px clamp(16px, 3vw, 32px);
+  margin: -24px -16px 0;
+}
+.lesson-progress-rail__label {
+  display: flex; justify-content: space-between;
+  color: var(--color-light-grey);
+  margin-bottom: 6px;
+}
+.lesson-progress-rail__track {
+  height: 3px; border-radius: 2px;
+  background: var(--color-hairline);
+  overflow: hidden;
+}
+.lesson-progress-rail__fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 2px;
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+.lesson-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 20px);
+  margin-top: 24px;
+}
+@media (max-width: 960px) {
+  .lesson-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .lesson-grid { grid-template-columns: 1fr; }
+}
+
+.lesson-card {
+  display: flex; flex-direction: column; gap: 8px;
+  text-decoration: none;
+  color: var(--color-white);
+  padding: clamp(18px, 2vw, 24px);
+  min-height: 180px;
+  position: relative;
+}
+.lesson-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--elev-2);
+  color: var(--color-white);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lesson-card:hover { transform: none; }
+}
+.lesson-card__head {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.lesson-card__num {
+  color: var(--color-accent);
+}
+.lesson-card__icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-top: 6px;
+}
+.lesson-card__title { margin: 0; color: var(--color-white); }
+.lesson-card__desc  { margin: 0; color: var(--color-light-grey); }
+.lesson-card__status {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--color-hairline);
+  color: var(--color-light-grey);
+  background: color-mix(in srgb, var(--color-light-grey) 8%, transparent);
+}
+.lesson-card__status .status-dot {
+  width: 6px; height: 6px; border-radius: var(--r-full);
+  background: var(--color-light-grey);
+}
+.lesson-card__status.is-in-progress {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: var(--color-accent-subtle);
+}
+.lesson-card__status.is-in-progress .status-dot { background: var(--color-accent); }
+.lesson-card__status.is-complete {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: var(--color-accent-subtle);
+}
+.lesson-card__status.is-complete .status-dot {
+  background: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-subtle);
+}
+.lesson-card__status.is-complete .status-dot::after {
+  /* Check glyph rendered with CSS so we don't need an icon asset. */
+  content: ''; display: block;
+  width: 4px; height: 8px;
+  border-right: 2px solid var(--color-dark-grey);
+  border-bottom: 2px solid var(--color-dark-grey);
+  transform: rotate(45deg) translate(-50%, -70%);
+}
+
+.quiz-transition {
+  display: flex; flex-wrap: wrap; gap: 20px;
+  align-items: center; justify-content: space-between;
+  padding: clamp(20px, 3vw, 32px) clamp(20px, 3vw, 36px);
+  margin-top: clamp(28px, 4vw, 48px);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--color-base) 20%, var(--color-mid-grey)),
+    var(--color-mid-grey) 70%);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--elev-2);
+}
+
 /* Section list (learning menu) */
 .section-item {
   display: flex; align-items: center; gap: 16px;
