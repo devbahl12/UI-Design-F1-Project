@@ -297,6 +297,7 @@ function selectGap(gap) {
 // ── QUIZ ──
 const questions = [
   {
+    type: 'mcq',
     topic: 'tires',
     text: 'Which tire compound is the most durable and typically used for the longest stints?',
     options: ['Soft', 'Medium', 'Hard', 'Intermediate'],
@@ -304,32 +305,66 @@ const questions = [
     explanation: 'The Hard compound can last 40+ laps, making it the go-to for teams planning a one-stop strategy.'
   },
   {
+    type: 'scenario',
     topic: 'tires',
-    text: 'A driver is told "box box box" over the radio. What does this mean?',
-    options: ['Push harder — attack mode', 'Pit this lap', 'Let the car behind pass', 'Save fuel'],
+    text: 'Lap 18: your medium tires are overheating, lap times are dropping, and race control warns of rain in 10 minutes. Your engineer says "box box box." What is the best immediate action?',
+    options: [
+      'Stay out two more laps to avoid traffic',
+      'Pit this lap for new tires before the pace cliff gets worse',
+      'Push harder to keep track position',
+      'Save fuel and wait for rain'
+    ],
     correct: 1,
-    explanation: '"Box" is F1 shorthand for pit lane (from the German "Box"). "Box box box" means come in and pit immediately.'
+    explanation: '"Box box box" means pit immediately. In this scenario, pitting now avoids further time loss from tire degradation.'
   },
   {
-    topic: 'aero',
-    text: 'Why is "dirty air" harmful to a following car\'s performance?',
-    options: ['It contains exhaust gases that overheat the engine', 'It reduces downforce, causing slower corners and tire overheating', 'It only affects top speed on straights', 'It improves fuel economy for the chasing car'],
-    correct: 1,
-    explanation: 'Turbulent wake from the car ahead can cut downforce by up to 30%, making corners slower and tires overheat faster.'
-  },
-  {
-    topic: 'aero',
-    text: 'What does DRS (Drag Reduction System) do when activated?',
-    options: ['Increases braking force', 'Opens the rear wing flap to reduce drag', 'Cools the rear tires', 'Locks the front differential'],
-    correct: 1,
-    explanation: 'DRS opens a slot in the rear wing element, reducing aerodynamic drag and adding up to 15 km/h of top speed on designated straight sections.'
-  },
-  {
+    type: 'ordering',
     topic: 'pit',
-    text: 'What is the "undercut" strategy in F1?',
-    options: ['Pitting before a rival to gain track position on fresher tires', 'Staying out longer than a rival to save pit stop time', 'Pitting twice in a row to beat a safety car', 'Using a softer compound to set the fastest qualifying lap'],
-    correct: 0,
-    explanation: 'The undercut means pitting before your rival. Your new tires are faster, so if the gap is large enough you emerge ahead when they eventually pit.'
+    text: 'Drag and drop to order these undercut steps from first to last.',
+    orderingItems: [
+      'A: Rival pits and rejoins behind',
+      'B: Your car pits before the rival',
+      'C: You use fresh tires to set faster laps',
+      'D: Gap closes while rival is still on old tires'
+    ],
+    correctOrder: ['B: Your car pits before the rival', 'C: You use fresh tires to set faster laps', 'D: Gap closes while rival is still on old tires', 'A: Rival pits and rejoins behind'],
+    explanation: 'Undercut flow: pit first, gain pace on fresh tires, close the gap while rival stays out, then emerge ahead when they pit.'
+  },
+  {
+    type: 'spot_error',
+    topic: 'aero',
+    text: 'Spot the error in this statement: "DRS increases downforce in corners so the car can turn better."',
+    prompt: 'Type what is wrong (briefly):',
+    requiredKeywords: ['reduce drag', 'rear wing', 'less downforce'],
+    minKeywordMatches: 1,
+    correctAnswer: 'DRS opens the rear wing flap to reduce drag on straights; it lowers downforce rather than increasing it.',
+    explanation: 'DRS is for straight-line speed. It reduces drag (and downforce), so it is not used to gain cornering grip.'
+  },
+  {
+    type: 'fill_blank',
+    topic: 'pit',
+    text: 'Fill in the blank: The undercut means pitting ____ a rival to gain pace on fresher tires.',
+    prompt: 'Your word/phrase:',
+    acceptableAnswers: ['before', 'before your rival', 'earlier than'],
+    correctAnswer: 'before',
+    explanation: 'An undercut works by stopping before your rival so your fresh-tire pace can jump them after their stop.'
+  },
+  {
+    type: 'ordering',
+    topic: 'tires',
+    text: 'Drag and drop the tire compounds from shortest to longest typical race stint.',
+    orderingItems: ['Soft', 'Medium', 'Hard'],
+    correctOrder: ['Soft', 'Medium', 'Hard'],
+    explanation: 'In dry conditions, Soft usually has the shortest stint, Medium is balanced, and Hard lasts the longest.'
+  },
+  {
+    type: 'fill_blank',
+    topic: 'aero',
+    text: 'Fill in the blank: Dirty air can reduce ____ and make cornering slower.',
+    prompt: 'Your word:',
+    acceptableAnswers: ['downforce', 'aerodynamic downforce'],
+    correctAnswer: 'downforce',
+    explanation: 'Turbulent wake from the car ahead reduces downforce, so the following car loses grip in corners.'
   }
 ];
 
@@ -338,6 +373,7 @@ let quizScore       = 0;
 let userAnswers     = [];
 let topicScores     = {};
 let topicTotals     = {};
+let dragSourceEl    = null;
 
 function startQuiz() {
   const nameInput = document.getElementById('quiz-name-input');
@@ -354,6 +390,8 @@ function startQuiz() {
 function showQuestion() {
   const q = questions[currentQuestion];
   const n = questions.length;
+  const type = q.type || 'mcq';
+  const answersEl = document.getElementById('quiz-answers');
 
   document.getElementById('quiz-nav-label').textContent  = `${currentQuestion + 1} / ${n}`;
   document.getElementById('quiz-q-num').textContent      = `Question ${currentQuestion + 1} of ${n}`;
@@ -361,10 +399,53 @@ function showQuestion() {
   document.getElementById('quiz-prog').style.width       = `${((currentQuestion + 1) / n) * 100}%`;
   document.getElementById('quiz-feedback').textContent   = '';
   document.getElementById('quiz-next-btn').style.display = 'none';
+  answersEl.style.gridTemplateColumns = '1fr 1fr';
 
-  document.getElementById('quiz-answers').innerHTML = q.options
-    .map((opt, i) => `<button class="answer-btn" onclick="selectAnswer(${i})">${opt}</button>`)
-    .join('');
+  if (type === 'mcq' || type === 'scenario') {
+    answersEl.innerHTML = q.options
+      .map((opt, i) => `<button class="answer-btn" onclick="selectAnswer(${i})">${opt}</button>`)
+      .join('');
+    return;
+  }
+
+  if (type === 'ordering') {
+    answersEl.style.gridTemplateColumns = '1fr';
+    const shuffled = [...q.orderingItems]
+      .map(v => ({ v, r: Math.random() }))
+      .sort((a, b) => a.r - b.r)
+      .map(x => x.v);
+
+    answersEl.innerHTML = `
+      <div class="answer-btn" style="text-align:left;cursor:default;">
+        <div style="font-size:0.8rem;color:var(--text-2);margin-bottom:8px;">Drag items to reorder, then press Check.</div>
+        <ol id="ordering-list" style="margin:0;padding-left:20px;line-height:1.8;display:flex;flex-direction:column;gap:8px;">
+          ${shuffled.map(item => `
+            <li class="ordering-item" draggable="true" data-value="${item}"
+                style="list-style-position:inside;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:grab;">
+              ${item}
+            </li>
+          `).join('')}
+        </ol>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn-primary" onclick="checkOrderingAnswer()" style="padding:12px 16px;">Check</button>
+      </div>
+    `;
+    initOrderingDnD();
+    return;
+  }
+
+  answersEl.style.gridTemplateColumns = '1fr';
+  answersEl.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <label style="font-size:0.8rem;color:var(--text-2);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">${q.prompt || 'Your answer:'}</label>
+      <textarea id="quiz-text-input" rows="3"
+                style="resize:vertical;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px 14px;line-height:1.5;"></textarea>
+      <div>
+        <button class="btn-primary" onclick="checkTextAnswer()" style="padding:12px 16px;">Check</button>
+      </div>
+    </div>
+  `;
 }
 
 function selectAnswer(idx) {
@@ -386,6 +467,106 @@ function selectAnswer(idx) {
   fb.style.color = correct ? '#00c853' : '#ff7043';
 
   document.getElementById('quiz-next-btn').style.display = 'block';
+}
+
+function markQuestionResult(correct, userResponse) {
+  const q = questions[currentQuestion];
+  if (correct) quizScore++;
+  topicScores[q.topic] = (topicScores[q.topic] || 0) + (correct ? 1 : 0);
+  topicTotals[q.topic] = (topicTotals[q.topic] || 0) + 1;
+  userAnswers.push(userResponse);
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.textContent = (correct ? '✓ Correct! ' : '✗ Not quite. ') + q.explanation;
+  fb.style.color = correct ? '#00c853' : '#ff7043';
+  document.getElementById('quiz-next-btn').style.display = 'block';
+}
+
+function normalizeAnswer(s) {
+  return (s || '').toLowerCase().trim().replace(/\s+/g, ' ');
+}
+
+function checkOrderingAnswer() {
+  const q = questions[currentQuestion];
+  const list = document.getElementById('ordering-list');
+  if (!list) return;
+  const currentOrder = [...list.querySelectorAll('.ordering-item')].map(el => el.dataset.value);
+  const expected = q.correctOrder || [];
+  const correct = currentOrder.length === expected.length &&
+    currentOrder.every((item, idx) => item === expected[idx]);
+  list.querySelectorAll('.ordering-item').forEach(el => {
+    el.draggable = false;
+    el.style.cursor = 'default';
+  });
+  const btn = list.parentElement && list.parentElement.parentElement
+    ? list.parentElement.parentElement.querySelector('button')
+    : null;
+  if (btn) btn.disabled = true;
+  markQuestionResult(correct, currentOrder.join(' → '));
+}
+
+function checkTextAnswer() {
+  const q = questions[currentQuestion];
+  const input = document.getElementById('quiz-text-input');
+  if (!input) return;
+  const typedRaw = input.value || '';
+  const typed = normalizeAnswer(typedRaw);
+  if (!typed) return;
+
+  let correct = false;
+  if ((q.type || '') === 'fill_blank') {
+    const accepted = (q.acceptableAnswers || []).map(normalizeAnswer);
+    correct = accepted.includes(typed);
+  } else {
+    const keywords = (q.requiredKeywords || []).map(normalizeAnswer);
+    const matches = keywords.reduce((count, k) => count + (typed.includes(k) ? 1 : 0), 0);
+    correct = matches >= (q.minKeywordMatches || 1);
+  }
+
+  input.disabled = true;
+  const btn = input.parentElement ? input.parentElement.querySelector('button') : null;
+  if (btn) btn.disabled = true;
+  markQuestionResult(correct, typedRaw.trim());
+}
+
+function initOrderingDnD() {
+  const list = document.getElementById('ordering-list');
+  if (!list) return;
+  const items = [...list.querySelectorAll('.ordering-item')];
+
+  function handleDragStart(e) {
+    dragSourceEl = this;
+    this.style.opacity = '0.5';
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', this.dataset.value || '');
+  }
+
+  function handleDragEnd() {
+    this.style.opacity = '1';
+    dragSourceEl = null;
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    if (!dragSourceEl || dragSourceEl === this) return;
+    const nodes = [...list.querySelectorAll('.ordering-item')];
+    const srcIndex = nodes.indexOf(dragSourceEl);
+    const targetIndex = nodes.indexOf(this);
+    if (srcIndex < targetIndex) list.insertBefore(dragSourceEl, this.nextSibling);
+    else list.insertBefore(dragSourceEl, this);
+  }
+
+  items.forEach(item => {
+    item.addEventListener('dragstart', handleDragStart);
+    item.addEventListener('dragend', handleDragEnd);
+    item.addEventListener('dragover', handleDragOver);
+    item.addEventListener('drop', handleDrop);
+  });
 }
 
 function nextQuestion() {
