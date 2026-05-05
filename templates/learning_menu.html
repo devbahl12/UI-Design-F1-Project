@@ -42,14 +42,16 @@
     {% endfor %}
   </div>
 
-  <!-- Transition band — the learn→quiz handoff. -->
-  <section class="quiz-transition" aria-label="Go to quiz">
+  <!-- Transition band — learn → Interactive Quiz -->
+  <section class="quiz-transition" aria-label="Interactive Quiz">
     <div>
       <div class="t-caption" style="color: var(--color-accent);">WHEN YOU'RE READY</div>
-      <h3 class="t-h2 mt-1">Ready? Take the quiz.</h3>
-      <p class="t-body" style="color: var(--color-light-grey); margin-top: 6px;">Five questions. No trick answers — just the core strategy.</p>
+      <h3 class="t-h2 mt-1">Try the Interactive Quiz</h3>
+      <p class="t-body" style="color: var(--color-light-grey); margin-top: 6px;">
+        Dial in tyres and wing for each scenario, then watch how your pace stacks up on track.
+      </p>
     </div>
-    <a class="btn btn-primary-f1 btn-lg" href="{{ url_for('quiz', n=1) }}">Start quiz →</a>
+    <a class="btn btn-primary-f1 btn-lg" href="{{ url_for('interactive_quiz') }}">Open Interactive Quiz →</a>
   </section>
 </div>
 {% endblock %}
