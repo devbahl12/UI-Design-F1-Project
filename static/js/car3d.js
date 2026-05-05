@@ -555,7 +555,7 @@
   global.initLessonCar = initLessonCar;
 
   /* ===========================================================
-     Victory lap — /results (when score ≥ 4)
+     Victory lap — optional canvas (e.g. celebratory screen)
      - Car orbits slowly around a torus ground track.
      - Always facing forward along the path (tangent rotation).
      - Reduced-motion: pin car to a static 3/4 view on the track.

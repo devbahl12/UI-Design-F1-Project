@@ -7,13 +7,13 @@
     <h1 class="home-title t-display" data-entrance-step="2">Understand Formula&nbsp;1 strategy in 20&nbsp;minutes.</h1>
     <p class="home-sub t-body" data-entrance-step="3">Tires, aerodynamics, pit strategy — the six moves every race is built on, with a car you can rotate and poke at.</p>
 
-    <form id="start-form" method="post" action="{{ url_for('start') }}" class="home-hero__ctas" data-entrance-step="4">
-      <!-- Mode is set by whichever CTA is clicked, so the radios stay hidden. -->
-      <input type="radio" name="mode" value="learning" id="mode-learning" checked hidden>
-      <input type="radio" name="mode" value="quiz" id="mode-quiz" hidden>
-      <button type="submit" class="btn btn-primary-f1 btn-lg" data-mode="learning">Start learning →</button>
-      <button type="submit" class="btn btn-ghost-f1 btn-lg" data-mode="quiz">Take the quiz</button>
-    </form>
+    <div class="home-hero__ctas d-flex flex-column align-items-start gap-3" data-entrance-step="4">
+      <form id="start-form" method="post" action="{{ url_for('start') }}" class="d-flex flex-wrap gap-3 mb-0">
+        <input type="hidden" name="mode" value="learning">
+        <button type="submit" class="btn btn-primary-f1 btn-lg">Start learning →</button>
+      </form>
+      <a class="btn btn-ghost-f1 btn-lg" href="{{ url_for('interactive_quiz') }}">Interactive Quiz</a>
+    </div>
   </div>
 
   <div class="home-hero__canvas" data-entrance data-entrance-step="3">
@@ -86,12 +86,6 @@
 {% block scripts %}
 <script>
   $(function () {
-    // Hero CTA routes mode via the hidden radio pair.
-    $('.home-hero__ctas button[data-mode]').on('click', function (e) {
-      const mode = $(this).data('mode');
-      $('#mode-' + mode).prop('checked', true);
-    });
-
     // Staggered entrance: elements inside [data-entrance] fade+translate-up
     // in sequence using their data-entrance-step value. Reduced-motion
     // short-circuits to an instant opacity flip.

@@ -19,7 +19,7 @@ def load_json(name):
 
 
 LESSONS = load_json("lessons.json")
-QUIZ = load_json("quiz.json")
+INTERACTIVE_QUIZ = load_json("interactive_quiz.json")
 
 
 def _fresh_session():
@@ -27,7 +27,6 @@ def _fresh_session():
         "started_at": None,
         "mode": None,
         "lesson_events": [],
-        "quiz_answers": [None] * len(QUIZ),
     }
 
 
@@ -38,8 +37,7 @@ def _load_session():
     try:
         with open(STORAGE_FILE, "r") as f:
             data = json.load(f)
-        if len(data.get("quiz_answers", [])) != len(QUIZ):
-            data["quiz_answers"] = [None] * len(QUIZ)
+        data.pop("quiz_answers", None)
         return data
     except json.JSONDecodeError:
         return _fresh_session()
@@ -66,13 +64,10 @@ def home():
 
 @app.route("/start", methods=["POST"])
 def start():
-    mode = request.form.get("mode", "learning")
     session = _fresh_session()
     session["started_at"] = datetime.now(timezone.utc).isoformat()
-    session["mode"] = mode
+    session["mode"] = request.form.get("mode", "learning")
     _save_session(session)
-    if mode == "quiz":
-        return redirect(url_for("quiz", n=1))
     return redirect(url_for("learning_menu"))
 
 
@@ -115,68 +110,14 @@ def learn_interact(n):
     return jsonify({"ok": True})
 
 
-@app.route("/quiz/<int:n>", methods=["GET", "POST"])
-def quiz(n):
-    if n < 1 or n > len(QUIZ):
-        abort(404)
-    q = QUIZ[n - 1]
-    session = _load_session()
-
-    if request.method == "POST":
-        try:
-            choice = int(request.form.get("choice", "-1"))
-        except ValueError:
-            choice = -1
-        correct = choice == q["correct"]
-        session["quiz_answers"][n - 1] = {
-            "choice": choice,
-            "correct": correct,
-            "at": datetime.now(timezone.utc).isoformat(),
-        }
-        _save_session(session)
-        if n < len(QUIZ):
-            return redirect(url_for("quiz", n=n + 1))
-        return redirect(url_for("results"))
-
-    prior = session["quiz_answers"][n - 1]
+@app.route("/interactive-quiz")
+def interactive_quiz():
+    """Tyre + wing vs conditions with on-track pace preview."""
+    tires = LESSONS[1].get("tires", []) if len(LESSONS) > 1 else []
     return render_template(
-        "quiz.html",
-        q=q,
-        n=n,
-        total=len(QUIZ),
-        prior=prior,
-    )
-
-
-@app.route("/results")
-def results():
-    session = _load_session()
-    answers = session["quiz_answers"]
-    score = sum(1 for a in answers if a and a.get("correct"))
-    total = len(QUIZ)
-    topic_score = {}
-    topic_total = {}
-    for q, a in zip(QUIZ, answers):
-        topic_total[q["topic"]] = topic_total.get(q["topic"], 0) + 1
-        if a and a.get("correct"):
-            topic_score[q["topic"]] = topic_score.get(q["topic"], 0) + 1
-    titles = [
-        "Keep Studying!",
-        "Getting There",
-        "Strategist in Training",
-        "Race Engineer Material",
-        "F1 Mastermind",
-    ]
-    title = titles[min(score, len(titles) - 1)]
-    return render_template(
-        "results.html",
-        score=score,
-        total=total,
-        title=title,
-        questions=QUIZ,
-        answers=answers,
-        topic_score=topic_score,
-        topic_total=topic_total,
+        "interactive_quiz.html",
+        iq=INTERACTIVE_QUIZ,
+        tires=tires,
     )
 
 

@@ -160,7 +160,7 @@
     {% if next_n %}
       <a class="btn btn-primary-f1" href="{{ url_for('learn', n=next_n) }}">Next →</a>
     {% else %}
-      <a class="btn btn-primary-f1" href="{{ url_for('quiz', n=1) }}">Take the Quiz →</a>
+      <a class="btn btn-primary-f1" href="{{ url_for('interactive_quiz') }}">Interactive Quiz →</a>
     {% endif %}
   </div>
 </div>

@@ -1,0 +1,69 @@
+{
+  "title": "Interactive Quiz",
+  "subtitle": "Configure your car for the conditions, then watch relative pace on track.",
+  "scenarios": [
+    {
+      "id": "dry-heat",
+      "headline": "High-degradation Sunday",
+      "conditions": "Ambient 34°C, track surface 52°C, bone-dry asphalt. Rear tires will punish every traction event.",
+      "weather": "dry",
+      "track_temp": "hot",
+      "rivals": [
+        {
+          "name": "Car 04",
+          "tire": "hard",
+          "wing": "high",
+          "blurb": "Conservative — prioritizes thermal stability over peak grip."
+        },
+        {
+          "name": "Car 77",
+          "tire": "soft",
+          "wing": "low",
+          "blurb": "Maximum qualifying-style pace — may struggle with overheating late stint."
+        }
+      ]
+    },
+    {
+      "id": "heavy-rain",
+      "headline": "Standing water — lights out",
+      "conditions": "Race control reports rivers across Turns 3–5. Spray limiting visibility; full wet grooves mandatory until it eases.",
+      "weather": "wet",
+      "track_temp": "cold",
+      "rivals": [
+        {
+          "name": "Car 18",
+          "tire": "soft",
+          "wing": "low",
+          "blurb": "Still on slicks — skating on the surface film."
+        },
+        {
+          "name": "Car 31",
+          "tire": "inter",
+          "wing": "balanced",
+          "blurb": "Inters — workable but aquaplaning risk where water piles up."
+        }
+      ]
+    },
+    {
+      "id": "drying-line",
+      "headline": "Drying racing line",
+      "conditions": "Showers stopped ten minutes ago. A dry line is forming but offline stays greasy — crossover tyre psychology matters.",
+      "weather": "mixed",
+      "track_temp": "mid",
+      "rivals": [
+        {
+          "name": "Car 09",
+          "tire": "wet",
+          "wing": "high",
+          "blurb": "Full wets — safe but overheating the tread on the dry stripe."
+        },
+        {
+          "name": "Car 55",
+          "tire": "hard",
+          "wing": "low",
+          "blurb": "Early slicks — heroic offline but fragile if rain returns."
+        }
+      ]
+    }
+  ]
+}
