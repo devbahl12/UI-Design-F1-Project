@@ -3,14 +3,14 @@
    Exposes two initializers: initHeroCar() for / and
    initLessonCar() for /learn/1.
 
-   The car is built procedurally from primitives so we're never at
-   the mercy of a remote GLB URL going 404 on submission day. It's
-   an open-wheel silhouette: chassis, nose, two wings, halo arch,
-   four wheels — stylized, not photoreal.
+   Loads the real Ferrari SF-25 GLB model via GLTFLoader.
+   Falls back to the procedural geometry car if the file fails.
    ============================================================ */
 (function (global) {
-  const THREE_CDN = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-  const ORBIT_CDN = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+  const THREE_CDN  = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+  const ORBIT_CDN  = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+  const GLTF_CDN   = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+  const MODEL_URL  = '/static/models/f1car.glb';
 
   /* Pull design tokens out of CSS so JS materials match the
      stylesheet exactly. Fallbacks mirror :root. */
@@ -191,6 +191,50 @@
     return group;
   }
 
+  /* Load the real GLB model. Resolves with a THREE.Group.
+     Falls back to the procedural car if fetch fails. */
+  async function loadCar(THREE, palette) {
+    try {
+      const { GLTFLoader } = await import(GLTF_CDN);
+      const gltf = await new Promise((resolve, reject) => {
+        new GLTFLoader().load(MODEL_URL, resolve, undefined, reject);
+      });
+      const model = gltf.scene;
+
+      /* Normalise scale — fit the car's longest axis to 5.5 units */
+      const box = new THREE.Box3().setFromObject(model);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 5.5 / maxDim;
+      model.scale.setScalar(scale);
+
+      /* Centre the model at origin, wheels touching y=0 */
+      box.setFromObject(model);
+      const centre = new THREE.Vector3();
+      box.getCenter(centre);
+      model.position.sub(centre);
+      box.setFromObject(model);
+      model.position.y -= box.min.y;
+
+      /* Improve material quality on the loaded meshes */
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = false;
+          if (child.material) {
+            child.material.envMapIntensity = 1.2;
+          }
+        }
+      });
+
+      return model;
+    } catch (err) {
+      console.warn('GLB load failed, falling back to procedural car:', err);
+      return buildCar(THREE, palette);
+    }
+  }
+
   /* Soft ground shadow plane — simple radial gradient sprite so
      we don't need ContactShadows from addons. */
   function buildGroundShadow(THREE) {
@@ -215,17 +259,33 @@
   }
 
   function lightScene(THREE, scene, { base, accent }) {
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x101018, 0.6);
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x101018, 0.9);
     scene.add(hemi);
-    const key = new THREE.DirectionalLight(base, 0.85);
+    const key = new THREE.DirectionalLight(base, 1.1);
     key.position.set(4, 5, 3);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(accent, 0.45);
+    const rim = new THREE.DirectionalLight(accent, 0.55);
     rim.position.set(-4, 3, -2);
     scene.add(rim);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.25);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.4);
     fill.position.set(0, 4, 6);
     scene.add(fill);
+    const back = new THREE.DirectionalLight(0xffffff, 0.2);
+    back.position.set(0, 2, -6);
+    scene.add(back);
+  }
+
+  /* Apply a neutral env map so GLB metallic/roughness materials catch
+     reflections. Call after renderer is created. */
+  async function applyEnvMap(THREE, renderer, scene) {
+    try {
+      const { RoomEnvironment } = await import(
+        'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/environments/RoomEnvironment.js'
+      );
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      pmrem.dispose();
+    } catch (_) { /* env map is purely cosmetic — ignore if it fails */ }
   }
 
   /* Cap devicePixelRatio at 2 — beyond that, fill-rate hurts. */
@@ -258,22 +318,25 @@
     };
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-    camera.position.set(3.4, 1.8, 5.2);
-    camera.lookAt(0, 0.45, 0);
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+    camera.position.set(3.0, 1.6, 4.5);
+    camera.lookAt(0, 0.5, 0);
 
     lightScene(THREE, scene, palette);
-    const car = buildCar(THREE, palette);
+    const car = await loadCar(THREE, palette);
     scene.add(car);
     scene.add(buildGroundShadow(THREE));
 
     const renderer = makeRenderer(THREE, canvas);
+    applyEnvMap(THREE, renderer, scene);
 
     function resize() {
       const w = canvas.clientWidth, h = canvas.clientHeight;
       if (!w || !h) return;
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
+      /* Widen FOV on narrow screens so the car fills the frame */
+      camera.fov = w < 480 ? 62 : w < 768 ? 55 : 50;
       camera.updateProjectionMatrix();
     }
     resize();
@@ -377,17 +440,18 @@
     };
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-    const defaultCamPos = new THREE.Vector3(4.2, 2.2, 5.6);
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    const defaultCamPos = new THREE.Vector3(5.5, 2.8, 7.5);
     camera.position.copy(defaultCamPos);
-    camera.lookAt(0, 0.45, 0);
+    camera.lookAt(0, 0.7, 0);
 
     lightScene(THREE, scene, palette);
-    const car = buildCar(THREE, palette);
+    const car = await loadCar(THREE, palette);
     scene.add(car);
     scene.add(buildGroundShadow(THREE));
 
     const renderer = makeRenderer(THREE, canvas);
+    applyEnvMap(THREE, renderer, scene);
 
     function resize() {
       const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -405,11 +469,11 @@
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
-    controls.minDistance = 3.2;
-    controls.maxDistance = 9;
+    controls.minDistance = 4.5;
+    controls.maxDistance = 14;
     controls.minPolarAngle = Math.PI / 6;
     controls.maxPolarAngle = Math.PI / 2.1;
-    controls.target.set(0, 0.45, 0);
+    controls.target.set(0, 0.7, 0);
     controls.autoRotate = !reduced;
     controls.autoRotateSpeed = 0.7;
     /* OrbitControls also binds arrow keys to camera-pan by default;
@@ -417,22 +481,24 @@
        can navigate the scene without a mouse. */
     controls.listenToKeyEvents(canvas);
 
-    /* Hotspot 3D anchor positions (matched to the procedural car). */
+    /* Hotspot 3D anchor positions — mapped to the Ferrari SF-25 GLB
+       scaled to 5.5 units along longest axis, nose toward +Z.
+       x=0 centre, y=0 ground. */
     const HOTSPOT_WORLD = {
-      frontwing: new THREE.Vector3( 0.0, 0.30, 2.05),
-      fronttire: new THREE.Vector3( 0.8, 0.34, 1.25),
-      halo:      new THREE.Vector3( 0.0, 0.75, 0.28),
-      sidepod:   new THREE.Vector3( 0.7, 0.45,-0.15),
-      reartire:  new THREE.Vector3( 0.8, 0.34,-1.25),
-      rearwing:  new THREE.Vector3( 0.0, 1.04,-1.75),
+      frontwing: new THREE.Vector3( 0.0, 0.10, 2.60),
+      fronttire: new THREE.Vector3( 1.05, 0.45, 1.70),
+      halo:      new THREE.Vector3( 0.0, 1.10, 0.20),
+      sidepod:   new THREE.Vector3( 0.90, 0.50,-0.10),
+      reartire:  new THREE.Vector3( 1.05, 0.45,-1.60),
+      rearwing:  new THREE.Vector3( 0.0, 1.30,-1.88),
     };
     const HOTSPOT_CAM = {
-      frontwing: new THREE.Vector3( 0.8, 1.1, 4.5),
-      fronttire: new THREE.Vector3( 3.5, 1.2, 3.2),
-      halo:      new THREE.Vector3( 0.0, 1.9, 3.2),
-      sidepod:   new THREE.Vector3( 3.6, 1.5, 2.2),
-      reartire:  new THREE.Vector3( 3.6, 1.2,-2.8),
-      rearwing:  new THREE.Vector3(-0.8, 2.2,-4.3),
+      frontwing: new THREE.Vector3( 1.0, 1.2, 6.0),
+      fronttire: new THREE.Vector3( 5.0, 1.6, 4.5),
+      halo:      new THREE.Vector3( 0.0, 2.8, 5.0),
+      sidepod:   new THREE.Vector3( 5.0, 2.0, 3.0),
+      reartire:  new THREE.Vector3( 5.0, 1.6,-4.0),
+      rearwing:  new THREE.Vector3(-1.0, 3.0,-5.2),
     };
 
     const hotspotEls = {};
@@ -466,7 +532,7 @@
     function tweenCameraTo(targetPos, duration) {
       if (reduced || duration === 0) {
         camera.position.copy(targetPos);
-        controls.target.set(0, 0.45, 0);
+        controls.target.set(0, 0.7, 0);
         controls.update();
         return;
       }
@@ -578,6 +644,7 @@
     camera.lookAt(0, 0, 0);
 
     lightScene(THREE, scene, palette);
+    const carPromise = loadCar(THREE, palette);
 
     /* Track: a torus lying flat on the ground + a thin accent inner rim. */
     const track = new THREE.Mesh(
@@ -595,13 +662,14 @@
     rim.position.y = 0.6;
     scene.add(rim);
 
-    const car = buildCar(THREE, palette);
-    car.scale.setScalar(0.55);
+    const car = await carPromise;
+    car.scale.multiplyScalar(0.55);
     scene.add(car);
 
     scene.add(buildGroundShadow(THREE));
 
     const renderer = makeRenderer(THREE, canvas);
+    applyEnvMap(THREE, renderer, scene);
 
     function resize() {
       const w = canvas.clientWidth, h = canvas.clientHeight;
