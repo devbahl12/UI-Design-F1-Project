@@ -67,6 +67,19 @@ storage/
   user_data.json          # single-user session state (git-ignored)
 ```
 
+## Design Principles
+
+This project applies core UI/UX principles throughout:
+
+- **Visual Hierarchy** — Ferrari red (`#DC0000`) and racing yellow (`#FFF200`) as accent colors direct attention to primary actions and key data; secondary text uses a lighter grey to recede naturally.
+- **Typography** — Titillium Web (Formula 1's real typeface) for headings paired with Inter for body copy. A fluid type scale using `clamp()` ensures readability across all screen sizes without hard breakpoints.
+- **Consistency** — A single design token system (`--color-*`, `--fs-*`, `--r-*`, `--dur-*`) drives every component. Changing one token updates the entire UI consistently.
+- **Feedback & Affordance** — All interactive elements (buttons, hotspots, tire cards) have visible hover/active states with color shifts, subtle lifts, and glow rings so users always know what's clickable.
+- **Spacing & Breathing Room** — `clamp()`-based padding scales with the viewport. Cards use consistent radius (`--r-lg: 20px`) and elevation shadows to create clear depth layers.
+- **Accessibility** — Semantic HTML throughout (`role="tab"`, `aria-selected`, `aria-live`), keyboard-navigable 3D car viewer, focus rings on all interactive elements, and `prefers-reduced-motion` support for animations.
+- **Responsive Design** — Mobile-first breakpoints at 768px and 480px collapse multi-column grids, reflow navigation, and constrain canvas heights to keep the experience usable on any device.
+- **Interactivity with Purpose** — Every interactive element (3D car, slipstream simulator, race setup lab) is tied to a learning objective, not decoration.
+
 ## Team
 
 - Reya Vir
