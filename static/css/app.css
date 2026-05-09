@@ -279,7 +279,7 @@ body::before {
 .screen-page {
   max-width: 1100px;
   margin: 0 auto;
-  padding: clamp(48px, 6vw, 88px) clamp(24px, 5vw, 56px);
+  padding: clamp(28px, 6vw, 88px) clamp(16px, 5vw, 56px);
   animation: fadeUp var(--dur-base) var(--ease-out);
 }
 .screen-home {
@@ -394,6 +394,7 @@ body::before {
 .home-car-canvas {
   width: 100%;
   aspect-ratio: 16 / 9;
+  min-height: 320px;
   display: block;
   border-radius: var(--r-lg);
   background: linear-gradient(135deg,
@@ -1367,7 +1368,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .iq-track-wrapper {
   position: relative;
-  height: 300px;
+  height: clamp(200px, 35vw, 300px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1461,3 +1462,93 @@ input[type="range"]::-webkit-slider-thumb {
    .t-display and .t-h1 fluid via clamp() between mobile and desktop.
    Tabular numerals enabled on all numeric UI.
    ========================================================= */
+
+/* =========================================================
+   Responsive — mobile-first fixes
+   ========================================================= */
+
+/* ── 768px and below ── */
+@media (max-width: 768px) {
+  /* Nav: hide wordmark text, shrink nav links to icons-only */
+  .app-nav__links { gap: 4px; }
+  .app-nav__links a { font-size: 0.85rem; padding: 6px 8px; }
+
+  /* Screen pages: cut vertical padding on small screens */
+  .screen-page {
+    padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 28px);
+  }
+
+  /* Home hero: cap the canvas height so it doesn't tower on portrait mobile */
+  .home-car-canvas {
+    min-height: 220px;
+    max-height: 56vw;
+  }
+
+  /* Mode cards: stack full-width */
+  .mode-card {
+    width: 100%;
+    min-width: unset;
+    padding: 20px 24px;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    min-height: unset;
+  }
+
+  /* Lesson car: slightly shorter canvas on mobile */
+  .lesson-car-canvas { aspect-ratio: 4 / 3; }
+
+  /* Comp panel below car on mobile (already col-12 via Bootstrap) */
+  .comp-panel { min-height: 140px; padding: 18px; }
+
+  /* IQ track: reduce fixed height */
+  .iq-track-wrapper { height: 220px; margin: 14px 0 8px; }
+
+  /* IQ config cards: 3-up → 2-up on mobile */
+  .iq-tire-grid .col-6 { flex: 0 0 50%; max-width: 50%; }
+
+  /* IQ wing buttons: stack on very narrow */
+  .iq-wing-row { flex-direction: column; }
+  .iq-wing-btn { min-width: unset; width: 100%; }
+
+  /* How-to steps: wrap tightly */
+  .iq-how-to { gap: 6px; }
+  .iq-how-to-step { font-size: 0.82rem; padding: 4px 10px; }
+
+  /* Lap board: tighter grid */
+  .iq-lap-row { padding: 10px 12px; gap: 8px; }
+
+  /* Tire grid: 3-up → 2-up */
+  .tire-grid .col { flex: 0 0 50%; max-width: 50%; }
+
+  /* Aero section */
+  .aero-sim-wrap { flex-direction: column; }
+}
+
+/* ── 480px and below ── */
+@media (max-width: 480px) {
+  /* Nav: hide nav links entirely on the smallest phones */
+  .app-nav__links { display: none; }
+
+  .home-car-canvas { min-height: 180px; max-height: 64vw; }
+
+  /* IQ config cards: 2-up → 1-up */
+  .iq-tire-grid .col-6 { flex: 0 0 100%; max-width: 100%; }
+
+  /* IQ track: smaller */
+  .iq-track-wrapper { height: 180px; }
+
+  /* Tile grid: single column */
+  .tire-grid .col { flex: 0 0 100%; max-width: 100%; }
+
+  /* Feature grid already goes 1-col at 600px, no change needed */
+
+  /* Results topic bars: tighter label column */
+  .topic-bar { grid-template-columns: 80px 1fr 48px; gap: 8px; }
+}
+
+/* ── Landscape phone: restore reasonable canvas height ── */
+@media (max-width: 768px) and (orientation: landscape) {
+  .home-car-canvas { min-height: 160px; max-height: 44vw; }
+  .iq-track-wrapper { height: 170px; }
+}
