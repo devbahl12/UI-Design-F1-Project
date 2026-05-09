@@ -100,7 +100,7 @@
 
     root.querySelectorAll("[data-scenario-tab]").forEach((btn, i) => {
       btn.classList.toggle("is-active", i === idx);
-      btn.setAttribute("aria-pressed", String(i === idx));
+      btn.setAttribute("aria-selected", String(i === idx));
     });
   }
 

@@ -13,6 +13,11 @@
   <div class="t-caption iq-eyebrow">INTERACTIVE QUIZ</div>
   <h1 class="t-h1 page-title mt-2">{{ iq.title }}</h1>
   <p class="t-body page-sub iq-intro">{{ iq.subtitle }}</p>
+  <ol class="t-caption iq-how-to d-flex flex-wrap gap-2 list-unstyled mt-2 mb-0">
+    <li class="iq-how-to-step">① Pick a scenario</li>
+    <li class="iq-how-to-step">② Choose tyre &amp; wing</li>
+    <li class="iq-how-to-step">③ Race with this setup →</li>
+  </ol>
 
   <section class="iq-scenarios card-modern mt-4" aria-label="Race scenarios">
     <div class="t-caption mb-2 iq-section-label">Conditions snapshot</div>
@@ -23,7 +28,7 @@
               data-scenario-tab
               data-scenario-index="{{ loop.index0 }}"
               role="tab"
-              aria-pressed="{{ 'true' if loop.first else 'false' }}">
+              aria-selected="{{ 'true' if loop.first else 'false' }}">
         {{ sc.headline }}
       </button>
       {% endfor %}
@@ -65,8 +70,9 @@
           <button type="button" class="btn iq-wing-btn" data-wing-pick data-wing-key="high" aria-pressed="false">High DF</button>
         </div>
 
-        <button type="button" class="btn btn-primary-f1 btn-lg w-100 mt-4" data-run-setup>
-          Apply setup &amp; sync telemetry
+        <button type="button" class="btn btn-primary-f1 btn-lg w-100 mt-4" data-run-setup
+                aria-label="Apply this tyre and wing setup to race against opponents">
+          Race with this setup →
         </button>
       </section>
     </div>
@@ -105,7 +111,7 @@
           </div>
         </div>
 
-        <div class="iq-lap-board mt-3" data-lap-rows></div>
+        <div class="iq-lap-board mt-3" data-lap-rows aria-live="polite" aria-label="Lap time comparison"></div>
         <p class="t-body iq-narrative mt-3 mb-0" data-iq-narrative></p>
       </section>
     </div>
