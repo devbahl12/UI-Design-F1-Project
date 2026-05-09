@@ -10,7 +10,7 @@
   --color-accent:       #FFF200;   /* Racing yellow: focus rings, in-progress states, peripheral wayfinding */
   --color-dark-grey:    #0F0F12;   /* Garage near-black: page background */
   --color-mid-grey:     #1E1E24;   /* Surface: cards, panels, sticky nav fill */
-  --color-light-grey:   #C5C6D2;   /* Secondary text — brighter for readability on dark bg */
+  --color-light-grey:   #D6D7E2;   /* Secondary text — brighter for readability on dark bg */
   --color-white:        #FFFFFF;   /* Primary text */
 
   /* ---- Derived state tokens (hover / active / subtle overlays) ---- */
@@ -57,10 +57,10 @@
      needing media-query switches. */
   --fs-display:   3.5rem;   --lh-display: 1.05;  --fw-display: 700;  --ls-display: -0.02em;
   --fs-h1:        2.25rem;  --lh-h1:      1.15;  --fw-h1:      700;  --ls-h1:      -0.01em;
-  --fs-h2:        1.625rem; --lh-h2:      1.28;  --fw-h2:      600;  --ls-h2:       0;
-  --fs-h3:        1.25rem;  --lh-h3:      1.38;  --fw-h3:      600;  --ls-h3:       0;
-  --fs-body:      1.125rem; --lh-body:    1.68;  --fw-body:    400;  --ls-body:     0;
-  --fs-caption:   0.875rem; --lh-caption: 1.45;  --fw-caption: 500;  --ls-caption:  0.02em;
+  --fs-h2:        1.75rem;  --lh-h2:      1.28;  --fw-h2:      600;  --ls-h2:       0;
+  --fs-h3:        1.35rem;  --lh-h3:      1.38;  --fw-h3:      600;  --ls-h3:       0;
+  --fs-body:      1.175rem; --lh-body:    1.72;  --fw-body:    400;  --ls-body:     0;
+  --fs-caption:   0.95rem;  --lh-caption: 1.5;   --fw-caption: 500;  --ls-caption:  0.02em;
 }
 
 /* =========================================================
@@ -279,7 +279,7 @@ body::before {
 .screen-page {
   max-width: 1100px;
   margin: 0 auto;
-  padding: clamp(36px, 5vw, 72px) clamp(20px, 4vw, 44px);
+  padding: clamp(48px, 6vw, 88px) clamp(24px, 5vw, 56px);
   animation: fadeUp var(--dur-base) var(--ease-out);
 }
 .screen-home {
@@ -431,7 +431,7 @@ body::before {
 .home-sub { color: var(--color-light-grey); font-size: 1.125rem; margin-bottom: 40px; }
 
 .page-title { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.02em; }
-.page-sub { color: var(--color-light-grey); font-size: 1rem; }
+.page-sub { color: var(--color-light-grey); font-size: 1.1rem; }
 
 .btn-primary-f1 {
   background: linear-gradient(135deg, var(--color-base), var(--color-base-hover));
@@ -525,7 +525,7 @@ body::before {
   border: 1px solid var(--color-hairline);
   border-radius: var(--r-lg);
   box-shadow: var(--elev-1);
-  padding: clamp(22px, 3vw, 32px);
+  padding: clamp(28px, 3.5vw, 40px);
   transition: background var(--dur-fast) var(--ease-out),
               border-color var(--dur-fast) var(--ease-out),
               transform var(--dur-fast) var(--ease-out),
@@ -1261,8 +1261,8 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--color-dark-grey);
   color: var(--color-white);
   font-weight: 600;
-  font-size: 0.92rem;
-  padding: 10px 18px;
+  font-size: 0.98rem;
+  padding: 12px 22px;
   transition: background var(--dur-fast) var(--ease-out),
               border-color var(--dur-fast) var(--ease-out),
               box-shadow var(--dur-fast) var(--ease-out),
@@ -1270,9 +1270,10 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .iq-scenario-tab:hover {
   border-color: var(--color-accent);
-  background: var(--color-surface-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--elev-2);
+  background: var(--color-accent-subtle);
+  color: var(--color-white);
+  transform: translateY(-2px);
+  box-shadow: var(--elev-2), 0 0 0 2px var(--color-accent-subtle);
 }
 .iq-scenario-tab.is-active {
   border-color: var(--color-base);
@@ -1287,7 +1288,7 @@ input[type="range"]::-webkit-slider-thumb {
 .iq-config-card {
   cursor: pointer;
   border: 2px solid var(--color-hairline);
-  padding: 16px 12px;
+  padding: 20px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1323,8 +1324,8 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--color-dark-grey);
   color: var(--color-white);
   font-weight: 700;
-  font-size: 0.98rem;
-  padding: 12px 16px;
+  font-size: 1rem;
+  padding: 14px 20px;
   transition: border-color var(--dur-fast) var(--ease-out),
               background var(--dur-fast) var(--ease-out),
               box-shadow var(--dur-fast) var(--ease-out),
@@ -1332,9 +1333,10 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .iq-wing-btn:hover {
   border-color: var(--color-accent);
-  background: var(--color-surface-hover);
+  background: var(--color-accent-subtle);
+  color: var(--color-white);
   transform: translateY(-2px);
-  box-shadow: var(--elev-2);
+  box-shadow: var(--elev-2), 0 0 0 2px var(--color-accent-subtle);
 }
 .iq-wing-btn.is-selected {
   border-color: var(--color-accent);
