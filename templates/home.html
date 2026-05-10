@@ -1,70 +1,114 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="home-hero">
-  <!-- Left rail: copy + CTAs. Right rail: 3D car canvas. -->
-  <div class="home-hero__copy" data-entrance>
-    <div class="home-eyebrow t-caption" data-entrance-step="1">COMS W4170 · F1 Primer</div>
-    <h1 class="home-title t-display" data-entrance-step="2">Understand Formula&nbsp;1 strategy in 20&nbsp;minutes.</h1>
+<section class="home-hero" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100vw; max-width: 100vw; min-height: 90vh; padding: 80px 6vw; box-sizing: border-box; overflow: hidden; position: relative;">
+  <!-- Abstract background elements -->
+  <div style="position: absolute; top: -10%; left: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(0,229,255,0.05) 0%, transparent 70%); z-index: 0; pointer-events: none;"></div>
+  
+  <div class="home-hero__copy" data-entrance style="flex: 1 1 55%; min-width: 320px; position: relative; z-index: 2; padding-right: 40px;">
+    <div class="home-eyebrow t-caption" data-entrance-step="1" style="color: var(--color-base); text-shadow: 0 0 10px rgba(255,30,30,0.5);">COMS W4170 · F1 Primer</div>
+    <h1 class="home-title t-display" data-entrance-step="2" style="font-size: clamp(3rem, 5vw, 5rem); line-height: 1.1;">Understand Formula&nbsp;1 strategy in 20&nbsp;minutes.</h1>
     <p class="home-sub t-body" data-entrance-step="3">Tires, aerodynamics, pit strategy — the six moves every race is built on, with a car you can rotate and poke at.</p>
 
-    <div class="home-hero__ctas d-flex flex-column align-items-start gap-3" data-entrance-step="4">
+    <!-- Cool extra content: Live animated telemetry preview -->
+    <div data-entrance-step="4" style="display: flex; gap: 16px; margin-bottom: 30px;">
+      <div style="background: rgba(30,30,42,0.5); border: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; backdrop-filter: blur(10px);">
+        <div style="font-size: 0.7rem; color: var(--color-blue); text-transform: uppercase; letter-spacing: 1px;">Top Speed</div>
+        <div style="font-size: 1.5rem; font-weight: bold; font-family: monospace;">342 <span style="font-size: 0.9rem; color: #888;">km/h</span></div>
+      </div>
+      <div style="background: rgba(30,30,42,0.5); border: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; backdrop-filter: blur(10px);">
+        <div style="font-size: 0.7rem; color: var(--color-base); text-transform: uppercase; letter-spacing: 1px;">Downforce</div>
+        <div style="font-size: 1.5rem; font-weight: bold; font-family: monospace;">High</div>
+      </div>
+    </div>
+
+    <div class="home-hero__ctas d-flex flex-column align-items-start gap-3" data-entrance-step="5">
       <form id="start-form" method="post" action="{{ url_for('start') }}" class="d-flex flex-wrap gap-3 mb-0">
         <input type="hidden" name="mode" value="learning">
-        <button type="submit" class="btn btn-primary-f1 btn-lg">Start learning →</button>
+        <button type="submit" class="btn btn-primary-f1 btn-lg" style="box-shadow: 0 0 20px rgba(255,30,30,0.4);">Start learning →</button>
       </form>
-      <a class="btn btn-ghost-f1 btn-lg" href="{{ url_for('interactive_quiz') }}">Interactive Quiz</a>
+      <div class="d-flex flex-wrap gap-3">
+        <a class="btn btn-ghost-f1 btn-lg" href="{{ url_for('garage') }}">Open 3D Garage</a>
+        <a class="btn btn-ghost-f1 btn-lg" href="{{ url_for('interactive_quiz') }}">Interactive Quiz</a>
+      </div>
     </div>
   </div>
 
-  <div class="home-hero__canvas" data-entrance data-entrance-step="3">
-    <div class="home-car-wrap">
-      <canvas id="hero-car" class="home-car-canvas" aria-label="Interactive 3D Formula 1 car"></canvas>
-      <noscript>
-        <img src="{{ url_for('static', filename='img/ferrari_home.jpg') }}" class="home-car-img" alt="Ferrari SF-24">
-      </noscript>
+  <div class="home-hero__canvas" data-entrance data-entrance-step="3" style="flex: 1 1 40%; min-width: 320px; position: relative; z-index: 1; height: 70vh;">
+	    <div class="hero-launch-panel" data-hero-launch-panel>
+      <button type="button" class="hero-ignition-btn" data-hero-ignition aria-pressed="false">
+        <span class="hero-ignition-btn__ring" aria-hidden="true"></span>
+        <span class="hero-ignition-btn__label">Ignition</span>
+      </button>
+      <div class="hero-launch-readout">
+        <span class="t-caption">Launch control</span>
+        <strong class="t-mono" data-hero-launch-state>Standby</strong>
+	      </div>
+	    </div>
+    <div class="hero-start-lights" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
     </div>
+	    <div class="hero-grandstand" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <canvas id="hero-car" class="home-car-canvas" aria-label="Interactive 3D Formula 1 car" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6)); background: transparent;"></canvas>
+    <div class="hero-launch-streaks" aria-hidden="true"></div>
+    <noscript>
+      <img src="{{ url_for('static', filename='img/ferrari_home.jpg') }}" class="home-car-img" alt="Ferrari SF-24" style="width: 100%; height: 100%; object-fit: contain;">
+    </noscript>
   </div>
 </section>
 
 <section class="home-features">
   <h2 class="visually-hidden">Three things you'll understand by the end</h2>
-  <div class="home-features__grid">
-    <article class="feature card-modern">
-      <span class="feature__icon" aria-hidden="true">
-        <!-- Car silhouette -->
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 18h3l2-4h12l3 4h4"/>
-          <circle cx="8" cy="20" r="2.5"/>
-          <circle cx="20" cy="20" r="2.5"/>
-          <path d="M11 14l1-3h6l1 3"/>
-        </svg>
-      </span>
-      <h3 class="t-h3 feature__title">The car</h3>
-      <p class="t-body feature__desc">Six components that actually matter — from halo to diffuser — and why engineers obsess over each one.</p>
-    </article>
-    <article class="feature card-modern">
-      <span class="feature__icon" aria-hidden="true">
-        <!-- Tire -->
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="14" cy="14" r="10"/>
-          <circle cx="14" cy="14" r="5"/>
-          <path d="M14 4v4M14 20v4M4 14h4M20 14h4"/>
-        </svg>
-      </span>
-      <h3 class="t-h3 feature__title">The tires</h3>
-      <p class="t-body feature__desc">Five compounds, one cliff. Pick the wrong moment and your race is over — play with the slider and you'll feel it.</p>
-    </article>
-    <article class="feature card-modern">
-      <span class="feature__icon" aria-hidden="true">
-        <!-- Strategy flag -->
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 24V4"/>
-          <path d="M6 5h16l-3 4 3 4H6"/>
-        </svg>
-      </span>
-      <h3 class="t-h3 feature__title">The strategy</h3>
-      <p class="t-body feature__desc">Undercut, overcut, clean-air vs. dirty-air. The decisions that win Sundays and the ones that lose them.</p>
-    </article>
+  <div class="home-mission-console">
+    <div class="home-mission-console__head">
+      <span class="t-caption">Racecraft path</span>
+      <strong class="t-mono">03 modules · 20 min</strong>
+    </div>
+    <div class="home-mission-rail">
+      <article class="home-mission-step">
+        <span class="home-mission-step__num t-mono">01</span>
+        <span class="home-mission-step__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 18h3l2-4h12l3 4h4"/>
+            <circle cx="8" cy="20" r="2.5"/>
+            <circle cx="20" cy="20" r="2.5"/>
+            <path d="M11 14l1-3h6l1 3"/>
+          </svg>
+        </span>
+        <div>
+          <h3 class="t-h3">Car anatomy</h3>
+          <p class="t-body">Explore the parts engineers tune first: halo, wings, sidepods, tires, and diffuser.</p>
+        </div>
+      </article>
+      <article class="home-mission-step">
+        <span class="home-mission-step__num t-mono">02</span>
+        <span class="home-mission-step__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="14" cy="14" r="10"/>
+            <circle cx="14" cy="14" r="5"/>
+            <path d="M14 4v4M14 20v4M4 14h4M20 14h4"/>
+          </svg>
+        </span>
+        <div>
+          <h3 class="t-h3">Tire window</h3>
+          <p class="t-body">See how compound, wear, temperature, and the tire cliff change race pace.</p>
+        </div>
+      </article>
+      <article class="home-mission-step">
+        <span class="home-mission-step__num t-mono">03</span>
+        <span class="home-mission-step__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 24V4"/>
+            <path d="M6 5h16l-3 4 3 4H6"/>
+          </svg>
+        </span>
+        <div>
+          <h3 class="t-h3">Pit wall calls</h3>
+          <p class="t-body">Practice undercut, overcut, clean air, and gap decisions in race scenarios.</p>
+        </div>
+      </article>
+    </div>
   </div>
 </section>
 
@@ -96,6 +140,139 @@
       const delay = reduced ? 0 : step * 80;
       setTimeout(() => $el.addClass('is-entered'), delay);
     });
+
+    const ignitionBtn = document.querySelector('[data-hero-ignition]');
+    const launchState = document.querySelector('[data-hero-launch-state]');
+    const heroCanvas = document.querySelector('.home-hero__canvas');
+    let audioCtx;
+
+    function playIgnitionSound() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      audioCtx = audioCtx || new AudioContext();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const now = audioCtx.currentTime;
+      const limiter = audioCtx.createDynamicsCompressor();
+      limiter.threshold.setValueAtTime(-7, now);
+      limiter.knee.setValueAtTime(6, now);
+      limiter.ratio.setValueAtTime(14, now);
+      limiter.attack.setValueAtTime(0.002, now);
+      limiter.release.setValueAtTime(0.12, now);
+      limiter.connect(audioCtx.destination);
+
+      const master = audioCtx.createGain();
+      master.gain.setValueAtTime(0.0001, now);
+      master.gain.exponentialRampToValueAtTime(0.62, now + 0.08);
+      master.gain.setValueAtTime(0.62, now + 2.55);
+      master.gain.exponentialRampToValueAtTime(0.0001, now + 4.05);
+      master.connect(limiter);
+
+      const pan = audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
+      if (pan) {
+        pan.pan.setValueAtTime(-0.9, now + 2.18);
+        pan.pan.linearRampToValueAtTime(0.9, now + 3.24);
+        pan.connect(master);
+      }
+      const out = pan || master;
+
+      const engineGain = audioCtx.createGain();
+      engineGain.gain.setValueAtTime(0.0001, now);
+      engineGain.gain.exponentialRampToValueAtTime(0.2, now + 0.14);
+      engineGain.gain.setValueAtTime(0.2, now + 2.08);
+      engineGain.gain.exponentialRampToValueAtTime(0.52, now + 2.62);
+      engineGain.gain.exponentialRampToValueAtTime(0.0001, now + 4.0);
+      engineGain.connect(out);
+
+      const engineFilter = audioCtx.createBiquadFilter();
+      engineFilter.type = 'bandpass';
+      engineFilter.Q.setValueAtTime(7, now);
+      engineFilter.frequency.setValueAtTime(1180, now);
+      engineFilter.frequency.exponentialRampToValueAtTime(3250, now + 2.6);
+      engineFilter.frequency.exponentialRampToValueAtTime(820, now + 3.95);
+      engineFilter.connect(engineGain);
+
+      [1, 1.985, 3.02, 4.08].forEach((ratio, index) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = index === 0 ? 'sawtooth' : 'triangle';
+        gain.gain.setValueAtTime(index === 0 ? 0.42 : 0.16 / index, now);
+        osc.frequency.setValueAtTime(290 * ratio, now);
+        osc.frequency.exponentialRampToValueAtTime(780 * ratio, now + 2.58);
+        osc.frequency.exponentialRampToValueAtTime(240 * ratio, now + 4.0);
+        osc.connect(gain);
+        gain.connect(engineFilter);
+        osc.start(now);
+        osc.stop(now + 4.05);
+      });
+
+      const noiseBuffer = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate * 2.2), audioCtx.sampleRate);
+      const noise = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < noise.length; i += 1) {
+        const fade = 1 - i / noise.length;
+        noise[i] = (Math.random() * 2 - 1) * fade * fade;
+      }
+      const noiseSource = audioCtx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      const noiseFilter = audioCtx.createBiquadFilter();
+      const noiseGain = audioCtx.createGain();
+      noiseFilter.type = 'highpass';
+      noiseFilter.frequency.setValueAtTime(900, now + 2.08);
+      noiseFilter.frequency.exponentialRampToValueAtTime(5200, now + 2.74);
+      noiseFilter.frequency.exponentialRampToValueAtTime(950, now + 4.0);
+      noiseGain.gain.setValueAtTime(0.0001, now + 2.02);
+      noiseGain.gain.exponentialRampToValueAtTime(0.34, now + 2.58);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 4.0);
+      noiseSource.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(out);
+      noiseSource.start(now + 2.02);
+      noiseSource.stop(now + 4.05);
+
+      const doppler = audioCtx.createOscillator();
+      const dopplerGain = audioCtx.createGain();
+      doppler.type = 'sawtooth';
+      doppler.frequency.setValueAtTime(880, now + 2.18);
+      doppler.frequency.exponentialRampToValueAtTime(1850, now + 2.62);
+      doppler.frequency.exponentialRampToValueAtTime(360, now + 3.65);
+      dopplerGain.gain.setValueAtTime(0.0001, now + 2.12);
+      dopplerGain.gain.exponentialRampToValueAtTime(0.12, now + 2.56);
+      dopplerGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.82);
+      doppler.connect(dopplerGain);
+      dopplerGain.connect(engineFilter);
+      doppler.start(now + 2.12);
+      doppler.stop(now + 3.9);
+    }
+
+    if (ignitionBtn && heroCanvas) {
+      ignitionBtn.addEventListener('click', () => {
+        const active = !heroCanvas.classList.contains('is-launching');
+        ignitionBtn.setAttribute('aria-pressed', String(active));
+        heroCanvas.classList.toggle('is-launching', active);
+        heroCanvas.classList.toggle('is-staging', active);
+        heroCanvas.classList.remove('is-lights-out');
+        if (launchState) launchState.textContent = active ? '5 RED' : 'Standby';
+        window.dispatchEvent(new CustomEvent('hero:ignition', { detail: { active } }));
+        if (active) {
+          playIgnitionSound();
+          window.setTimeout(() => {
+            if (!heroCanvas.classList.contains('is-launching')) return;
+            heroCanvas.classList.remove('is-staging');
+            heroCanvas.classList.add('is-lights-out');
+            if (launchState) launchState.textContent = 'Lights out';
+          }, 2450);
+          window.setTimeout(() => {
+            heroCanvas.classList.remove('is-launching');
+            heroCanvas.classList.remove('is-staging');
+            heroCanvas.classList.remove('is-lights-out');
+            ignitionBtn.setAttribute('aria-pressed', 'false');
+            if (launchState) launchState.textContent = 'Standby';
+            window.dispatchEvent(new CustomEvent('hero:ignition', { detail: { active: false } }));
+          }, 4400);
+        }
+      });
+    }
   });
 </script>
 {% endblock %}

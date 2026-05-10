@@ -3,47 +3,57 @@
 {% block content %}
 <script type="application/json" id="iq-scenarios-data">{{ iq.scenarios | tojson }}</script>
 <div
-  class="screen-page iq-page"
+  class="screen-page race-page iq-page"
   data-interactive-quiz>
-  <div class="nav-row d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <a class="nav-back" href="{{ url_for('home') }}">← Home</a>
-    <span class="nav-badge t-caption">Interactive Quiz</span>
-  </div>
-
-  <div class="t-caption iq-eyebrow">INTERACTIVE QUIZ</div>
-  <h1 class="t-h1 page-title mt-2">{{ iq.title }}</h1>
-  <p class="t-body page-sub iq-intro">{{ iq.subtitle }}</p>
-  <ol class="t-caption iq-how-to d-flex flex-wrap gap-2 list-unstyled mt-2 mb-0">
-    <li class="iq-how-to-step">① Pick a scenario</li>
-    <li class="iq-how-to-step">② Choose tyre &amp; wing</li>
-    <li class="iq-how-to-step">③ Race with this setup →</li>
-  </ol>
-
-  <section class="iq-scenarios card-modern mt-4" aria-label="Race scenarios">
-    <div class="t-caption mb-2 iq-section-label">Conditions snapshot</div>
-    <div class="iq-scenario-tabs d-flex flex-wrap gap-2" role="tablist">
-      {% for sc in iq.scenarios %}
-      <button type="button"
-              class="btn iq-scenario-tab {% if loop.first %}is-active{% endif %}"
-              data-scenario-tab
-              data-scenario-index="{{ loop.index0 }}"
-              role="tab"
-              aria-selected="{{ 'true' if loop.first else 'false' }}">
-        {{ sc.headline }}
-      </button>
-      {% endfor %}
+  <section class="race-page-hero iq-hero">
+    <div class="nav-row d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <a class="nav-back" href="{{ url_for('home') }}">← Home</a>
+      <span class="nav-badge t-caption">Interactive Quiz</span>
     </div>
-    <h2 class="t-h2 mt-3 mb-2" data-iq-headline>{{ iq.scenarios[0].headline }}</h2>
-    <p class="t-body iq-conditions-text" data-iq-conditions>{{ iq.scenarios[0].conditions }}</p>
-    <div class="mt-3">
+
+    <div class="race-page-hero__grid">
+      <div>
+        <div class="t-caption iq-eyebrow race-eyebrow">INTERACTIVE QUIZ</div>
+        <h1 class="t-display race-page-title mt-2">{{ iq.title }}</h1>
+        <p class="t-body page-sub iq-intro">{{ iq.subtitle }}</p>
+      </div>
+      <ol class="t-caption iq-how-to list-unstyled mt-2 mb-0">
+        <li class="iq-how-to-step">01 Pick scenario</li>
+        <li class="iq-how-to-step">02 Choose setup</li>
+        <li class="iq-how-to-step">03 Run race sim</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="iq-scenarios race-console-panel mt-4" aria-label="Race scenarios">
+    <div class="iq-scenario-layout">
+      <div>
+        <div class="t-caption mb-2 iq-section-label">Conditions snapshot</div>
+        <h2 class="t-h2 mt-3 mb-2" data-iq-headline>{{ iq.scenarios[0].headline }}</h2>
+        <p class="t-body iq-conditions-text" data-iq-conditions>{{ iq.scenarios[0].conditions }}</p>
+      </div>
+      <div class="iq-scenario-tabs" role="tablist">
+        {% for sc in iq.scenarios %}
+        <button type="button"
+                class="btn iq-scenario-tab {% if loop.first %}is-active{% endif %}"
+                data-scenario-tab
+                data-scenario-index="{{ loop.index0 }}"
+                role="tab"
+                aria-selected="{{ 'true' if loop.first else 'false' }}">
+          {{ sc.headline }}
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="iq-rival-console mt-3">
       <div class="t-caption iq-section-label">Opponent presets</div>
       <ul class="iq-rival-list list-unstyled mb-0 mt-2" data-iq-rivals></ul>
     </div>
   </section>
 
-  <div class="row g-4 mt-1 align-items-start">
-    <div class="col-12 col-lg-6">
-      <section class="card-modern h-100" aria-label="Car configuration">
+  <div class="row g-4 mt-1 align-items-stretch iq-race-grid">
+    <div class="col-12 col-xl-5">
+      <section class="race-console-panel h-100 iq-config-panel" aria-label="Car configuration">
         <div class="t-caption iq-section-label">Tyre compound</div>
         <p class="t-body iq-hint">Select rubber for the current scenario — your garage call.</p>
         <div class="iq-tire-grid row g-2 mt-2">
@@ -77,8 +87,8 @@
       </section>
     </div>
 
-    <div class="col-12 col-lg-6">
-      <section class="card-modern iq-track-card" aria-label="Track simulation">
+    <div class="col-12 col-xl-7">
+      <section class="race-console-panel iq-track-card" aria-label="Track simulation">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
           <div>
             <div class="t-caption iq-section-label">Live pace preview</div>
@@ -119,6 +129,10 @@
 
   <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mt-4 pt-2">
     <a class="btn btn-ghost-f1" href="{{ url_for('learning_menu') }}">Learning menu</a>
+    <span class="t-caption iq-footer-note iq-pit-wall mb-0">
+      <span>[PIT WALL]</span>
+      <span>Box box box · Target plus one · Strat mode 4 · Watch the mirrors</span>
+    </span>
     <span class="t-caption iq-footer-note mb-0">Telemetry is illustrative for teaching — not real session data.</span>
   </div>
 </div>
