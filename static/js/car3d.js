@@ -218,13 +218,6 @@
     rearWing.position.set(0, 1.0, -1.75);
     group.add(rearWing);
 
-    const rearWingUpper = new THREE.Mesh(
-      new THREE.BoxGeometry(1.25, 0.05, 0.28),
-      carAccent
-    );
-    rearWingUpper.position.set(0, 1.08, -1.75);
-    group.add(rearWingUpper);
-
     /* Sidepods — flanking the monocoque. */
     const sidepodL = new THREE.Mesh(
       new THREE.BoxGeometry(0.35, 0.32, 1.8),
@@ -278,14 +271,6 @@
     group.add(wheel(-0.8, -1.25)); // rear left
     group.add(wheel( 0.8, -1.25)); // rear right
 
-    /* Tiny livery stripes over the engine cover for visual interest. */
-    const stripe = new THREE.Mesh(
-      new THREE.BoxGeometry(0.04, 0.23, 1.1),
-      carAccent
-    );
-    stripe.position.set(0, 0.53, -0.3);
-    group.add(stripe);
-
     return group;
   }
 
@@ -318,12 +303,18 @@
       model.position.y -= box.min.y;
 
       /* Improve material quality on the loaded meshes */
+      const accentHex = palette.accent.toLowerCase();
       model.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
           if (child.material) {
-            child.material.envMapIntensity = 2.5; // Boosted for premium metallic look
+            /* Hide bright-yellow import artifacts; synthetic DRS parts are handled below. */
+            const matColor = child.material.color ? '#' + child.material.color.getHexString().toLowerCase() : '';
+            if (matColor === accentHex) {
+              child.visible = false;
+            }
+            child.material.envMapIntensity = 2.5; 
             child.material.needsUpdate = true;
           }
         }
@@ -898,19 +889,7 @@
     }
     scene.add(flowGroup);
 
-    const drsFlap = new THREE.Mesh(
-      new THREE.BoxGeometry(1.15, 0.035, 0.3),
-      new THREE.MeshStandardMaterial({
-        color: palette.accent,
-        emissive: palette.accent,
-        emissiveIntensity: 0.12,
-        metalness: 0.35,
-        roughness: 0.42,
-      })
-    );
-    drsFlap.position.set(0, 1.15, -2.08);
-    drsFlap.rotation.x = 0.12;
-    scene.add(drsFlap);
+    const drsFlap = null;
 
     const renderer = makeRenderer(THREE, canvas);
     applyEnvMap(THREE, renderer, scene);
@@ -1136,7 +1115,9 @@
         line.position.z = shift;
         line.position.y = Math.sin(t * 2 + d.phase) * 0.035;
       });
-      drsFlap.rotation.x += ((drsOpen ? -0.52 : 0.12) - drsFlap.rotation.x) * 0.1;
+      if (drsFlap) {
+        drsFlap.rotation.x += ((drsOpen ? -0.52 : 0.12) - drsFlap.rotation.x) * 0.1;
+      }
 
       if (!reduced) {
         const launchAmp = launching ? 0.08 : 0.012;

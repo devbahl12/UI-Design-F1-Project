@@ -171,6 +171,12 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   font-family: var(--font-body);
   font-size: var(--fs-body);
@@ -352,7 +358,7 @@ body::before {
 }
 @media (max-width: 640px) {
   .app-nav {
-    align-items: flex-start;
+    align-items: center;
   }
   .app-nav__links {
     gap: 6px;
@@ -360,6 +366,17 @@ body::before {
   .app-nav__links a {
     padding: 6px 8px;
     font-size: 0.82rem;
+  }
+}
+@media (max-width: 480px) {
+  .app-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .app-nav__links {
+    justify-content: flex-start;
+    width: 100%;
   }
 }
 
@@ -397,6 +414,7 @@ body::before {
   padding: 80px 6vw;
   box-sizing: border-box;
   overflow: hidden;
+  position: relative;
 }
 @media (max-width: 960px) {
   .home-hero { 
@@ -407,20 +425,71 @@ body::before {
   }
   .home-hero__copy {
     padding-right: 0 !important;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
   }
   .home-hero__canvas {
-    height: 40vh !important;
+    height: 45vh !important;
+    min-height: 380px !important;
     width: 100% !important;
+    margin-top: 20px;
   }
 }
-.home-hero__copy { max-width: 540px; }
+@media (max-width: 640px) {
+  .home-hero__canvas {
+    height: 38vh !important;
+    min-height: 320px !important;
+  }
+  .hero-launch-panel {
+    transform: scale(0.75);
+    transform-origin: top right;
+    right: 12px !important;
+    top: 60px !important;
+  }
+  .hero-start-lights {
+    transform: scale(0.7);
+    transform-origin: top center;
+    top: 12px !important;
+    gap: 8px !important;
+  }
+  .hero-start-lights span {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .home-hero__telemetry {
+    gap: 8px !important;
+    margin-bottom: 20px !important;
+  }
+  .home-hero__telemetry > div {
+    padding: 8px 12px !important;
+    flex: 1;
+  }
+  .home-hero__telemetry div div:first-child {
+    font-size: 0.6rem !important;
+  }
+  .home-hero__telemetry div div:last-child {
+    font-size: 1.1rem !important;
+  }
+}
+.home-hero__copy { 
+  flex: 1 1 55%;
+  min-width: 280px;
+  max-width: 540px;
+  position: relative;
+  z-index: 2;
+  padding-right: 40px;
+}
 .home-hero__copy .home-title { margin: 12px 0 16px; }
 .home-hero__copy .home-sub { color: var(--color-light-grey); max-width: 48ch; }
 .home-hero__ctas {
   display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px;
 }
-.home-hero__canvas { min-width: 0; }
+.home-hero__canvas { 
+  flex: 1 1 40%;
+  min-width: 280px;
+  position: relative;
+  z-index: 1;
+  height: 70vh;
+}
 
 .hero-launch-panel {
   position: absolute;
@@ -587,6 +656,23 @@ body::before {
 @keyframes gridTremor {
   0%, 100% { transform: translateX(0) skewX(-14deg); }
   50% { transform: translateX(-2px) skewX(-14deg); }
+}
+
+@media (max-width: 1100px) {
+  .home-hero__canvas {
+    min-height: 420px;
+  }
+  .home-hero__canvas .home-car-canvas {
+    height: calc(100% - 112px) !important;
+    min-height: 0 !important;
+    margin-top: 112px;
+  }
+  .hero-start-lights {
+    top: 0;
+  }
+  .hero-launch-panel {
+    top: 46px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -1200,14 +1286,20 @@ body::before {
    Learning flow refresh — shared race-control page system.
    ========================================================= */
 .race-page {
-  width: 100vw;
-  max-width: 100vw;
+  width: 100%;
+  max-width: 100%;
   min-height: calc(100vh - 54px);
-  margin-inline: calc(50% - 50vw);
+  margin-inline: 0;
   padding: clamp(24px, 4vw, 58px) clamp(18px, 5vw, 72px) clamp(76px, 7vw, 112px);
+  box-sizing: border-box;
 }
 .lesson-page {
-  padding-right: clamp(270px, 18vw, 360px);
+  padding-right: clamp(18px, 18vw, 360px);
+}
+@media (min-width: 1200px) {
+  .lesson-page {
+    padding-right: clamp(270px, 18vw, 360px);
+  }
 }
 .learning-menu-page,
 .iq-page {
@@ -1766,6 +1858,25 @@ input[type="range"]::-webkit-slider-thumb:hover {
     padding: 14px;
   }
   .iq-pit-wall {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    max-width: 100%;
+    order: 2;
+  }
+  .iq-pit-wall span:last-child {
+    width: 100%;
+    font-size: 0.75rem;
+  }
+  .iq-footer-note {
+    width: 100%;
+    margin-top: 8px;
+    font-size: 0.7rem !important;
+    opacity: 0.8;
+    order: 3;
+  }
+  .iq-page .btn-ghost-f1 {
+    order: 1;
     width: 100%;
   }
 }
@@ -1939,7 +2050,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-hairline);
   padding: 10px clamp(16px, 3vw, 32px);
-  margin: -24px -16px 0;
+  margin: -24px 0 0;
 }
 .lesson-progress-rail__label {
   display: flex; justify-content: space-between;
@@ -2984,5 +3095,579 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 480px) {
   .iq-track-wrapper {
     min-height: 190px;
+  }
+}
+
+/* Final responsive hardening pass after legacy overrides. */
+@media (max-width: 720px) {
+  .app-nav {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+  }
+  .app-nav__brand {
+    flex: 1 0 auto;
+  }
+  .app-nav__links {
+    display: flex;
+    flex: 1 0 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .app-nav__links::-webkit-scrollbar {
+    display: none;
+  }
+  .app-nav__links a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .home-hero {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    padding: 32px 20px 64px !important;
+    gap: 22px;
+  }
+  .home-hero__copy {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding-right: 0 !important;
+  }
+  .home-hero__copy [data-entrance-step="4"] {
+    flex-wrap: wrap;
+  }
+  .home-hero__copy .home-title {
+    max-width: 100%;
+    font-size: 2.65rem !important;
+    line-height: 1.08 !important;
+    overflow-wrap: normal;
+  }
+  .home-hero__copy .home-sub,
+  .garage-sub,
+  .race-page-sub,
+  .iq-conditions-text {
+    max-width: 100%;
+  }
+  .home-hero__canvas {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 390px !important;
+    overflow: visible;
+  }
+  .home-hero__canvas .home-car-canvas {
+    height: calc(100% - 118px) !important;
+    min-height: 0 !important;
+    margin-top: 118px;
+  }
+  .hero-launch-panel {
+    top: 48px !important;
+    left: 50%;
+    right: auto !important;
+    width: min(100%, 330px);
+    max-width: 100%;
+    justify-content: center;
+    transform: translateX(-50%) !important;
+    transform-origin: top center;
+  }
+  .hero-start-lights {
+    top: 0 !important;
+    left: 50%;
+    transform: translateX(-50%) !important;
+  }
+
+  .race-page,
+  .garage-page,
+  .learning-menu-page,
+  .iq-page {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+    padding-inline: 14px;
+  }
+  .race-page > .race-page-hero,
+  .race-page > .lesson-workbench,
+  .race-page > .race-console-panel,
+  .race-page > .row,
+  .race-page > .lesson-grid,
+  .race-page > .quiz-transition,
+  .lesson-page > .race-page-hero,
+  .lesson-page > .lesson-workbench,
+  .lesson-page > .row,
+  .lesson-page > .d-flex:last-of-type,
+  .iq-page > .race-page-hero,
+  .iq-page > .race-console-panel,
+  .iq-page > .row,
+  .iq-page > .d-flex:last-of-type {
+    width: calc(100vw - 28px) !important;
+    max-width: calc(100vw - 28px) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .race-page {
+    padding-top: 24px;
+  }
+  .race-page-hero {
+    margin-bottom: 14px;
+  }
+  .nav-row {
+    margin-bottom: 10px !important;
+  }
+  .race-page-title,
+  .lesson-hero .race-page-title,
+  .iq-hero .race-page-title,
+  .garage-title {
+    max-width: 100%;
+    font-size: clamp(2rem, 10vw, 2.7rem);
+    line-height: 1.06;
+    margin-block: 8px 10px;
+  }
+  .race-page-sub,
+  .iq-intro,
+  .iq-hint {
+    font-size: 1rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+  .race-callout,
+  .lesson-telemetry-strip,
+  .iq-how-to,
+  .iq-pit-wall {
+    min-width: 0;
+  }
+  .garage-quick-actions .btn,
+  .home-hero__ctas .btn {
+    width: 100%;
+  }
+  .garage-canvas-shell {
+    min-height: 340px;
+  }
+  .garage-car-canvas {
+    height: 340px;
+    min-height: 340px;
+  }
+  .garage-hud {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-hero__copy .home-title,
+  .race-page-title,
+  .lesson-hero .race-page-title,
+  .iq-hero .race-page-title,
+  .garage-title {
+    font-size: 2.05rem !important;
+  }
+  .race-page-hero,
+  .race-console-panel,
+  .lesson-workbench,
+  .garage-panel {
+    padding: 16px;
+  }
+  .race-page-hero__grid,
+  .iq-scenario-layout,
+  .iq-rival-console {
+    gap: 16px;
+  }
+  .lesson-progress-rail {
+    padding-inline: 10px;
+  }
+  .iq-scenario-tab,
+  .iq-wing-btn,
+  .iq-config-card,
+  .garage-preset,
+  .garage-system,
+  .garage-model {
+    min-width: 0;
+  }
+  .home-hero__canvas {
+    height: 360px !important;
+  }
+  .hero-launch-panel {
+    width: 100%;
+    gap: 10px;
+    padding: 8px 10px;
+  }
+  .hero-ignition-btn {
+    width: 66px;
+    height: 66px;
+  }
+  .hero-ignition-btn__label {
+    font-size: 0.62rem;
+  }
+  .hero-launch-readout {
+    min-width: 0;
+  }
+  .hero-launch-readout strong {
+    font-size: 0.88rem;
+  }
+}
+
+/* Responsiveness fixes for the lesson tire module and quiz footer. */
+.lesson-workbench--tires {
+  padding: clamp(14px, 1.8vw, 22px);
+}
+.lesson-workbench--tires .tire-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(10px, 1.5vw, 18px);
+  margin: 0;
+}
+.lesson-workbench--tires .tire-grid > [class*="col"] {
+  width: auto;
+  max-width: none;
+  padding: 0;
+}
+.lesson-workbench--tires .tire-card {
+  width: 100%;
+  min-height: 132px;
+  padding: 18px 12px;
+}
+.lesson-workbench--tires .tire-info-box {
+  margin-top: clamp(12px, 1.8vw, 18px) !important;
+  min-height: 78px;
+  padding: 16px 20px;
+}
+.lesson-workbench--tires #tire-text {
+  line-height: 1.55;
+}
+
+.iq-page > .d-flex:last-of-type {
+  display: grid !important;
+  grid-template-columns: auto minmax(220px, 520px) minmax(190px, 280px);
+  gap: 14px;
+  align-items: center !important;
+}
+.iq-pit-wall {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  max-width: none;
+  min-width: 0;
+  overflow: visible;
+  text-align: left;
+}
+.iq-pit-wall__label,
+.iq-pit-wall span:first-child {
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.iq-pit-wall__ticker {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: none !important;
+  transform: none !important;
+}
+.iq-pit-wall__ticker span {
+  display: inline-block;
+  padding-left: 100%;
+  white-space: nowrap;
+  width: max-content !important;
+  max-width: none;
+  overflow: visible;
+  font-size: inherit !important;
+  animation: pitWallCrawl 14s linear infinite;
+}
+.iq-pit-wall span:last-child {
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .lesson-workbench--tires .tire-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .iq-page > .d-flex:last-of-type {
+    grid-template-columns: 1fr;
+  }
+  .iq-footer-note {
+    max-width: none;
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  .lesson-workbench--tires .tire-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .lesson-workbench--tires .tire-card {
+    min-height: 118px;
+    padding: 14px 10px;
+  }
+  .lesson-workbench--tires .tire-ring {
+    width: 42px;
+    height: 42px;
+  }
+  .lesson-workbench--tires .tire-info-box {
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 340px) {
+  .lesson-workbench--tires .tire-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hero launch controls: one responsive cluster, no independent overlap math. */
+.home-hero__canvas {
+  display: grid !important;
+  grid-template-rows: auto minmax(240px, 1fr);
+  align-items: stretch;
+}
+.hero-control-cluster {
+  grid-row: 1;
+  position: relative;
+  z-index: 6;
+  display: grid;
+  justify-items: center;
+  gap: clamp(8px, 1vw, 12px);
+  width: min(100%, clamp(270px, 32vw, 420px));
+  margin: 0 auto clamp(10px, 1.6vw, 22px);
+  pointer-events: none;
+}
+.hero-control-cluster .hero-start-lights,
+.hero-control-cluster .hero-launch-panel {
+  pointer-events: auto;
+}
+.hero-control-cluster .hero-start-lights {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  display: flex;
+  gap: clamp(7px, 0.8vw, 10px) !important;
+  padding: clamp(6px, 0.7vw, 8px) clamp(8px, 0.9vw, 10px);
+}
+.hero-control-cluster .hero-start-lights span {
+  width: clamp(14px, 1.25vw, 18px) !important;
+  height: clamp(14px, 1.25vw, 18px) !important;
+}
+.hero-control-cluster .hero-launch-panel {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  transform: none !important;
+  width: min(100%, clamp(250px, 28vw, 360px));
+  max-width: 100%;
+  justify-content: center;
+  gap: clamp(10px, 1vw, 14px);
+  padding: clamp(8px, 0.9vw, 12px);
+}
+.hero-control-cluster .hero-ignition-btn {
+  width: clamp(64px, 6vw, 78px);
+  height: clamp(64px, 6vw, 78px);
+  flex: 0 0 auto;
+}
+.hero-control-cluster .hero-ignition-btn__label {
+  font-size: clamp(0.62rem, 0.72vw, 0.72rem);
+}
+.hero-control-cluster .hero-launch-readout {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.home-hero__canvas .home-car-canvas {
+  grid-row: 2;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin-top: 0 !important;
+  align-self: stretch;
+}
+
+@media (min-width: 961px) {
+  .hero-control-cluster {
+    justify-self: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .home-hero__canvas {
+    grid-template-rows: auto minmax(230px, 1fr);
+  }
+  .hero-control-cluster {
+    width: min(100%, 330px);
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-control-cluster .hero-launch-panel {
+    width: 100%;
+    gap: 8px;
+  }
+  .hero-control-cluster .hero-ignition-btn {
+    width: 60px;
+    height: 60px;
+  }
+  .hero-control-cluster .hero-launch-readout span {
+    font-size: 0.58rem;
+  }
+  .hero-control-cluster .hero-launch-readout strong {
+    font-size: 0.82rem;
+  }
+}
+
+/* Polished hero race-control console. Keep this late so it wins old overlay rules. */
+.home-hero__canvas {
+  grid-template-rows: auto minmax(260px, 1fr);
+}
+.hero-control-cluster {
+  width: min(100%, clamp(248px, 24vw, 332px));
+  gap: 0;
+  padding: clamp(10px, 1vw, 14px);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.08), transparent 34%),
+    radial-gradient(circle at 23% 62%, rgba(255,30,30,0.26), transparent 34%),
+    rgba(8, 8, 12, 0.74);
+  box-shadow:
+    0 18px 42px rgba(0,0,0,0.42),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 0 34px rgba(255,30,30,0.10);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+.hero-control-cluster::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, rgba(255,30,30,0.42), transparent 22%),
+    linear-gradient(180deg, rgba(0,229,255,0.10), transparent 38%);
+  opacity: 0.58;
+  pointer-events: none;
+  mask-image: linear-gradient(90deg, black, transparent 76%);
+}
+.hero-control-cluster .hero-start-lights {
+  justify-self: stretch;
+  justify-content: flex-end;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.hero-control-cluster .hero-start-lights span {
+  width: clamp(11px, 0.9vw, 14px) !important;
+  height: clamp(11px, 0.9vw, 14px) !important;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55), rgba(255,255,255,0.18) 44%, rgba(255,255,255,0.07));
+  border-color: rgba(255,255,255,0.22);
+  box-shadow: inset 0 -1px 2px rgba(0,0,0,0.38);
+}
+.hero-control-cluster .hero-launch-panel {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(12px, 1.2vw, 16px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.hero-control-cluster .hero-ignition-btn {
+  width: clamp(66px, 5.3vw, 82px);
+  height: clamp(66px, 5.3vw, 82px);
+  border: 1px solid rgba(255,30,30,0.82);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,0.13), transparent 16%),
+    radial-gradient(circle at 50% 50%, rgba(255,30,30,0.52), rgba(255,30,30,0.13) 42%, transparent 68%),
+    conic-gradient(from 210deg, rgba(255,30,30,0.12), rgba(255,242,0,0.32), rgba(255,30,30,0.12), rgba(0,229,255,0.16), rgba(255,30,30,0.12)),
+    #07070a;
+  box-shadow:
+    inset 0 0 0 8px rgba(255,255,255,0.035),
+    inset 0 -10px 22px rgba(0,0,0,0.56),
+    0 0 0 4px rgba(255,30,30,0.08),
+    0 0 24px rgba(255,30,30,0.28);
+}
+.hero-control-cluster .hero-ignition-btn::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: var(--r-full);
+  border: 1px solid rgba(255,30,30,0.22);
+}
+.hero-control-cluster .hero-ignition-btn__ring {
+  inset: 9px;
+  border-color: rgba(255,255,255,0.34);
+}
+.hero-control-cluster .hero-ignition-btn__label {
+  font-size: clamp(0.62rem, 0.62vw, 0.7rem);
+  letter-spacing: 0.06em;
+}
+.hero-control-cluster .hero-launch-readout {
+  display: grid;
+  align-content: center;
+  min-height: 58px;
+  padding-left: clamp(2px, 0.5vw, 8px);
+  border-left: 1px solid rgba(255,255,255,0.10);
+}
+.hero-control-cluster .hero-launch-readout span {
+  font-size: clamp(0.58rem, 0.62vw, 0.66rem);
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--color-light-grey) 86%, white);
+}
+.hero-control-cluster .hero-launch-readout strong {
+  margin-top: 2px;
+  font-size: clamp(1rem, 1.1vw, 1.16rem);
+  color: var(--color-accent);
+  text-shadow: 0 0 16px rgba(255,242,0,0.24);
+}
+.home-hero__canvas.is-staging .hero-control-cluster,
+.home-hero__canvas.is-lights-out .hero-control-cluster {
+  border-color: rgba(255,30,30,0.36);
+  box-shadow:
+    0 18px 42px rgba(0,0,0,0.42),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 0 44px rgba(255,30,30,0.22);
+}
+
+@media (min-width: 961px) {
+  .hero-control-cluster {
+    justify-self: center;
+    margin-top: clamp(4px, 1vh, 18px);
+  }
+}
+
+@media (max-width: 720px) {
+  .home-hero__canvas {
+    grid-template-rows: auto minmax(230px, 1fr);
+  }
+  .hero-control-cluster {
+    width: min(100%, 318px);
+    padding: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-control-cluster {
+    width: 100%;
+  }
+  .hero-control-cluster .hero-launch-panel {
+    gap: 10px;
+  }
+  .hero-control-cluster .hero-ignition-btn {
+    width: 60px;
+    height: 60px;
+  }
+  .hero-control-cluster .hero-launch-readout {
+    min-height: 52px;
+    padding-left: 10px;
   }
 }

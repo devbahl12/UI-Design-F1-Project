@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="home-hero" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100vw; max-width: 100vw; min-height: 90vh; padding: 80px 6vw; box-sizing: border-box; overflow: hidden; position: relative;">
+<section class="home-hero">
   <!-- Abstract background elements -->
   <div style="position: absolute; top: -10%; left: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(0,229,255,0.05) 0%, transparent 70%); z-index: 0; pointer-events: none;"></div>
   
-  <div class="home-hero__copy" data-entrance style="flex: 1 1 55%; min-width: 320px; position: relative; z-index: 2; padding-right: 40px;">
+  <div class="home-hero__copy" data-entrance>
     <div class="home-eyebrow t-caption" data-entrance-step="1" style="color: var(--color-base); text-shadow: 0 0 10px rgba(255,30,30,0.5);">COMS W4170 · F1 Primer</div>
     <h1 class="home-title t-display" data-entrance-step="2" style="font-size: clamp(3rem, 5vw, 5rem); line-height: 1.1;">Understand Formula&nbsp;1 strategy in 20&nbsp;minutes.</h1>
     <p class="home-sub t-body" data-entrance-step="3">Tires, aerodynamics, pit strategy — the six moves every race is built on, with a car you can rotate and poke at.</p>
 
     <!-- Cool extra content: Live animated telemetry preview -->
-    <div data-entrance-step="4" style="display: flex; gap: 16px; margin-bottom: 30px;">
+    <div class="home-hero__telemetry" data-entrance-step="4" style="display: flex; gap: 16px; margin-bottom: 30px;">
       <div style="background: rgba(30,30,42,0.5); border: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; backdrop-filter: blur(10px);">
         <div style="font-size: 0.7rem; color: var(--color-blue); text-transform: uppercase; letter-spacing: 1px;">Top Speed</div>
         <div style="font-size: 1.5rem; font-weight: bold; font-family: monospace;">342 <span style="font-size: 0.9rem; color: #888;">km/h</span></div>
@@ -33,19 +33,21 @@
     </div>
   </div>
 
-  <div class="home-hero__canvas" data-entrance data-entrance-step="3" style="flex: 1 1 40%; min-width: 320px; position: relative; z-index: 1; height: 70vh;">
-	    <div class="hero-launch-panel" data-hero-launch-panel>
-      <button type="button" class="hero-ignition-btn" data-hero-ignition aria-pressed="false">
-        <span class="hero-ignition-btn__ring" aria-hidden="true"></span>
-        <span class="hero-ignition-btn__label">Ignition</span>
-      </button>
-      <div class="hero-launch-readout">
-        <span class="t-caption">Launch control</span>
-        <strong class="t-mono" data-hero-launch-state>Standby</strong>
-	      </div>
-	    </div>
-    <div class="hero-start-lights" aria-hidden="true">
-      <span></span><span></span><span></span><span></span><span></span>
+  <div class="home-hero__canvas" data-entrance data-entrance-step="3">
+    <div class="hero-control-cluster">
+      <div class="hero-start-lights" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="hero-launch-panel" data-hero-launch-panel>
+        <button type="button" class="hero-ignition-btn" data-hero-ignition aria-pressed="false">
+          <span class="hero-ignition-btn__ring" aria-hidden="true"></span>
+          <span class="hero-ignition-btn__label">Ignition</span>
+        </button>
+        <div class="hero-launch-readout">
+          <span class="t-caption">Launch control</span>
+          <strong class="t-mono" data-hero-launch-state>Standby</strong>
+        </div>
+      </div>
     </div>
 	    <div class="hero-grandstand" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span>
@@ -114,7 +116,7 @@
 
 <footer class="home-footer t-caption">
   <span>Reya Vir · Dev Bahl · Nitish Ramaraj</span>
-  <span>COMS W4170 · HW11</span>
+  <span>COMS W4170 · Final Project</span>
 </footer>
 {% endblock %}
 
