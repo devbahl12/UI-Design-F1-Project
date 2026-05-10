@@ -121,6 +121,12 @@ def interactive_quiz():
     )
 
 
+@app.route("/garage")
+def garage():
+    """Interactive 3D garage for exploring the current F1 model."""
+    return render_template("garage.html")
+
+
 @app.route("/reset", methods=["POST"])
 def reset():
     _save_session(_fresh_session())

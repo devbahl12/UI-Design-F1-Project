@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="screen-page">
+<div class="screen-page race-page learning-menu-page">
   <!-- Sticky progress: updates from localStorage on mount. -->
   <div class="lesson-progress-rail" aria-label="Lesson progress">
     <div class="lesson-progress-rail__label">
@@ -12,16 +12,29 @@
     </div>
   </div>
 
-  <div class="nav-row d-flex justify-content-between align-items-center mb-3 mt-4">
-    <a class="nav-back" href="{{ url_for('home') }}">← Home</a>
-    <span class="nav-badge t-caption">F1 Strategies</span>
-  </div>
+  <section class="race-page-hero learning-menu-hero">
+    <div class="nav-row d-flex justify-content-between align-items-center mb-3 mt-4">
+      <a class="nav-back" href="{{ url_for('home') }}">← Home</a>
+      <span class="nav-badge t-caption">F1 Strategies</span>
+    </div>
 
-  <div class="t-caption eyebrow-label" style="color: var(--color-base);">LEARN</div>
-  <h2 class="t-h1 page-title mt-1">Pick a lesson</h2>
-  <p class="t-body page-sub" style="color: var(--color-light-grey); max-width: 56ch;">
-    Six focused modules, roughly three minutes each. Work through in order or jump to the one you care about.
-  </p>
+    <div class="race-page-hero__grid">
+      <div>
+        <div class="t-caption race-eyebrow">LEARN</div>
+        <h2 class="t-display race-page-title">Build racecraft step by step.</h2>
+        <p class="t-body race-page-sub">
+          Six focused modules, roughly three minutes each. Work through the sequence or jump to the system you want to understand first.
+        </p>
+      </div>
+      <aside class="race-callout" aria-label="Strategy tip">
+        <span class="race-callout__pulse" aria-hidden="true"></span>
+        <div>
+          <div class="t-caption">Pit wall note</div>
+          <p>Tire degradation is non-linear. Watch for the cliff where lap times collapse suddenly.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
 
   <div class="lesson-grid">
     {% for lesson in lessons %}
@@ -38,12 +51,13 @@
       <span class="lesson-card__icon" aria-hidden="true">{{ lesson.icon }}</span>
       <h3 class="t-h3 lesson-card__title">{{ lesson.title }}</h3>
       <p class="t-body lesson-card__desc">{{ lesson.subtitle }}</p>
+      <span class="lesson-card__launch t-caption">Open module</span>
     </a>
     {% endfor %}
   </div>
 
   <!-- Transition band — learn → Interactive Quiz -->
-  <section class="quiz-transition" aria-label="Interactive Quiz">
+  <section class="quiz-transition race-transition" aria-label="Interactive Quiz">
     <div>
       <div class="t-caption" style="color: var(--color-accent);">WHEN YOU'RE READY</div>
       <h3 class="t-h2 mt-1">Try the Interactive Quiz</h3>

@@ -10,6 +10,7 @@ An interactive web app for learning Formula 1 race strategy. Built for our UI De
 - **Performance Degradation** — animated car on a track showing grip vs lap time
 - **Aerodynamics** — clean air vs dirty air slipstream simulator
 - **Finding the Gap** — interactive pit window selector
+- **F1 Garage** — orbitable 3D model lab with selectable Ferrari, McLaren, Alpine, Mercedes, and Red Bull GLB cars, plus launch mode, setup presets, DRS, aero flow, and telemetry
 - **Interactive Quiz** — configure tyre compound and rear wing for different weather scenarios, then compare modeled pace to rivals on a live track visualization
 
 ## Run locally
@@ -32,6 +33,7 @@ Then open **http://127.0.0.1:5000** (or 5001 if AirPlay is using 5000).
 | `GET /learn` | Learning module menu |
 | `GET /learn/<n>` | Lesson n (1–6), logs a view event |
 | `POST /learn/<n>/interact` | Log an interaction as JSON |
+| `GET /garage` | 3D garage — setup presets, launch mode, DRS and aero-flow controls |
 | `GET /interactive-quiz` | Interactive Quiz — setup lab + pace preview |
 | `POST /reset` | Clear the stored session |
 
@@ -52,6 +54,7 @@ templates/
   home.html               # / — hero + start
   learning_menu.html      # /learn — module list
   learn.html              # /learn/<n> — one lesson
+  garage.html             # /garage — interactive 3D model lab
   interactive_quiz.html   # /interactive-quiz — setup + track preview
 static/
   css/app.css             # F1 dark theme on top of Bootstrap, fully responsive
@@ -60,6 +63,10 @@ static/
   js/interactive_quiz.js  # Interactive Quiz simulation UI
   models/
     f1car.glb             # Ferrari SF-25 3D model (CC Attribution — Abu Saif)
+    2025_mclaren_mcl39.glb
+    2025_alpine_a525.glb
+    2020_f1_mercedes_benz_w11.glb
+    redbull_rb7.glb
   img/
     ferrari_home.jpg      # hero image fallback
     ferrari_sf24.jpg      # car components reference
