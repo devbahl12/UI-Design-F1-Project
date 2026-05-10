@@ -1,23 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="screen-page" data-lesson-id="{{ n }}" data-lesson-slug="{{ lesson.slug }}">
-  <div class="nav-row d-flex justify-content-between align-items-center mb-3">
-    <a class="nav-back" href="{{ url_for('learning_menu') }}">← Back</a>
-    <div class="d-flex align-items-center gap-3">
-      <div class="progress-dots">
-        {% for i in range(1, total + 1) %}
-          <span class="pd {% if i == n %}active{% elif i < n %}done{% endif %}"></span>
-        {% endfor %}
+<div class="screen-page race-page lesson-page" data-lesson-id="{{ n }}" data-lesson-slug="{{ lesson.slug }}">
+  <section class="race-page-hero lesson-hero">
+    <div class="nav-row d-flex justify-content-between align-items-center mb-3">
+      <a class="nav-back" href="{{ url_for('learning_menu') }}">← Back</a>
+      <div class="d-flex align-items-center gap-3">
+        <div class="progress-dots">
+          {% for i in range(1, total + 1) %}
+            <span class="pd {% if i == n %}active{% elif i < n %}done{% endif %}"></span>
+          {% endfor %}
+        </div>
+        <span class="nav-badge t-caption">{{ '%02d' % n }} / {{ '%02d' % total }}</span>
       </div>
-      <span class="nav-badge t-caption">{{ '%02d' % n }} / {{ '%02d' % total }}</span>
     </div>
-  </div>
 
-  <h2 class="t-h1 page-title">{{ lesson.title }}</h2>
-  <p class="t-body page-sub">{{ lesson.subtitle }}</p>
+    <div class="race-page-hero__grid">
+      <div>
+        <div class="t-caption race-eyebrow">MODULE {{ '%02d' % n }}</div>
+        <h2 class="t-display race-page-title">{{ lesson.title }}</h2>
+        <p class="t-body race-page-sub">{{ lesson.subtitle }}</p>
+      </div>
+      <aside class="lesson-telemetry-strip" aria-label="Lesson telemetry">
+        <div>
+          <span class="t-caption">Pace mode</span>
+          <strong class="t-mono">LIVE</strong>
+        </div>
+        <div>
+          <span class="t-caption">Focus</span>
+          <strong class="t-mono">{{ lesson.type|replace('-', ' ')|upper }}</strong>
+        </div>
+      </aside>
+    </div>
+  </section>
 
   {% if lesson.type == 'hotspots' %}
-    <div class="row g-4 mt-2 align-items-start">
+    <div class="row g-4 mt-2 align-items-start lesson-workbench lesson-workbench--hotspots">
       <div class="col-12 col-lg-8">
         <div class="lesson-car-wrap">
           <canvas id="lesson-car" class="lesson-car-canvas"
@@ -46,6 +63,7 @@
       </div>
     </div>
   {% elif lesson.type == 'tires' %}
+    <div class="lesson-workbench lesson-workbench--tires">
     <div class="tire-grid row g-2 mt-3">
       {% for t in lesson.tires %}
       <div class="col">
@@ -61,8 +79,9 @@
     <div class="tire-info-box mt-3">
       <p id="tire-text" class="t-body m-0">Select a compound above to see details.</p>
     </div>
+    </div>
   {% elif lesson.type == 'wear-slider' %}
-    <div class="slider-card card-modern">
+    <div class="slider-card card-modern lesson-workbench lesson-workbench--slider">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
           <div class="small-label t-caption">Lap Time</div>
@@ -84,6 +103,7 @@
       <div id="degrad-msg" class="degrad-msg t-body mt-3"></div>
     </div>
   {% elif lesson.type == 'perf-slider' %}
+    <div class="lesson-workbench lesson-workbench--track">
     <div class="d-flex justify-content-between align-items-start">
       <div></div>
       <div class="stat-chip">
@@ -111,8 +131,9 @@
         <span class="t-caption" style="color: var(--color-base);">Worn Tires</span>
       </div>
     </div>
+    </div>
   {% elif lesson.type == 'aero' %}
-    <div class="row g-3 mt-2">
+    <div class="row g-3 mt-2 lesson-workbench lesson-workbench--aero">
       {% for c in lesson.cards %}
       <div class="col-12 col-md-6">
         <div class="aero-card card-modern" style="border-top-color: {{ c.color }};">
@@ -135,6 +156,7 @@
       </div>
     </div>
   {% elif lesson.type == 'gap' %}
+    <div class="lesson-workbench lesson-workbench--gap">
     <div class="gap-strip d-flex align-items-center">
       <span class="car-emoji" aria-hidden="true">🏎️</span>
       {% for g in lesson.gaps %}
@@ -151,6 +173,7 @@
         <li>Strategic track position relative to rivals who are also pitting</li>
       </ul>
     </div>
+    </div>
   {% endif %}
 
   <div class="d-flex gap-2 justify-content-end mt-4">
@@ -164,6 +187,36 @@
     {% endif %}
   </div>
 </div>
+<aside class="lesson-side-telemetry d-none d-xl-block" data-live-telemetry aria-label="Live lesson telemetry">
+  <div class="lesson-side-telemetry__panel">
+    <div class="t-caption mb-3 lesson-side-telemetry__live">
+      <span></span>
+      LIVE TELEMETRY
+    </div>
+    <div class="lesson-side-telemetry__row">
+      <span>VELOCITY</span>
+      <strong class="t-mono"><span data-telemetry-speed>284</span> <small>KM/H</small></strong>
+      <div>
+        <i data-telemetry-speed-bar style="width:70%;"></i>
+      </div>
+    </div>
+    <div class="lesson-side-telemetry__row">
+      <span>ENGINE RPM</span>
+      <strong class="t-mono" data-telemetry-rpm>11,402</strong>
+      <div>
+        <i data-telemetry-rpm-bar style="width:85%;"></i>
+      </div>
+    </div>
+    <div class="lesson-side-telemetry__row">
+      <span>G-FORCE</span>
+      <strong class="t-mono"><span data-telemetry-g>4.2</span> G</strong>
+    </div>
+    <div class="lesson-side-telemetry__state">
+      <span class="t-caption">Driver input</span>
+      <strong data-telemetry-state>Awaiting action</strong>
+    </div>
+  </div>
+</aside>
 {% endblock %}
 
 {% block three_js %}
