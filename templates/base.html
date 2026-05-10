@@ -38,6 +38,7 @@
     </a>
     <div class="app-nav__links">
       <a href="{{ url_for('learning_menu') }}">Learn</a>
+      <a href="{{ url_for('garage') }}">Garage</a>
       <a href="{{ url_for('interactive_quiz') }}">Interactive Quiz</a>
     </div>
   </nav>
@@ -45,6 +46,23 @@
   <main class="screen active">
     {% block content %}{% endblock %}
   </main>
+
+  <!-- Cool Race Ticker -->
+  <div class="race-ticker">
+    <div class="race-ticker__content">
+      <span>MONACO GP: VERSTAPPEN LEADS BY 5.2s</span>
+      <span>•</span>
+      <span>WEATHER: DRY 24°C</span>
+      <span>•</span>
+      <span>DRS ENABLED</span>
+      <span>•</span>
+      <span>FASTEST LAP: LECLERC 1:12.909</span>
+      <span>•</span>
+      <span>PIT WINDOW: OPEN FOR FRONT-RUNNERS</span>
+      <span>•</span>
+      <span>TRACK TEMP: 42°C</span>
+    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
