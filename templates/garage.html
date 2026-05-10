@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}F1 Garage · Intro to Formula 1{% endblock %}
+{% block content %}
+<section class="garage-page" data-garage-page>
+  <div class="garage-stage">
+    <div class="garage-copy" data-entrance-step="1">
+      <div class="t-caption garage-eyebrow">F1 GARAGE</div>
+      <h1 class="t-display garage-title">Tune the car before lights out.</h1>
+      <p class="t-body garage-sub">
+        Inspect the current 3D model in a live studio, switch race setup presets, pulse the aero flow, and launch it down the pit lane.
+      </p>
+      <div class="garage-quick-actions">
+        <button type="button" class="btn btn-primary-f1 btn-lg" data-garage-launch>Launch mode</button>
+        <button type="button" class="btn btn-ghost-f1 btn-lg" data-garage-orbit>Auto orbit</button>
+      </div>
+    </div>
+
+    <div class="garage-canvas-shell" data-entrance-step="2">
+      <div class="garage-lightbar" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <canvas id="garage-car" class="garage-car-canvas" aria-label="Interactive 3D Formula 1 garage model"></canvas>
+      <div class="garage-speed-lines" aria-hidden="true"></div>
+      <div class="garage-hud garage-hud--left">
+        <span class="t-caption">RPM</span>
+        <strong class="t-mono" data-garage-rpm>3,200</strong>
+      </div>
+      <div class="garage-hud garage-hud--right">
+        <span class="t-caption">DF</span>
+        <strong class="t-mono" data-garage-df>62%</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="garage-control-deck" data-entrance-step="3">
+    <section class="garage-panel garage-model-panel" aria-label="Car model selector">
+      <div class="garage-panel__head">
+        <div>
+          <div class="t-caption garage-section-label">Car Bay</div>
+          <h2 class="t-h3">Choose chassis</h2>
+        </div>
+        <span class="garage-status t-caption" data-model-status>Ferrari SF-25</span>
+      </div>
+      <div class="garage-model-grid">
+        <button type="button" class="garage-model is-active" data-garage-model="ferrari">
+          <span class="garage-model__swatch garage-model__swatch--ferrari"></span>
+          <span>
+            <strong>Ferrari SF-25</strong>
+            <small>2025</small>
+          </span>
+        </button>
+        <button type="button" class="garage-model" data-garage-model="mclaren">
+          <span class="garage-model__swatch garage-model__swatch--mclaren"></span>
+          <span>
+            <strong>McLaren MCL39</strong>
+            <small>2025</small>
+          </span>
+        </button>
+        <button type="button" class="garage-model" data-garage-model="alpine">
+          <span class="garage-model__swatch garage-model__swatch--alpine"></span>
+          <span>
+            <strong>Alpine A525</strong>
+            <small>2025</small>
+          </span>
+        </button>
+        <button type="button" class="garage-model" data-garage-model="mercedes">
+          <span class="garage-model__swatch garage-model__swatch--mercedes"></span>
+          <span>
+            <strong>Mercedes W11</strong>
+            <small>2020</small>
+          </span>
+        </button>
+        <button type="button" class="garage-model" data-garage-model="redbull">
+          <span class="garage-model__swatch garage-model__swatch--redbull"></span>
+          <span>
+            <strong>Red Bull RB7</strong>
+            <small>Classic</small>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <section class="garage-panel" aria-label="Race setup presets">
+      <div class="garage-panel__head">
+        <div>
+          <div class="t-caption garage-section-label">Setup Preset</div>
+          <h2 class="t-h3">Track personality</h2>
+        </div>
+        <span class="garage-status t-caption" data-garage-status>Studio idle</span>
+      </div>
+      <div class="garage-preset-grid">
+        <button type="button" class="garage-preset is-active" data-garage-preset="qualifying">
+          <span class="garage-preset__name">Qualifying</span>
+          <span class="garage-preset__meta">Soft tyre · low fuel</span>
+        </button>
+        <button type="button" class="garage-preset" data-garage-preset="wet">
+          <span class="garage-preset__name">Wet Race</span>
+          <span class="garage-preset__meta">High wing · full grip</span>
+        </button>
+        <button type="button" class="garage-preset" data-garage-preset="monza">
+          <span class="garage-preset__name">Monza</span>
+          <span class="garage-preset__meta">Low drag · high speed</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="garage-panel" aria-label="Car systems">
+      <div class="garage-panel__head">
+        <div>
+          <div class="t-caption garage-section-label">Systems</div>
+          <h2 class="t-h3">Aero lab</h2>
+        </div>
+      </div>
+      <div class="garage-toggle-list">
+        <button type="button" class="garage-system is-active" data-garage-system="flow">
+          <span>Aero flow</span>
+          <strong data-flow-state>On</strong>
+        </button>
+        <button type="button" class="garage-system" data-garage-system="drs">
+          <span>DRS wing</span>
+          <strong data-drs-state>Closed</strong>
+        </button>
+        <button type="button" class="garage-system" data-garage-system="lights">
+          <span>Grid lights</span>
+          <strong data-lights-state>Armed</strong>
+        </button>
+      </div>
+    </section>
+
+    <section class="garage-panel garage-telemetry-panel" aria-label="Live telemetry">
+      <div class="garage-panel__head">
+        <div>
+          <div class="t-caption garage-section-label">Telemetry</div>
+          <h2 class="t-h3">Live readout</h2>
+        </div>
+      </div>
+      <div class="garage-bars">
+        <div class="garage-bar">
+          <span class="t-caption">Grip</span>
+          <div><i style="width: 86%;" data-garage-grip></i></div>
+          <strong class="t-mono" data-garage-grip-value>86</strong>
+        </div>
+        <div class="garage-bar">
+          <span class="t-caption">Drag</span>
+          <div><i style="width: 28%;" data-garage-drag></i></div>
+          <strong class="t-mono" data-garage-drag-value>28</strong>
+        </div>
+        <div class="garage-bar">
+          <span class="t-caption">Energy</span>
+          <div><i style="width: 74%;" data-garage-energy></i></div>
+          <strong class="t-mono" data-garage-energy-value>74</strong>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+{% endblock %}
+
+{% block three_js %}
+<script type="module" src="{{ url_for('static', filename='js/car3d.js') }}"></script>
+<script type="module">
+  window.addEventListener('load', () => {
+    if (typeof window.initGarageCar === 'function') window.initGarageCar();
+  });
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.addEventListener('load', () => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.querySelectorAll('[data-entrance-step]').forEach((el) => {
+      const step = parseInt(el.getAttribute('data-entrance-step'), 10) || 1;
+      window.setTimeout(() => el.classList.add('is-entered'), reduced ? 0 : step * 90);
+    });
+  });
+</script>
+{% endblock %}
