@@ -2,6 +2,8 @@
 
 An interactive web app for learning Formula 1 race strategy. Built for our UI Design class (HW12).
 
+Repository: `COMS4170W-UI-Design-F1-Project`
+
 ## What it covers
 
 - **Car Components** — interactive 3D Ferrari SF-25 model with orbitable camera and clickable hotspots
@@ -13,6 +15,20 @@ An interactive web app for learning Formula 1 race strategy. Built for our UI De
 - **F1 Garage** — orbitable 3D model lab with selectable Ferrari, McLaren, Alpine, Mercedes, and Red Bull GLB cars, plus launch mode, setup presets, DRS, aero flow, and telemetry
 - **Interactive Quiz** — configure tyre compound and rear wing for different weather scenarios, then compare modeled pace to rivals on a live track visualization
 
+## Screenshots
+
+![Home page hero with 3D F1 car and launch control](docs/screenshots/main.png)
+
+![F1 Garage 3D model view](docs/screenshots/garage.png)
+
+![Learning menu modules](docs/screenshots/learn.png)
+
+![Car components lesson with interactive hotspots](docs/screenshots/carcomps.png)
+
+![Interactive quiz scenario setup](docs/screenshots/quiz.png)
+
+![Interactive quiz setup and live pace preview](docs/screenshots/quiz1.png)
+
 ## Run locally
 
 ```bash
@@ -22,7 +38,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Then open **http://127.0.0.1:5000** (or 5001 if AirPlay is using 5000).
+Then open **http://127.0.0.1:3000**.
 
 ## Routes
 
@@ -49,6 +65,8 @@ requirements.txt          # Flask
 data/
   lessons.json            # 6 lessons of content
   interactive_quiz.json   # Interactive Quiz scenarios + metadata
+docs/
+  screenshots/            # README screenshots
 templates/
   base.html               # shared layout (Bootstrap 5 + jQuery CDN)
   home.html               # / — hero + start
@@ -87,14 +105,14 @@ This project applies core UI/UX principles throughout:
 - **Responsive Design** — Mobile-first breakpoints at 768px and 480px collapse multi-column grids, reflow navigation, and constrain canvas heights to keep the experience usable on any device.
 - **Interactivity with Purpose** — Every interactive element (3D car, slipstream simulator, race setup lab) is tied to a learning objective, not decoration.
 
-## Team
+# Team Members
 
-- Reya Vir
-- Dev Bahl
-- Nitish Ramaraj
+- Reya Vir — reyavir
+- Dev Bahl — devbahl12
+- Nitish Ramaraj — nitishramaraj
 
 TA: Riya
 
 ## Repo
 
-https://github.com/devbahl12/UI-Design-F1-Project
+https://github.com/devbahl12/COMS4170W-UI-Design-F1-Project
